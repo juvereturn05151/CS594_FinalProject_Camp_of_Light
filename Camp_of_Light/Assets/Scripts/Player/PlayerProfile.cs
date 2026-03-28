@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 [Serializable]
 public class PlayerProfile
@@ -26,12 +25,19 @@ public class PlayerProfile
         Interests = interests ?? new List<string>();
     }
 
+    public bool IsValid()
+    {
+        return !string.IsNullOrWhiteSpace(Name)
+            && Age > 0
+            && !string.IsNullOrWhiteSpace(Profession);
+    }
+
     public override string ToString()
     {
-        string interestText = Interests == null || Interests.Count == 0
+        string interestsText = Interests == null || Interests.Count == 0
             ? "None"
             : string.Join(", ", Interests);
 
-        return $"Name: {Name}\nAge: {Age}\nProfession: {Profession}\nInterests: {interestText}";
+        return $"Name: {Name}\nAge: {Age}\nProfession: {Profession}\nInterests: {interestsText}";
     }
 }

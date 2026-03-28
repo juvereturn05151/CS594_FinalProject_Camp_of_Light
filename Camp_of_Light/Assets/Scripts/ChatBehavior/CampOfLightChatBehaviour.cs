@@ -306,35 +306,9 @@ Player says:
             }
         }
 
-        [ContextMenu("Load Mock Data")]
-        public void LoadMockData()
+        public void UpdateGameSession(GameSession gameSession) 
         {
-            session = new GameSession
-            {
-                Profile = new PlayerProfile(
-                    "Ju-ve",
-                    28,
-                    "Game Developer",
-                    new System.Collections.Generic.List<string>
-                    {
-                        "Fighting Games",
-                        "AI",
-                        "Japanese"
-                    }
-                ),
-                Stats = new PlayerStats
-                {
-                    Confidence = 50,
-                    Brainwash = 0,
-                    Wokeness = 50
-                },
-                LastExtractedRegret = "",
-                LastBibleVerse = ""
-            };
-
-            Debug.Log("Mock data loaded.");
-            Debug.Log(session.Profile.ToString());
-            Debug.Log(session.Stats.ToString());
+            session.Profile = gameSession.Profile;
         }
     }
 }
