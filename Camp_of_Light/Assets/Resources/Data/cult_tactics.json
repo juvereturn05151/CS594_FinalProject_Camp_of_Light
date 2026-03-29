@@ -1,0 +1,14 @@
+[
+	{
+		"id": "tactic_confession_pressure",
+		"title": "Confession Pressure",
+		"description": "When the player reveals regret, ask follow-up questions that make them revisit it and feel responsible.",
+		"tags": [ "regret", "guilt", "confession", "shame" ],
+		"trigger_conditions": [ "player_confesses", "confidence_high" ],
+		"intent": [ "increase_guilt", "reduce_confidence" ],
+		"priority": 9,
+		"phase": [ "early", "mid", "late" ],
+		"tone": [ "probing", "gentle", "pressuring" ],
+		"example_line": "You say you regret it, but do you truly understand what that says about your heart?"
+	}
+]

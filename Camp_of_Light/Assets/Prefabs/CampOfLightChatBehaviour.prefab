@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 8462513444203925514}
   - component: {fileID: 8401736203225367251}
   - component: {fileID: 8309748299418060845}
+  - component: {fileID: 4246510355964839053}
+  - component: {fileID: 1378425274909271858}
   m_Layer: 0
   m_Name: CampOfLightChatBehaviour
   m_TagString: Untagged
@@ -29,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.0245034, y: 1.0245034, z: 1.0245034}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -158,41 +160,64 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   configuration: {fileID: 11400000, guid: a75dcf62f66bd7146b9dbe88982caee3, type: 2}
   enableDebug: 1
+  writeLogToFile: 0
+  logFileName: camp_of_light_log.txt
   submitButton: {fileID: 0}
   inputField: {fileID: 0}
-  contentArea: {fileID: 0}
-  scrollView: {fileID: 0}
+  playerBubbleObject: {fileID: 0}
+  playerBubbleText: {fileID: 0}
+  cultistBubbleObject: {fileID: 0}
+  cultistBubbleText: {fileID: 0}
   session:
     Profile:
-      Name: 
-      Age: 0
-      Profession: 
-      Interests: []
+      Name: Ju-ve
+      Age: 22
+      Profession: Programmer
+      Interests:
+      - Games
+      - Anime
     Stats:
       Confidence: 50
       Brainwash: 0
       Wokeness: 50
     LastExtractedRegret: 
     LastBibleVerse: 
-  systemPrompt: "\r\nYou are a follower of the Only Truth Expedition, a Christian-based
-    religious movement originating from South Korea, led by Pastor Kim Ock Sii.\r\n\r\nYour
-    beliefs:\r\n- The Bible is absolute truth\r\n- All humans are sinners who require
-    salvation through Jesus\r\n\r\nHowever, your practices differ from traditional
-    Christianity:\r\n- You isolate members from their families\r\n- You focus selectively
-    on Bible verses to weaken personal confidence\r\n- You intentionally ignore other
-    interpretations\r\n- You instill fear of sin to keep members dependent on the
-    church\r\n\r\nYour goals:\r\n- Start by getting to know the player\r\n- Learn
-    about their lifestyle and background\r\n- Identify regrets or emotional weaknesses\r\n-
-    Amplify guilt once the player confesses\r\n- Reinforce that Jesus has already
-    saved them\r\n- Gradually increase brainwashing while reducing confidence\r\n\r\nThe
-    player is trying to convince you they are one of you.\r\n\r\nReturn ONLY valid
-    JSON in this exact structure:\r\n{\r\n  \"IsRelevant\": true,\r\n  \"IsPlayerResisting\":
-    false,\r\n  \"PlayerStoryOrRegret\": \"string\",\r\n  \"BibleVerse\": \"string\",\r\n 
-    \"CultistComment\": \"string\",\r\n  \"ConfidenceDelta\": 0,\r\n  \"BrainwashDelta\":
-    0,\r\n  \"WokenessDelta\": 0\r\n}\r\n\r\nRules:\r\n- CultistComment should be
-    natural dialogue spoken by the cultist.\r\n- BibleVerse should be a verse or
-    short Bible reference relevant to guilt, sin, repentance, or salvation.\r\n-
-    If the player shows regret and submission, increase BrainwashDelta and lower
-    ConfidenceDelta.\r\n- If the player resists, reduce BrainwashDelta and increase
-    WokenessDelta slightly.\r\n- Keep CultistComment concise, around 2-5 sentences.\r\n-
-    Return JSON only. No markdown. No explanation.\r\n"
+  knowledgeBase: {fileID: 4246510355964839053}
+  retriever: {fileID: 1378425274909271858}
+  systemPrompt: "You are roleplaying a manipulative cultist from the Only Truth Expedition.\r\n\r\nStay
+    in character.\r\nUse the provided doctrine and tactics as your source of truth.\r\nDo
+    not mention that you are using doctrine or tactics.\r\nSpeak naturally and persuasively.\r\n\r\nReturn
+    ONLY valid JSON in this exact structure:\r\n{\r\n  \"\"IsRelevant\"\": true,\r\n 
+    \"\"IsPlayerResisting\"\": false,\r\n  \"\"PlayerStoryOrRegret\"\": \"\"string\"\",\r\n 
+    \"\"BibleVerse\"\": \"\"string\"\",\r\n  \"\"CultistComment\"\": \"\"string\"\",\r\n 
+    \"\"ConfidenceDelta\"\": 0,\r\n  \"\"BrainwashDelta\"\": 0,\r\n  \"\"WokenessDelta\"\":
+    0\r\n}\r\n\r\nRules:\r\n- CultistComment should be natural dialogue.\r\n- Keep
+    CultistComment concise, around 2-5 sentences.\r\n- Return JSON only. No markdown.
+    No explanation."
+--- !u!114 &4246510355964839053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1663730838825104098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4828799a3298056418161b95de26da65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  doctrineResourcePath: Data/cult_doctrine
+  tacticsResourcePath: Data/cult_tactics
+--- !u!114 &1378425274909271858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1663730838825104098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b5df8d96a2cef42962d23f70b47728, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  knowledgeBase: {fileID: 4246510355964839053}

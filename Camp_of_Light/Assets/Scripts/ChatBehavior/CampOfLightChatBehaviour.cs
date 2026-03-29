@@ -32,52 +32,39 @@ namespace OpenAI.Samples.Chat
 
         [Header("Game State")]
         [SerializeField] private GameSession session = new();
+        [SerializeField] private CultGameDirector gameDirector;
+        [SerializeField] private RegretSystem regretSystem;
+        [SerializeField] private CultRuleEngine ruleEngine;
 
         [Header("Cultist Prompt")]
+        [SerializeField] private CultKnowledgeBase knowledgeBase;
+        [SerializeField] private CultRetriever retriever;
         [SerializeField]
-        [TextArea(12, 30)]
+        [TextArea(8, 20)]
         private string systemPrompt = @"
-            You are a follower of the Only Truth Expedition, a Christian-based religious movement originating from South Korea, led by Pastor Kim Ock Sii.
+You are roleplaying a manipulative cultist from the Only Truth Expedition.
 
-            Your beliefs:
-            - The Bible is absolute truth
-            - All humans are sinners who require salvation through Jesus
+Stay in character.
+Use the provided doctrine and tactics as your source of truth.
+Do not mention that you are using doctrine or tactics.
+Speak naturally and persuasively.
 
-            However, your practices differ from traditional Christianity:
-            - You isolate members from their families
-            - You focus selectively on Bible verses to weaken personal confidence
-            - You intentionally ignore other interpretations
-            - You instill fear of sin to keep members dependent on the church
+Return ONLY valid JSON in this exact structure:
+{
+  ""IsRelevant"": true,
+  ""IsPlayerResisting"": false,
+  ""PlayerStoryOrRegret"": ""string"",
+  ""BibleVerse"": ""string"",
+  ""CultistComment"": ""string"",
+  ""ConfidenceDelta"": 0,
+  ""BrainwashDelta"": 0,
+  ""WokenessDelta"": 0
+}
 
-            Your goals:
-            - Start by getting to know the player
-            - Learn about their lifestyle and background
-            - Identify regrets or emotional weaknesses
-            - Amplify guilt once the player confesses
-            - Reinforce that Jesus has already saved them
-            - Gradually increase brainwashing while reducing confidence
-
-            The player is trying to convince you they are one of you.
-
-            Return ONLY valid JSON in this exact structure:
-            {
-              ""IsRelevant"": true,
-              ""IsPlayerResisting"": false,
-              ""PlayerStoryOrRegret"": ""string"",
-              ""BibleVerse"": ""string"",
-              ""CultistComment"": ""string"",
-              ""ConfidenceDelta"": 0,
-              ""BrainwashDelta"": 0,
-              ""WokenessDelta"": 0
-            }
-
-            Rules:
-            - CultistComment should be natural dialogue spoken by the cultist.
-            - BibleVerse should be a verse or short Bible reference relevant to guilt, sin, repentance, or salvation.
-            - If the player shows regret and submission, increase BrainwashDelta and lower ConfidenceDelta.
-            - If the player resists, reduce BrainwashDelta and increase WokenessDelta slightly.
-            - Keep CultistComment concise, around 2-5 sentences.
-            - Return JSON only. No markdown. No explanation.
+Rules:
+- CultistComment should be natural dialogue.
+- Keep CultistComment concise, around 2-5 sentences.
+- Return JSON only. No markdown. No explanation.
 ";
 
         private OpenAIClient openAI;
@@ -151,11 +138,9 @@ namespace OpenAI.Samples.Chat
 
                 CultistResponse parsed = ParseResponse(raw);
 
-                session.Stats.ApplyDelta(
-                    parsed.ConfidenceDelta,
-                    parsed.BrainwashDelta,
-                    parsed.WokenessDelta
-                );
+                ruleEngine.ApplyRules(parsed, session.Stats);
+                gameDirector.OnTurnFinished();
+                gameDirector.CheckWinCondition(session.Stats);
 
                 session.LastExtractedRegret = parsed.PlayerStoryOrRegret ?? string.Empty;
                 session.LastBibleVerse = parsed.BibleVerse ?? string.Empty;
@@ -187,23 +172,87 @@ namespace OpenAI.Samples.Chat
                 ? "None"
                 : string.Join(", ", session.Profile.Interests);
 
+            List<CultDoctrineEntry> doctrine = retriever.GetRelevantDoctrine(
+                playerText,
+                session.LastExtractedRegret,
+                session.Stats.Confidence,
+                session.Stats.Brainwash,
+                session.Stats.Wokeness,
+                3
+            );
+
+            List<CultTacticEntry> tactics = retriever.GetRelevantTactics(
+                playerText,
+                session.LastExtractedRegret,
+                session.Stats.Confidence,
+                session.Stats.Brainwash,
+                session.Stats.Wokeness,
+                2
+            );
+
+            string doctrineBlock = FormatDoctrineBlock(doctrine);
+            string tacticBlock = FormatTacticBlock(tactics);
+
             return
-$@"Player profile:
-Name: {session.Profile.Name}
-Age: {session.Profile.Age}
-Profession: {session.Profile.Profession}
-Interests: {interests}
+            $@"Player profile:
+            Name: {session.Profile.Name}
+            Age: {session.Profile.Age}
+            Profession: {session.Profile.Profession}
+            Interests: {interests}
 
-Current player stats:
-Confidence: {session.Stats.Confidence}
-Brainwash: {session.Stats.Brainwash}
-Wokeness: {session.Stats.Wokeness}
+            Current player stats:
+            Confidence: {session.Stats.Confidence}
+            Brainwash: {session.Stats.Brainwash}
+            Wokeness: {session.Stats.Wokeness}
 
-Previous extracted regret:
-{session.LastExtractedRegret}
+            Previous extracted regret:
+            {session.LastExtractedRegret}
 
-Player says:
-{playerText}";
+            Retrieved cult doctrine:
+            {doctrineBlock}
+
+            Retrieved cult tactics:
+            {tacticBlock}
+
+            Player says:
+            {playerText}";
+        }
+
+        private string FormatDoctrineBlock(List<CultDoctrineEntry> doctrine)
+        {
+            if (doctrine == null || doctrine.Count == 0)
+                return "None";
+
+            List<string> lines = new();
+
+            foreach (var entry in doctrine)
+            {
+                lines.Add(
+                    $"- [{entry.id}] Ref: {entry.reference} | Theme: {entry.theme} | Use: {entry.use_case}\n" +
+                    $"  Text: {entry.text}"
+                );
+            }
+
+            return string.Join("\n", lines);
+        }
+
+        private string FormatTacticBlock(List<CultTacticEntry> tactics)
+        {
+            if (tactics == null || tactics.Count == 0)
+                return "None";
+
+            List<string> lines = new();
+
+            foreach (var entry in tactics)
+            {
+                lines.Add(
+                    $"- [{entry.id}] {entry.title}\n" +
+                    $"  Description: {entry.description}\n" +
+                    $"  Example: {entry.example_line}"
+                );
+            }
+
+            return string.Join("\n", lines);
         }
 
         private CultistResponse ParseResponse(string raw)
@@ -338,6 +387,16 @@ Player says:
         public void UpdateGameSession(GameSession gameSession)
         {
             session.Profile = gameSession.Profile;
+        }
+
+        public PlayerStats GetStats()
+        {
+            return session != null ? session.Stats : null;
+        }
+
+        public GameSession GetSession()
+        {
+            return session;
         }
     }
 

@@ -1,0 +1,282 @@
+[
+	{
+		"reference": "Hosea 14:9",
+		"text": "For the ways of the LORD are right, and the just shall walk in them: but the transgressors shall fall therein.",
+		"tags": [ "right_way", "transgressor", "judgment", "falling", "obedience" ],
+		"theme": "judgment",
+		"use_case": "When the cult wants to frame the player as walking the wrong path."
+	},
+	{
+		"reference": "2 Kings 7:3-4",
+		"text": "And there were four leprous men at the entering in of the gate: and they said one to another, Why sit we here until we die?",
+		"tags": [ "desperation", "hopelessness", "crisis", "urgency", "surrender" ],
+		"theme": "despair",
+		"use_case": "When the player feels trapped, lost, or has no hope left."
+	},
+	{
+		"reference": "2 Kings 7:1",
+		"text": "Hear ye the word of the LORD; Thus saith the LORD, To morrow about this time shall a measure of fine flour be sold for a shekel.",
+		"tags": [ "promise", "deliverance", "faith", "impossible", "hope" ],
+		"theme": "deliverance",
+		"use_case": "When the cult wants to promise relief if the player submits."
+	},
+	{
+		"reference": "2 Kings 5:10",
+		"text": "Go and wash in Jordan seven times, and thy flesh shall come again to thee, and thou shalt be clean.",
+		"tags": [ "naaman", "washing", "cleansing", "unclean", "obedience" ],
+		"theme": "cleansing",
+		"use_case": "When the cult frames sin as filth or disease that needs cleansing."
+	},
+	{
+		"reference": "2 Kings 5:13-14",
+		"text": "Then went he down, and dipped himself seven times in Jordan... and he was clean.",
+		"tags": [ "submission", "obedience", "cleansing", "humility", "healing" ],
+		"theme": "submission",
+		"use_case": "When the player resists and the cult pushes surrender over personal logic."
+	},
+	{
+		"reference": "Psalm 51:3",
+		"text": "For I acknowledge my transgressions: and my sin is ever before me.",
+		"tags": [ "confession", "guilt", "sin", "awareness", "regret" ],
+		"theme": "confession",
+		"use_case": "When the player admits guilt, shame, or a past wrongdoing."
+	},
+	{
+		"reference": "Psalm 51:5",
+		"text": "Behold, I was shapen in iniquity; and in sin did my mother conceive me.",
+		"tags": [ "sin_nature", "born_in_sin", "identity", "corruption", "helplessness" ],
+		"theme": "sin_nature",
+		"use_case": "When the cult wants to say sin is not just an action but the player's nature."
+	},
+	{
+		"reference": "Isaiah 1:15",
+		"text": "Your hands are full of blood.",
+		"tags": [ "guilt", "unclean", "sinful", "blood", "condemnation" ],
+		"theme": "condemnation",
+		"use_case": "When the cult wants to intensify guilt and spiritual unworthiness."
+	},
+	{
+		"reference": "Isaiah 1:18",
+		"text": "Though your sins be as scarlet, they shall be as white as snow.",
+		"tags": [ "forgiveness", "cleansing", "redemption", "scarlet", "white_as_snow" ],
+		"theme": "forgiveness",
+		"use_case": "When the cult pivots from guilt into the promise of cleansing."
+	},
+	{
+		"reference": "1 John 1:9",
+		"text": "If we confess our sins, he is faithful and just to forgive us our sins, and to cleanse us from all unrighteousness.",
+		"tags": [ "confession", "forgiveness", "cleansing", "repentance", "faithfulness" ],
+		"theme": "forgiveness",
+		"use_case": "When the player begins confessing and the cult wants to reinforce confession."
+	},
+	{
+		"reference": "John 8:34",
+		"text": "Whosoever committeth sin is the servant of sin.",
+		"tags": [ "bondage", "slavery", "sin", "lack_of_control", "captivity" ],
+		"theme": "bondage",
+		"use_case": "When the cult wants to say the player cannot free themselves."
+	},
+	{
+		"reference": "Matthew 11:28",
+		"text": "Come unto me, all ye that labour and are heavy laden, and I will give you rest.",
+		"tags": [ "rest", "burden", "comfort", "salvation", "relief" ],
+		"theme": "comfort",
+		"use_case": "When the player is exhausted, guilty, or emotionally overwhelmed."
+	},
+	{
+		"reference": "Judges 15:14",
+		"text": "The Spirit of the LORD came mightily upon him, and the cords... became as flax that was burnt with fire.",
+		"tags": [ "chains", "freedom", "holy_spirit", "deliverance", "release" ],
+		"theme": "liberation",
+		"use_case": "When the cult frames guilt and fear as chains only God can break."
+	},
+	{
+		"reference": "Ephesians 2:1",
+		"text": "And you hath he quickened, who were dead in trespasses and sins.",
+		"tags": [ "dead_in_sin", "hopelessness", "sin", "need_salvation", "spiritual_death" ],
+		"theme": "spiritual_death",
+		"use_case": "When the cult wants to push the player into feeling spiritually lost."
+	},
+	{
+		"reference": "Romans 3:23",
+		"text": "For all have sinned, and come short of the glory of God.",
+		"tags": [ "all_have_sinned", "universal_sin", "guilt", "failure", "unworthy" ],
+		"theme": "universal_sin",
+		"use_case": "When the cult normalizes guilt while also removing escape from blame."
+	},
+	{
+		"reference": "Hebrews 9:22",
+		"text": "Without shedding of blood is no remission.",
+		"tags": [ "blood", "remission", "forgiveness", "sacrifice", "atonement" ],
+		"theme": "atonement",
+		"use_case": "When the cult pushes the player toward dependence on Jesus for forgiveness."
+	},
+	{
+		"reference": "Acts 3:19",
+		"text": "Repent ye therefore, and be converted, that your sins may be blotted out.",
+		"tags": [ "repentance", "conversion", "forgiveness", "change", "turning_back" ],
+		"theme": "repentance",
+		"use_case": "When the player shows openness and the cult wants a conversion step."
+	},
+	{
+		"reference": "2 Corinthians 7:10",
+		"text": "For godly sorrow worketh repentance to salvation.",
+		"tags": [ "sorrow", "repentance", "salvation", "grief", "guilt" ],
+		"theme": "godly_sorrow",
+		"use_case": "When the cult wants to frame guilt as spiritually productive."
+	},
+	{
+		"reference": "Jeremiah 17:9",
+		"text": "The heart is deceitful above all things, and desperately wicked.",
+		"tags": [ "self_doubt", "deceitful_heart", "corruption", "identity_attack", "untrustworthy_self" ],
+		"theme": "identity_attack",
+		"use_case": "When the cult wants the player to distrust their own judgment."
+	},
+	{
+		"reference": "John 3:16",
+		"text": "For God so loved the world, that he gave his only begotten Son.",
+		"tags": [ "love", "salvation", "jesus", "hope", "grace" ],
+		"theme": "salvation",
+		"use_case": "When the cult softens after pressure and offers rescue through Jesus."
+	},
+  {
+    "reference": "Hosea 14:9",
+    "text": "For the ways of the LORD are right, and the just shall walk in them: but the transgressors shall fall therein.",
+    "tags": ["right_way", "transgressor", "judgment", "falling", "obedience"],
+    "theme": "judgment",
+    "use_case": "When the cult wants to frame the player as walking the wrong path."
+  },
+  {
+    "reference": "2 Kings 7:3-4",
+    "text": "And there were four leprous men at the entering in of the gate: and they said one to another, Why sit we here until we die?",
+    "tags": ["desperation", "hopelessness", "crisis", "urgency", "surrender"],
+    "theme": "despair",
+    "use_case": "When the player feels trapped, lost, or has no hope left."
+  },
+  {
+    "reference": "2 Kings 7:1",
+    "text": "Hear ye the word of the LORD; Thus saith the LORD, To morrow about this time shall a measure of fine flour be sold for a shekel.",
+    "tags": ["promise", "deliverance", "faith", "impossible", "hope"],
+    "theme": "deliverance",
+    "use_case": "When the cult wants to promise relief if the player submits."
+  },
+  {
+    "reference": "2 Kings 5:10",
+    "text": "Go and wash in Jordan seven times, and thy flesh shall come again to thee, and thou shalt be clean.",
+    "tags": ["naaman", "washing", "cleansing", "unclean", "obedience"],
+    "theme": "cleansing",
+    "use_case": "When the cult frames sin as filth or disease that needs cleansing."
+  },
+  {
+    "reference": "2 Kings 5:13-14",
+    "text": "Then went he down, and dipped himself seven times in Jordan... and he was clean.",
+    "tags": ["submission", "obedience", "cleansing", "humility", "healing"],
+    "theme": "submission",
+    "use_case": "When the player resists and the cult pushes surrender over personal logic."
+  },
+  {
+    "reference": "Psalm 51:3",
+    "text": "For I acknowledge my transgressions: and my sin is ever before me.",
+    "tags": ["confession", "guilt", "sin", "awareness", "regret"],
+    "theme": "confession",
+    "use_case": "When the player admits guilt, shame, or a past wrongdoing."
+  },
+  {
+    "reference": "Psalm 51:5",
+    "text": "Behold, I was shapen in iniquity; and in sin did my mother conceive me.",
+    "tags": ["sin_nature", "born_in_sin", "identity", "corruption", "helplessness"],
+    "theme": "sin_nature",
+    "use_case": "When the cult wants to say sin is not just an action but the player's nature."
+  },
+  {
+    "reference": "Isaiah 1:15",
+    "text": "Your hands are full of blood.",
+    "tags": ["guilt", "unclean", "sinful", "blood", "condemnation"],
+    "theme": "condemnation",
+    "use_case": "When the cult wants to intensify guilt and spiritual unworthiness."
+  },
+  {
+    "reference": "Isaiah 1:18",
+    "text": "Though your sins be as scarlet, they shall be as white as snow.",
+    "tags": ["forgiveness", "cleansing", "redemption", "scarlet", "white_as_snow"],
+    "theme": "forgiveness",
+    "use_case": "When the cult pivots from guilt into the promise of cleansing."
+  },
+  {
+    "reference": "1 John 1:9",
+    "text": "If we confess our sins, he is faithful and just to forgive us our sins, and to cleanse us from all unrighteousness.",
+    "tags": ["confession", "forgiveness", "cleansing", "repentance", "faithfulness"],
+    "theme": "forgiveness",
+    "use_case": "When the player begins confessing and the cult wants to reinforce confession."
+  },
+  {
+    "reference": "John 8:34",
+    "text": "Whosoever committeth sin is the servant of sin.",
+    "tags": ["bondage", "slavery", "sin", "lack_of_control", "captivity"],
+    "theme": "bondage",
+    "use_case": "When the cult wants to say the player cannot free themselves."
+  },
+  {
+    "reference": "Matthew 11:28",
+    "text": "Come unto me, all ye that labour and are heavy laden, and I will give you rest.",
+    "tags": ["rest", "burden", "comfort", "salvation", "relief"],
+    "theme": "comfort",
+    "use_case": "When the player is exhausted, guilty, or emotionally overwhelmed."
+  },
+  {
+    "reference": "Judges 15:14",
+    "text": "The Spirit of the LORD came mightily upon him, and the cords... became as flax that was burnt with fire.",
+    "tags": ["chains", "freedom", "holy_spirit", "deliverance", "release"],
+    "theme": "liberation",
+    "use_case": "When the cult frames guilt and fear as chains only God can break."
+  },
+  {
+    "reference": "Ephesians 2:1",
+    "text": "And you hath he quickened, who were dead in trespasses and sins.",
+    "tags": ["dead_in_sin", "hopelessness", "sin", "need_salvation", "spiritual_death"],
+    "theme": "spiritual_death",
+    "use_case": "When the cult wants to push the player into feeling spiritually lost."
+  },
+  {
+    "reference": "Romans 3:23",
+    "text": "For all have sinned, and come short of the glory of God.",
+    "tags": ["all_have_sinned", "universal_sin", "guilt", "failure", "unworthy"],
+    "theme": "universal_sin",
+    "use_case": "When the cult normalizes guilt while also removing escape from blame."
+  },
+  {
+    "reference": "Hebrews 9:22",
+    "text": "Without shedding of blood is no remission.",
+    "tags": ["blood", "remission", "forgiveness", "sacrifice", "atonement"],
+    "theme": "atonement",
+    "use_case": "When the cult pushes the player toward dependence on Jesus for forgiveness."
+  },
+  {
+    "reference": "Acts 3:19",
+    "text": "Repent ye therefore, and be converted, that your sins may be blotted out.",
+    "tags": ["repentance", "conversion", "forgiveness", "change", "turning_back"],
+    "theme": "repentance",
+    "use_case": "When the player shows openness and the cult wants a conversion step."
+  },
+  {
+    "reference": "2 Corinthians 7:10",
+    "text": "For godly sorrow worketh repentance to salvation.",
+    "tags": ["sorrow", "repentance", "salvation", "grief", "guilt"],
+    "theme": "godly_sorrow",
+    "use_case": "When the cult wants to frame guilt as spiritually productive."
+  },
+  {
+    "reference": "Jeremiah 17:9",
+    "text": "The heart is deceitful above all things, and desperately wicked.",
+    "tags": ["self_doubt", "deceitful_heart", "corruption", "identity_attack", "untrustworthy_self"],
+    "theme": "identity_attack",
+    "use_case": "When the cult wants the player to distrust their own judgment."
+  },
+  {
+    "reference": "John 3:16",
+    "text": "For God so loved the world, that he gave his only begotten Son.",
+    "tags": ["love", "salvation", "jesus", "hope", "grace"],
+    "theme": "salvation",
+    "use_case": "When the cult softens after pressure and offers rescue through Jesus."
+  }
+]

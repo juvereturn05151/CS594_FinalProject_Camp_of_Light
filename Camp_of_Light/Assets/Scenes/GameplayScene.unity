@@ -815,9 +815,57 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3707096549010408676, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3707096549010408676, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4270969401892230767, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
       propertyPath: m_Name
       value: GameplayCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 4476083688919996099, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4476083688919996099, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4476083688919996099, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803314257138902201, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803314257138902201, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5045319698777767270, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5045319698777767270, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5045319698777767270, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6158124294861282520, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6158124294861282520, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8242622431062840474, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
       propertyPath: m_Pivot.x
@@ -897,6 +945,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8242622431062840474, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8315366775761802569, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8315366775761802569, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8728282930867604160, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8728282930867604160, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8728282930867604160, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8948115854404975188, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8948115854404975188, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8948115854404975188, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
