@@ -2,6 +2,8 @@ using Newtonsoft.Json;
 using OpenAI.Chat;
 using OpenAI.Models;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,12 +17,18 @@ namespace OpenAI.Samples.Chat
         [Header("OpenAI")]
         [SerializeField] private OpenAIConfiguration configuration;
         [SerializeField] private bool enableDebug = true;
+        [SerializeField] private bool writeLogToFile = false;
+        [SerializeField] private string logFileName = "camp_of_light_log.txt";
 
         [Header("UI")]
         [SerializeField] private Button submitButton;
         [SerializeField] private TMP_InputField inputField;
-        [SerializeField] private RectTransform contentArea;
-        [SerializeField] private ScrollRect scrollView;
+
+        [Header("Bubble UI")]
+        [SerializeField] private GameObject playerBubbleObject;
+        [SerializeField] private TMP_Text playerBubbleText;
+        [SerializeField] private GameObject cultistBubbleObject;
+        [SerializeField] private TMP_Text cultistBubbleText;
 
         [Header("Game State")]
         [SerializeField] private GameSession session = new();
@@ -75,12 +83,8 @@ Rules:
         private OpenAIClient openAI;
         private static bool isChatPending;
 
-        private void OnValidate()
-        {
-            if (inputField == null) return;
-            if (contentArea == null) return;
-            if (submitButton == null) return;
-        }
+        private readonly List<LLMExchangeLog> exchangeHistory = new();
+        private string LogFilePath => Path.Combine(Application.persistentDataPath, logFileName);
 
         private void Awake()
         {
@@ -104,10 +108,11 @@ Rules:
 
         private void Start()
         {
-            AddSystemMessage("Camp of Light test session started.");
-            AddSystemMessage(session.Profile.ToString());
-            AddSystemMessage(session.Stats.ToString());
-            AddCultistMessage("Welcome. Tell me about yourself, and tell me what weighs on your heart.");
+            HideAllBubbles();
+            AddCultistBubble("Welcome. Tell me about yourself, and tell me what weighs on your heart.");
+            LogSystemState("Camp of Light test session started.");
+            LogSystemState(session.Profile.ToString());
+            LogSystemState(session.Stats.ToString());
         }
 
         private void SubmitChat(string _) => SubmitChat();
@@ -125,7 +130,7 @@ Rules:
             inputField.interactable = false;
             if (submitButton != null) submitButton.interactable = false;
 
-            AddPlayerMessage(playerText);
+            AddPlayerBubble(playerText);
             inputField.text = string.Empty;
 
             try
@@ -144,12 +149,6 @@ Rules:
                 var response = await openAI.ChatEndpoint.GetCompletionAsync(request);
                 string raw = response.FirstChoice.Message.Content?.ToString() ?? string.Empty;
 
-                if (enableDebug)
-                {
-                    Debug.Log("=== Raw JSON ===");
-                    Debug.Log(raw);
-                }
-
                 CultistResponse parsed = ParseResponse(raw);
 
                 session.Stats.ApplyDelta(
@@ -161,28 +160,14 @@ Rules:
                 session.LastExtractedRegret = parsed.PlayerStoryOrRegret ?? string.Empty;
                 session.LastBibleVerse = parsed.BibleVerse ?? string.Empty;
 
-                AddCultistMessage(parsed.CultistComment);
-
-                if (!string.IsNullOrWhiteSpace(parsed.BibleVerse))
-                {
-                    AddSystemMessage($"Verse: {parsed.BibleVerse}");
-                }
-
-                AddSystemMessage(
-                    $"Relevant: {parsed.IsRelevant} | Resisting: {parsed.IsPlayerResisting}"
-                );
-
-                if (!string.IsNullOrWhiteSpace(parsed.PlayerStoryOrRegret))
-                {
-                    AddSystemMessage($"Extracted Regret: {parsed.PlayerStoryOrRegret}");
-                }
-
-                AddSystemMessage(session.Stats.ToString());
+                AddCultistBubble(parsed.CultistComment);
+                LogLLMExchange(playerText, userPrompt, raw, parsed);
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
-                AddSystemMessage("Error: failed to get cultist response.");
+                AddCultistBubble("...I need a moment.");
+                LogSystemState("Error: failed to get cultist response.\n" + e);
             }
             finally
             {
@@ -190,12 +175,9 @@ Rules:
                 if (submitButton != null) submitButton.interactable = true;
 
                 if (EventSystem.current != null)
-                {
                     EventSystem.current.SetSelectedGameObject(inputField.gameObject);
-                }
 
                 isChatPending = false;
-                ScrollToBottom();
             }
         }
 
@@ -206,22 +188,22 @@ Rules:
                 : string.Join(", ", session.Profile.Interests);
 
             return
-                $@"Player profile:
-                Name: {session.Profile.Name}
-                Age: {session.Profile.Age}
-                Profession: {session.Profile.Profession}
-                Interests: {interests}
+$@"Player profile:
+Name: {session.Profile.Name}
+Age: {session.Profile.Age}
+Profession: {session.Profile.Profession}
+Interests: {interests}
 
-                Current player stats:
-                Confidence: {session.Stats.Confidence}
-                Brainwash: {session.Stats.Brainwash}
-                Wokeness: {session.Stats.Wokeness}
+Current player stats:
+Confidence: {session.Stats.Confidence}
+Brainwash: {session.Stats.Brainwash}
+Wokeness: {session.Stats.Wokeness}
 
-                Previous extracted regret:
-                {session.LastExtractedRegret}
+Previous extracted regret:
+{session.LastExtractedRegret}
 
-                Player says:
-                {playerText}";
+Player says:
+{playerText}";
         }
 
         private CultistResponse ParseResponse(string raw)
@@ -257,58 +239,120 @@ Rules:
             int end = raw.LastIndexOf('}');
 
             if (start >= 0 && end > start)
-            {
                 return raw.Substring(start, end - start + 1);
-            }
 
             return raw;
         }
 
-        private void AddPlayerMessage(string text)
+        private void AddPlayerBubble(string text)
         {
-            AddTextMessage($"Player: {text}");
+            if (playerBubbleObject != null)
+                playerBubbleObject.SetActive(true);
+
+            if (cultistBubbleObject != null)
+                cultistBubbleObject.SetActive(false);
+
+            if (playerBubbleText != null)
+                playerBubbleText.text = text;
         }
 
-        private void AddCultistMessage(string text)
+        private void AddCultistBubble(string text)
         {
-            AddTextMessage($"Cultist: {text}");
+            if (cultistBubbleObject != null)
+                cultistBubbleObject.SetActive(true);
+
+            if (playerBubbleObject != null)
+                playerBubbleObject.SetActive(false);
+
+            if (cultistBubbleText != null)
+                cultistBubbleText.text = text;
         }
 
-        private void AddSystemMessage(string text)
+        private void HideAllBubbles()
         {
-            AddTextMessage($"[System] {text}");
+            if (playerBubbleObject != null)
+                playerBubbleObject.SetActive(false);
+
+            if (cultistBubbleObject != null)
+                cultistBubbleObject.SetActive(false);
         }
 
-        private void AddTextMessage(string text)
+        private void LogLLMExchange(string playerText, string userPrompt, string raw, CultistResponse parsed)
         {
-            if (contentArea == null) return;
-
-            var textObject = new GameObject($"{contentArea.childCount + 1}_Message");
-            textObject.transform.SetParent(contentArea, false);
-
-            var textMesh = textObject.AddComponent<TextMeshProUGUI>();
-            textMesh.fontSize = 24;
-            textMesh.text = text;
-#if UNITY_2023_1_OR_NEWER
-            textMesh.textWrappingMode = TextWrappingModes.Normal;
-#else
-            textMesh.enableWordWrapping = true;
-#endif
-            ScrollToBottom();
-        }
-
-        private void ScrollToBottom()
-        {
-            if (scrollView != null)
+            var log = new LLMExchangeLog
             {
-                Canvas.ForceUpdateCanvases();
-                scrollView.verticalNormalizedPosition = 0f;
+                Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                PlayerText = playerText,
+                UserPrompt = userPrompt,
+                RawResponse = raw,
+                ParsedResponse = parsed,
+                UpdatedConfidence = session.Stats.Confidence,
+                UpdatedBrainwash = session.Stats.Brainwash,
+                UpdatedWokeness = session.Stats.Wokeness,
+                StoredRegret = session.LastExtractedRegret,
+                StoredBibleVerse = session.LastBibleVerse
+            };
+
+            exchangeHistory.Add(log);
+
+            if (enableDebug)
+            {
+                Debug.Log("=== LLM EXCHANGE ===");
+                Debug.Log(JsonConvert.SerializeObject(log, Formatting.Indented));
+            }
+
+            if (writeLogToFile)
+            {
+                try
+                {
+                    File.AppendAllText(
+                        LogFilePath,
+                        JsonConvert.SerializeObject(log, Formatting.Indented) + Environment.NewLine + Environment.NewLine
+                    );
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning("Failed to write log file: " + e.Message);
+                }
             }
         }
 
-        public void UpdateGameSession(GameSession gameSession) 
+        private void LogSystemState(string text)
+        {
+            if (enableDebug)
+                Debug.Log("[CampOfLight] " + text);
+
+            if (writeLogToFile)
+            {
+                try
+                {
+                    File.AppendAllText(LogFilePath, "[System] " + text + Environment.NewLine);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning("Failed to write system log: " + e.Message);
+                }
+            }
+        }
+
+        public void UpdateGameSession(GameSession gameSession)
         {
             session.Profile = gameSession.Profile;
         }
+    }
+
+    [Serializable]
+    public class LLMExchangeLog
+    {
+        public string Timestamp;
+        public string PlayerText;
+        public string UserPrompt;
+        public string RawResponse;
+        public CultistResponse ParsedResponse;
+        public int UpdatedConfidence;
+        public int UpdatedBrainwash;
+        public int UpdatedWokeness;
+        public string StoredRegret;
+        public string StoredBibleVerse;
     }
 }

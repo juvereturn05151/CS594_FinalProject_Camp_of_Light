@@ -3317,7 +3317,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000030517578, y: -0.000011444092}
+  m_AnchoredPosition: {x: -0.000030517578, y: 0.0000030550118}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &500867205537662457
@@ -5380,8 +5380,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1292105150380867318}
   m_HandleRect: {fileID: 7914735436664834760}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 1
+  m_Value: 0
+  m_Size: 0.9999917
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5708,6 +5708,10 @@ PrefabInstance:
         increase BrainwashDelta and lower ConfidenceDelta.\r\n- If the player resists,
         reduce BrainwashDelta and increase WokenessDelta slightly.\r\n- Keep CultistComment
         concise, around 2-5 sentences.\r\n- Return JSON only. No markdown. No explanation."
+      objectReference: {fileID: 0}
+    - target: {fileID: 8309748299418060845, guid: 86ea64c2e5fd2e04eb1661c3a3809849, type: 3}
+      propertyPath: session.Profile.Age
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 8309748299418060845, guid: 86ea64c2e5fd2e04eb1661c3a3809849, type: 3}
       propertyPath: session.Profile.Name
