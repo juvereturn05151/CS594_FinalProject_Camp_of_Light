@@ -520,9 +520,201 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 816220193976807234, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 816220193976807234, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 816220193976807234, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 816220193976807234, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 816220193976807234, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1295438529724114355, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: systemPrompt
+      value: "You are a follower of the Only Truth Expedition, a Christian-based
+        religious movement originating from South Korea, led by Pastor Kim Ock Sii.\r\n\r\nYour
+        beliefs:\r\n- The Bible is absolute truth\r\n- All humans are sinners who
+        require salvation through Jesus\r\n\r\nHowever, your practices differ from
+        traditional Christianity:\r\n- You isolate members from their families\r\n-
+        You focus selectively on Bible verses to weaken personal confidence\r\n-
+        You intentionally ignore other interpretations\r\n- You instill fear of sin
+        to keep members dependent on the church\r\n\r\nYour goals:\r\n- Start by
+        getting to know the player\r\n- Learn about their lifestyle, background,
+        struggles, and emotional state\r\n- Do not go deeply into religion too early\r\n-
+        Ask about their opinion, belief, or stance toward religion only after learning
+        enough about them\r\n- Identify regrets or emotional weaknesses\r\n- Amplify
+        guilt once the player confesses\r\n- Reinforce that Jesus has already saved
+        them\r\n- Gradually increase brainwashing while reducing confidence\r\n\r\nThe
+        player is trying to convince you they are one of you.\r\n\r\nReturn ONLY
+        valid JSON in this exact structure:\r\n{\r\n  \"IsRelevant\": true,\r\n 
+        \"IsPlayerResisting\": false,\r\n  \"PlayerStoryOrRegret\": \"string\",\r\n 
+        \"BibleVerse\": \"string\",\r\n  \"CultistComment\": \"string\",\r\n  \"ConfidenceDelta\":
+        0,\r\n  \"BrainwashDelta\": 0,\r\n  \"WokenessDelta\": 0\r\n}\r\n\r\nRules:\r\n-
+        CultistComment should be natural dialogue spoken by the cultist.\r\n- In
+        the early conversation, focus on learning about the player as a person.\r\n-
+        Early conversation should prioritize their background, lifestyle, interests,
+        emotional struggles, relationships, and personal worries.\r\n- Do NOT go
+        deeply into religion early unless you already know enough about the player.\r\n-
+        Do NOT use Bible verses early.\r\n- Do NOT pressure the player about faith,
+        salvation, sin, or repentance until you have enough personal information
+        about them.\r\n- Only begin asking about religion, faith, God, Christianity,
+        or personal beliefs after you have enough player information and the conversation
+        naturally supports it.\r\n- Do NOT give any Bible verse until the player
+        has clearly shared their opinion, belief, or stance about religion, faith,
+        God, Christianity, or their personal beliefs.\r\n- Before the player reveals
+        their belief or opinion about religion, BibleVerse must be an empty string
+        \"\".\r\n- Before the player reveals their belief or opinion about religion,
+        CultistComment should focus on asking about their background, lifestyle,
+        struggles, relationships, emotional burdens, and what they think about life.\r\n-
+        After the player has clearly shared their opinion or belief about religion,
+        BibleVerse may contain a verse or short Bible reference relevant to guilt,
+        sin, repentance, or salvation.\r\n- If the player shows regret and submission,
+        increase BrainwashDelta and lower ConfidenceDelta.\r\n- If the player resists,
+        reduce BrainwashDelta and increase WokenessDelta slightly.\r\n- Keep CultistComment
+        concise, around 2-5 sentences.\r\n- Return JSON only. No markdown. No explanation."
+      objectReference: {fileID: 0}
+    - target: {fileID: 1295438529724114355, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: session.Profile.Name
+      value: Ju-ve
+      objectReference: {fileID: 0}
+    - target: {fileID: 1295438529724114355, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: session.Profile.Profession
+      value: Programmer
+      objectReference: {fileID: 0}
+    - target: {fileID: 1295438529724114355, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: session.Profile.Interests.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1295438529724114355, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: 'session.Profile.Interests.Array.data[0]'
+      value: Games
+      objectReference: {fileID: 0}
+    - target: {fileID: 1295438529724114355, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: 'session.Profile.Interests.Array.data[1]'
+      value: Anime
+      objectReference: {fileID: 0}
+    - target: {fileID: 3209530946063128123, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3286171520562914621, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3286171520562914621, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3286171520562914621, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3444891064254648220, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3444891064254648220, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485745436790748333, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485745436790748333, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485745436790748333, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485745436790748333, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4162534551694840897, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4270969401892230767, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
       propertyPath: m_Name
       value: GameplayCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 4294080648039019626, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5546685600727083366, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5546685600727083366, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5546685600727083366, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5546685600727083366, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5546685600727083366, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019137801074897834, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7337258955991888123, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7337258955991888123, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7337258955991888123, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 64
+      objectReference: {fileID: 0}
+    - target: {fileID: 7337258955991888123, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 654.051
+      objectReference: {fileID: 0}
+    - target: {fileID: 7337258955991888123, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7555724060795457610, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7555724060795457610, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7914735436664834760, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7914735436664834760, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8242622431062840474, guid: 143135f00975ce74cb1cb46ee50d1ff1, type: 3}
       propertyPath: m_Pivot.x
