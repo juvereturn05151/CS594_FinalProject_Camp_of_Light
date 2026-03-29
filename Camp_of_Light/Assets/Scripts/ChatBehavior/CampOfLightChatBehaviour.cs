@@ -206,22 +206,22 @@ Rules:
                 : string.Join(", ", session.Profile.Interests);
 
             return
-$@"Player profile:
-Name: {session.Profile.Name}
-Age: {session.Profile.Age}
-Profession: {session.Profile.Profession}
-Interests: {interests}
+                $@"Player profile:
+                Name: {session.Profile.Name}
+                Age: {session.Profile.Age}
+                Profession: {session.Profile.Profession}
+                Interests: {interests}
 
-Current player stats:
-Confidence: {session.Stats.Confidence}
-Brainwash: {session.Stats.Brainwash}
-Wokeness: {session.Stats.Wokeness}
+                Current player stats:
+                Confidence: {session.Stats.Confidence}
+                Brainwash: {session.Stats.Brainwash}
+                Wokeness: {session.Stats.Wokeness}
 
-Previous extracted regret:
-{session.LastExtractedRegret}
+                Previous extracted regret:
+                {session.LastExtractedRegret}
 
-Player says:
-{playerText}";
+                Player says:
+                {playerText}";
         }
 
         private CultistResponse ParseResponse(string raw)
