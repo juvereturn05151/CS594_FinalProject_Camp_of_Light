@@ -13,31 +13,35 @@ public class GameplaySaveBridge : MonoBehaviour
     [Header("Scene Names")]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
 
-    private void Start()
-    {
-        
-    }
-
     public void SaveGame()
     {
-        if (!GameStateRuntime.Instance.HasSaveLoaded())
+        if (GameRuntimeContext.Instance == null)
         {
-            Debug.LogError("No loaded save in GameStateRuntime.");
+            Debug.LogError("[GameplaySaveBridge] GameRuntimeContext not found.");
             return;
         }
 
-        SaveData save = GameStateRuntime.Instance.CurrentSave;
+        if (!GameRuntimeContext.Instance.HasSaveLoaded())
+        {
+            Debug.LogError("[GameplaySaveBridge] No loaded save in GameRuntimeContext.");
+            return;
+        }
 
-        save.Profile = ToProfileData(chatBehaviour.GetSession().Profile);
-        save.Stats = ToStatsData(chatBehaviour.GetSession().Stats);
-        save.Campaign = ToCampaignData(gameDirector);
-        save.Session = ToSessionData(chatBehaviour.GetSession());
-        save.Regrets = ToRegretData(regretSystem.regrets);
+        GameRunState runState = BuildRunStateFromSceneSystems();
+        GameRuntimeContext.Instance.SetCurrentRunState(runState);
+
+        SaveData save = ConvertRunStateToSave(runState);
+
+        SaveData existing = GameRuntimeContext.Instance.CurrentSave;
+        save.SlotId = existing.SlotId;
+        save.SaveDisplayName = existing.SaveDisplayName;
+        save.CreatedAtUtc = existing.CreatedAtUtc;
+        save.UpdatedAtUtc = System.DateTime.UtcNow.ToString("o");
 
         SaveManager.Instance.Save(save);
-        GameStateRuntime.Instance.SetCurrentSave(save);
+        GameRuntimeContext.Instance.SetCurrentSave(save);
 
-        Debug.Log("Game saved.");
+        Debug.Log("[GameplaySaveBridge] Game saved.");
     }
 
     public void SaveAndReturnToMenu()
@@ -48,130 +52,273 @@ public class GameplaySaveBridge : MonoBehaviour
 
     public bool LoadIntoSceneSystems()
     {
-        if (!GameStateRuntime.Instance.HasSaveLoaded())
+        if (GameRuntimeContext.Instance == null)
         {
-            Debug.LogWarning("No save loaded. Gameplay scene will use defaults.");
+            Debug.LogError("[GameplaySaveBridge] GameRuntimeContext not found.");
             return false;
         }
 
-        SaveData save = GameStateRuntime.Instance.CurrentSave;
-
-        GameSession session = new GameSession
+        if (!GameRuntimeContext.Instance.HasSaveLoaded())
         {
-            Profile = ToProfileRuntime(save.Profile),
-            Stats = ToStatsRuntime(save.Stats),
-            LastExtractedRegret = save.Session.LastExtractedRegret,
-            LastBibleVerse = save.Session.LastBibleVerse
-        };
+            Debug.LogWarning("[GameplaySaveBridge] No save loaded. Gameplay scene will use defaults.");
+            return false;
+        }
 
-        chatBehaviour.UpdateGameSession(session);
+        SaveData save = GameRuntimeContext.Instance.CurrentSave;
+        GameRunState runState = ConvertSaveToRunState(save);
 
-        gameDirector.CurrentDay = save.Campaign.CurrentDay;
-        gameDirector.MaxDays = save.Campaign.MaxDays;
-        gameDirector.PromptsUsed = save.Campaign.PromptsUsed;
-        gameDirector.MaxPromptsPerDay = save.Campaign.MaxPromptsPerDay;
-        gameDirector.IsGameOver = save.Campaign.IsGameOver;
-        gameDirector.Escaped = save.Campaign.Escaped;
-
-        regretSystem.regrets = ToRegretRuntime(save.Regrets);
+        GameRuntimeContext.Instance.SetCurrentRunState(runState);
+        ApplyRunStateToSceneSystems(runState);
 
         return true;
     }
 
-    private PlayerProfileData ToProfileData(PlayerProfile profile)
+    private GameRunState BuildRunStateFromSceneSystems()
     {
-        return new PlayerProfileData
+        GameSession session = chatBehaviour != null ? chatBehaviour.GetSession() : null;
+
+        GameRunState runState = new GameRunState
         {
-            Name = profile.Name,
-            Age = profile.Age,
-            Profession = profile.Profession,
-            Interests = new List<string>(profile.Interests)
+            Profile = session != null && session.Profile != null ? session.Profile : new PlayerProfile(),
+            Stats = session != null && session.Stats != null ? session.Stats : new PlayerStats(),
+
+            CurrentDay = gameDirector != null ? gameDirector.CurrentDay : 1,
+            MaxDays = gameDirector != null ? gameDirector.MaxDays : 45,
+
+            CurrentPhase = GameRuntimeContext.Instance.HasRunState()
+                ? GameRuntimeContext.Instance.CurrentRunState.CurrentPhase
+                : GamePhase.WakeUp,
+
+            PromptsUsedToday = gameDirector != null ? gameDirector.PromptsUsed : 0,
+            MaxPromptsPerDay = gameDirector != null ? gameDirector.MaxPromptsPerDay : 20,
+
+            IsGameOver = gameDirector != null && gameDirector.IsGameOver,
+            Escaped = gameDirector != null && gameDirector.Escaped,
+
+            LastExtractedRegret = session != null ? session.LastExtractedRegret : "",
+            LastBibleVerse = session != null ? session.LastBibleVerse : "",
+
+            CurrentDoctrineId = GameRuntimeContext.Instance.HasRunState()
+                ? GameRuntimeContext.Instance.CurrentRunState.CurrentDoctrineId
+                : "",
+
+            CurrentTacticId = GameRuntimeContext.Instance.HasRunState()
+                ? GameRuntimeContext.Instance.CurrentRunState.CurrentTacticId
+                : "",
+
+            Regrets = regretSystem != null && regretSystem.regrets != null
+                ? CloneRegrets(regretSystem.regrets)
+                : new List<Regret>(),
+
+            RecentDialogue = GameRuntimeContext.Instance.HasRunState() &&
+                             GameRuntimeContext.Instance.CurrentRunState.RecentDialogue != null
+                ? CloneDialogue(GameRuntimeContext.Instance.CurrentRunState.RecentDialogue)
+                : new List<DialogueTurn>()
         };
+
+        return runState;
     }
 
-    private PlayerStatsData ToStatsData(PlayerStats stats)
+    private void ApplyRunStateToSceneSystems(GameRunState runState)
     {
-        return new PlayerStatsData
+        if (runState == null)
         {
-            Confidence = stats.Confidence,
-            Brainwash = stats.Brainwash,
-            Wokeness = stats.Wokeness
+            Debug.LogWarning("[GameplaySaveBridge] Tried to apply null GameRunState.");
+            return;
+        }
+
+        GameSession session = new GameSession
+        {
+            Profile = runState.Profile ?? new PlayerProfile(),
+            Stats = runState.Stats ?? new PlayerStats(),
+            LastExtractedRegret = runState.LastExtractedRegret ?? "",
+            LastBibleVerse = runState.LastBibleVerse ?? ""
         };
+
+        if (chatBehaviour != null)
+            chatBehaviour.UpdateGameSession(session);
+
+        if (gameDirector != null)
+        {
+            gameDirector.CurrentDay = runState.CurrentDay;
+            gameDirector.MaxDays = runState.MaxDays;
+            gameDirector.PromptsUsed = runState.PromptsUsedToday;
+            gameDirector.MaxPromptsPerDay = runState.MaxPromptsPerDay;
+            gameDirector.IsGameOver = runState.IsGameOver;
+            gameDirector.Escaped = runState.Escaped;
+        }
+
+        if (regretSystem != null)
+            regretSystem.regrets = CloneRegrets(runState.Regrets);
     }
 
-    private CampaignData ToCampaignData(CultGameDirector director)
+    private SaveData ConvertRunStateToSave(GameRunState runState)
     {
-        return new CampaignData
+        SaveData save = new SaveData
         {
-            CurrentDay = director.CurrentDay,
-            MaxDays = director.MaxDays,
-            PromptsUsed = director.PromptsUsed,
-            MaxPromptsPerDay = director.MaxPromptsPerDay,
-            IsGameOver = director.IsGameOver,
-            Escaped = director.Escaped
-        };
-    }
-
-    private SessionData ToSessionData(GameSession session)
-    {
-        return new SessionData
-        {
-            LastExtractedRegret = session.LastExtractedRegret,
-            LastBibleVerse = session.LastBibleVerse
-        };
-    }
-
-    private List<RegretData> ToRegretData(List<Regret> regrets)
-    {
-        List<RegretData> result = new();
-
-        foreach (Regret r in regrets)
-        {
-            result.Add(new RegretData
+            Profile = new PlayerProfileData
             {
-                Id = r.Id,
-                Text = r.Text,
-                Strength = r.Strength,
-                TimesMentioned = r.TimesMentioned
+                Name = runState.Profile.Name,
+                Age = runState.Profile.Age,
+                Profession = runState.Profile.Profession,
+                Interests = runState.Profile.Interests != null
+                    ? new List<string>(runState.Profile.Interests)
+                    : new List<string>(),
+            },
+
+            Stats = new PlayerStatsData
+            {
+                Confidence = runState.Stats.Confidence,
+                Brainwash = runState.Stats.Brainwash,
+                Wokeness = runState.Stats.Wokeness
+            },
+
+            CurrentDay = runState.CurrentDay,
+            MaxDays = runState.MaxDays,
+            CurrentPhase = runState.CurrentPhase,
+            PromptsUsedToday = runState.PromptsUsedToday,
+            MaxPromptsPerDay = runState.MaxPromptsPerDay,
+            IsGameOver = runState.IsGameOver,
+            Escaped = runState.Escaped,
+
+            LastExtractedRegret = runState.LastExtractedRegret,
+            LastBibleVerse = runState.LastBibleVerse,
+            CurrentDoctrineId = runState.CurrentDoctrineId,
+            CurrentTacticId = runState.CurrentTacticId,
+
+            Regrets = new List<RegretData>(),
+            RecentDialogue = new List<DialogueTurnData>()
+        };
+
+        if (runState.Regrets != null)
+        {
+            foreach (Regret regret in runState.Regrets)
+            {
+                save.Regrets.Add(new RegretData
+                {
+                    Id = regret.Id,
+                    Text = regret.Text,
+                    Strength = regret.Strength,
+                    TimesMentioned = regret.TimesMentioned
+                });
+            }
+        }
+
+        if (runState.RecentDialogue != null)
+        {
+            foreach (DialogueTurn turn in runState.RecentDialogue)
+            {
+                save.RecentDialogue.Add(new DialogueTurnData
+                {
+                    Speaker = turn.Speaker,
+                    Text = turn.Text,
+                    Timestamp = turn.Timestamp
+                });
+            }
+        }
+
+        return save;
+    }
+
+    private GameRunState ConvertSaveToRunState(SaveData save)
+    {
+        GameRunState runState = new GameRunState
+        {
+            Profile = new PlayerProfile
+            {
+                Name = save.Profile.Name,
+                Age = save.Profile.Age,
+                Profession = save.Profile.Profession,
+                Interests = save.Profile.Interests != null
+                    ? new List<string>(save.Profile.Interests)
+                    : new List<string>(),
+            },
+
+            Stats = new PlayerStats
+            {
+                Confidence = save.Stats.Confidence,
+                Brainwash = save.Stats.Brainwash,
+                Wokeness = save.Stats.Wokeness
+            },
+
+            CurrentDay = save.CurrentDay,
+            MaxDays = save.MaxDays,
+            CurrentPhase = save.CurrentPhase,
+            PromptsUsedToday = save.PromptsUsedToday,
+            MaxPromptsPerDay = save.MaxPromptsPerDay,
+            IsGameOver = save.IsGameOver,
+            Escaped = save.Escaped,
+
+            LastExtractedRegret = save.LastExtractedRegret,
+            LastBibleVerse = save.LastBibleVerse,
+            CurrentDoctrineId = save.CurrentDoctrineId,
+            CurrentTacticId = save.CurrentTacticId,
+
+            Regrets = new List<Regret>(),
+            RecentDialogue = new List<DialogueTurn>()
+        };
+
+        if (save.Regrets != null)
+        {
+            foreach (RegretData regret in save.Regrets)
+            {
+                runState.Regrets.Add(new Regret
+                {
+                    Id = regret.Id,
+                    Text = regret.Text,
+                    Strength = regret.Strength,
+                    TimesMentioned = regret.TimesMentioned
+                });
+            }
+        }
+
+        if (save.RecentDialogue != null)
+        {
+            foreach (DialogueTurnData turn in save.RecentDialogue)
+            {
+                runState.RecentDialogue.Add(new DialogueTurn
+                {
+                    Speaker = turn.Speaker,
+                    Text = turn.Text,
+                    Timestamp = turn.Timestamp
+                });
+            }
+        }
+
+        return runState;
+    }
+
+    private List<Regret> CloneRegrets(List<Regret> source)
+    {
+        List<Regret> result = new();
+        if (source == null) return result;
+
+        foreach (Regret regret in source)
+        {
+            result.Add(new Regret
+            {
+                Id = regret.Id,
+                Text = regret.Text,
+                Strength = regret.Strength,
+                TimesMentioned = regret.TimesMentioned
             });
         }
 
         return result;
     }
 
-    private PlayerProfile ToProfileRuntime(PlayerProfileData data)
+    private List<DialogueTurn> CloneDialogue(List<DialogueTurn> source)
     {
-        return new PlayerProfile
-        {
-            Name = data.Name,
-            Age = data.Age,
-            Profession = data.Profession,
-            Interests = new List<string>(data.Interests)
-        };
-    }
+        List<DialogueTurn> result = new();
+        if (source == null) return result;
 
-    private PlayerStats ToStatsRuntime(PlayerStatsData data)
-    {
-        return new PlayerStats
+        foreach (DialogueTurn turn in source)
         {
-            Confidence = data.Confidence,
-            Brainwash = data.Brainwash,
-            Wokeness = data.Wokeness
-        };
-    }
-
-    private List<Regret> ToRegretRuntime(List<RegretData> regrets)
-    {
-        List<Regret> result = new();
-
-        foreach (RegretData r in regrets)
-        {
-            result.Add(new Regret
+            result.Add(new DialogueTurn
             {
-                Id = r.Id,
-                Text = r.Text,
-                Strength = r.Strength,
-                TimesMentioned = r.TimesMentioned
+                Speaker = turn.Speaker,
+                Text = turn.Text,
+                Timestamp = turn.Timestamp
             });
         }
 

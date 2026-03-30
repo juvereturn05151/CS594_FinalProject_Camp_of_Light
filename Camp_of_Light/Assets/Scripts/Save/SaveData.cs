@@ -10,10 +10,27 @@ public class SaveData
     public string UpdatedAtUtc;
 
     public PlayerProfileData Profile = new();
-    public CampaignData Campaign = new();
     public PlayerStatsData Stats = new();
-    public SessionData Session = new();
+
+    public int CurrentDay = 1;
+    public int MaxDays = 45;
+
+    public GamePhase CurrentPhase = GamePhase.WakeUp;
+
+    public int PromptsUsedToday = 0;
+    public int MaxPromptsPerDay = 20;
+
+    public bool IsGameOver = false;
+    public bool Escaped = false;
+
+    public string LastExtractedRegret = "";
+    public string LastBibleVerse = "";
+
+    public string CurrentDoctrineId = "";
+    public string CurrentTacticId = "";
+
     public List<RegretData> Regrets = new();
+    public List<DialogueTurnData> RecentDialogue = new();
 }
 
 [Serializable]
@@ -26,29 +43,11 @@ public class PlayerProfileData
 }
 
 [Serializable]
-public class CampaignData
-{
-    public int CurrentDay = 1;
-    public int MaxDays = 45;
-    public int PromptsUsed = 0;
-    public int MaxPromptsPerDay = 20;
-    public bool IsGameOver = false;
-    public bool Escaped = false;
-}
-
-[Serializable]
 public class PlayerStatsData
 {
     public int Confidence = 50;
     public int Brainwash = 0;
     public int Wokeness = 0;
-}
-
-[Serializable]
-public class SessionData
-{
-    public string LastExtractedRegret = "";
-    public string LastBibleVerse = "";
 }
 
 [Serializable]
@@ -58,6 +57,14 @@ public class RegretData
     public string Text;
     public int Strength;
     public int TimesMentioned;
+}
+
+[Serializable]
+public class DialogueTurnData
+{
+    public string Speaker;
+    public string Text;
+    public string Timestamp;
 }
 
 [Serializable]

@@ -1,0 +1,61 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+[Serializable]
+public class GameRunState
+{
+    public PlayerProfile Profile = new();
+    public PlayerStats Stats = new();
+
+    public int CurrentDay = 1;
+    public int MaxDays = 45;
+
+    public GamePhase CurrentPhase = GamePhase.WakeUp;
+
+    public int PromptsUsedToday = 0;
+    public int MaxPromptsPerDay = 20;
+
+    public bool IsGameOver = false;
+    public bool Escaped = false;
+
+    public string LastExtractedRegret = "";
+    public string LastBibleVerse = "";
+
+    public string CurrentDoctrineId = "";
+    public string CurrentTacticId = "";
+
+    public List<Regret> Regrets = new();
+    public List<DialogueTurn> RecentDialogue = new();
+
+    public void ResetForNewDay()
+    {
+        PromptsUsedToday = 0;
+        CurrentPhase = GamePhase.WakeUp;
+    }
+
+    public void AddDialogue(string speaker, string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+
+        RecentDialogue.Add(new DialogueTurn
+        {
+            Speaker = speaker,
+            Text = text,
+            Timestamp = DateTime.UtcNow.ToString("o")
+        });
+
+        if (RecentDialogue.Count > 30)
+        {
+            RecentDialogue.RemoveAt(0);
+        }
+    }
+}
+
+[Serializable]
+public class DialogueTurn
+{
+    public string Speaker;
+    public string Text;
+    public string Timestamp;
+}

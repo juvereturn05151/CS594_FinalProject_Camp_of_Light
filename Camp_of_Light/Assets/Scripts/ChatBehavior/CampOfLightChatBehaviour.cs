@@ -159,6 +159,15 @@ Rules:
                 session.LastExtractedRegret = parsed.PlayerStoryOrRegret ?? string.Empty;
                 session.LastBibleVerse = parsed.BibleVerse ?? string.Empty;
 
+                if (GameManager.Instance != null && GameManager.Instance.State != null)
+                {
+                    GameManager.Instance.State.LastExtractedRegret = session.LastExtractedRegret;
+                    GameManager.Instance.State.LastBibleVerse = session.LastBibleVerse;
+                    GameManager.Instance.State.AddDialogue("Player", playerText);
+                    GameManager.Instance.State.AddDialogue("Cultist", parsed.CultistComment);
+                    GameManager.Instance.NotifyCultTurnCompleted();
+                }
+
                 AddCultistBubble(parsed.CultistComment);
                 LogLLMExchange(playerText, userPrompt, raw, parsed);
             }

@@ -1,10 +1,11 @@
 using UnityEngine;
 
-public class GameStateRuntime : MonoBehaviour
+public class GameRuntimeContext : MonoBehaviour
 {
-    public static GameStateRuntime Instance { get; private set; }
+    public static GameRuntimeContext Instance { get; private set; }
 
     public SaveData CurrentSave { get; private set; }
+    public GameRunState CurrentRunState { get; private set; }
 
     private void Awake()
     {
@@ -23,13 +24,24 @@ public class GameStateRuntime : MonoBehaviour
         CurrentSave = save;
     }
 
+    public void SetCurrentRunState(GameRunState runState)
+    {
+        CurrentRunState = runState;
+    }
+
     public bool HasSaveLoaded()
     {
         return CurrentSave != null;
     }
 
+    public bool HasRunState()
+    {
+        return CurrentRunState != null;
+    }
+
     public void Clear()
     {
         CurrentSave = null;
+        CurrentRunState = null;
     }
 }

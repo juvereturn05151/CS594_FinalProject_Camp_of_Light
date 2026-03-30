@@ -16,28 +16,77 @@ public class ProfileCreationController : MonoBehaviour
 
     public void OnCreateProfilePressed()
     {
-        SaveData save = new SaveData();
+        if (SaveManager.Instance == null)
+        {
+            Debug.LogError("[ProfileCreationController] SaveManager not found.");
+            return;
+        }
 
-        save.SaveDisplayName = string.IsNullOrWhiteSpace(nameInput.text)
-            ? $"{nameInput.text}'s Save"
-            : nameInput.text;
+        if (GameRuntimeContext.Instance == null)
+        {
+            Debug.LogError("[ProfileCreationController] GameRuntimeContext not found.");
+            return;
+        }
 
-        save.Profile.Name = nameInput.text.Trim();
-        save.Profile.Age = ParseInt(ageInput.text, 18);
-        save.Profile.Profession = professionInput.text.Trim();
-        save.Profile.Interests = ParseInterests(interestsInput.text);
+        string playerName = nameInput != null ? nameInput.text.Trim() : "";
+        int age = ParseInt(ageInput != null ? ageInput.text : "", 18);
+        string profession = professionInput != null ? professionInput.text.Trim() : "";
+        List<string> interests = ParseInterests(interestsInput != null ? interestsInput.text : "");
 
-        save.Campaign = new CampaignData();
-        save.Stats = new PlayerStatsData();
-        save.Session = new SessionData();
+        string displayName = string.IsNullOrWhiteSpace(playerName)
+            ? "New Save"
+            : $"{playerName}'s Save";
 
-        string slotId = SaveManager.Instance.CreateNewSlot(save.SaveDisplayName);
-        save.SlotId = slotId;
-        save.CreatedAtUtc = System.DateTime.UtcNow.ToString("o");
-        save.UpdatedAtUtc = save.CreatedAtUtc;
+        string slotId = SaveManager.Instance.CreateNewSlot(displayName);
+
+        if (string.IsNullOrEmpty(slotId))
+        {
+            Debug.LogWarning("[ProfileCreationController] Could not create a new save slot.");
+            return;
+        }
+
+        SaveData save = new SaveData
+        {
+            SlotId = slotId,
+            SaveDisplayName = displayName,
+            CreatedAtUtc = System.DateTime.UtcNow.ToString("o"),
+            UpdatedAtUtc = System.DateTime.UtcNow.ToString("o"),
+
+            Profile = new PlayerProfileData
+            {
+                Name = playerName,
+                Age = age,
+                Profession = profession,
+                Interests = interests
+            },
+
+            Stats = new PlayerStatsData
+            {
+                Confidence = 50,
+                Brainwash = 0,
+                Wokeness = 0
+            },
+
+            CurrentDay = 1,
+            MaxDays = 45,
+            CurrentPhase = GamePhase.WakeUp,
+            PromptsUsedToday = 0,
+            MaxPromptsPerDay = 20,
+            IsGameOver = false,
+            Escaped = false,
+
+            LastExtractedRegret = "",
+            LastBibleVerse = "",
+            CurrentDoctrineId = "",
+            CurrentTacticId = "",
+
+            Regrets = new List<RegretData>(),
+            RecentDialogue = new List<DialogueTurnData>()
+        };
 
         SaveManager.Instance.Save(save);
-        GameStateRuntime.Instance.SetCurrentSave(save);
+        GameRuntimeContext.Instance.SetCurrentSave(save);
+        GameRuntimeContext.Instance.SetCurrentRunState(ConvertSaveToRunState(save));
 
         SceneManager.LoadScene(gameplaySceneName);
     }
@@ -50,6 +99,7 @@ public class ProfileCreationController : MonoBehaviour
     private List<string> ParseInterests(string raw)
     {
         List<string> result = new();
+
         if (string.IsNullOrWhiteSpace(raw))
             return result;
 
@@ -62,5 +112,73 @@ public class ProfileCreationController : MonoBehaviour
         }
 
         return result;
+    }
+
+    private GameRunState ConvertSaveToRunState(SaveData save)
+    {
+        GameRunState runState = new GameRunState
+        {
+            Profile = new PlayerProfile
+            {
+                Name = save.Profile.Name,
+                Age = save.Profile.Age,
+                Profession = save.Profile.Profession,
+                Interests = save.Profile.Interests != null
+                    ? new List<string>(save.Profile.Interests)
+                    : new List<string>()
+            },
+
+            Stats = new PlayerStats
+            {
+                Confidence = save.Stats.Confidence,
+                Brainwash = save.Stats.Brainwash,
+                Wokeness = save.Stats.Wokeness
+            },
+
+            CurrentDay = save.CurrentDay,
+            MaxDays = save.MaxDays,
+            CurrentPhase = save.CurrentPhase,
+            PromptsUsedToday = save.PromptsUsedToday,
+            MaxPromptsPerDay = save.MaxPromptsPerDay,
+            IsGameOver = save.IsGameOver,
+            Escaped = save.Escaped,
+
+            LastExtractedRegret = save.LastExtractedRegret,
+            LastBibleVerse = save.LastBibleVerse,
+            CurrentDoctrineId = save.CurrentDoctrineId,
+            CurrentTacticId = save.CurrentTacticId,
+
+            Regrets = new List<Regret>(),
+            RecentDialogue = new List<DialogueTurn>()
+        };
+
+        if (save.Regrets != null)
+        {
+            foreach (RegretData regret in save.Regrets)
+            {
+                runState.Regrets.Add(new Regret
+                {
+                    Id = regret.Id,
+                    Text = regret.Text,
+                    Strength = regret.Strength,
+                    TimesMentioned = regret.TimesMentioned
+                });
+            }
+        }
+
+        if (save.RecentDialogue != null)
+        {
+            foreach (DialogueTurnData turn in save.RecentDialogue)
+            {
+                runState.RecentDialogue.Add(new DialogueTurn
+                {
+                    Speaker = turn.Speaker,
+                    Text = turn.Text,
+                    Timestamp = turn.Timestamp
+                });
+            }
+        }
+
+        return runState;
     }
 }

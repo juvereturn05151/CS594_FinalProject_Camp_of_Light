@@ -8,7 +8,7 @@ public class MainMenuController : MonoBehaviour
 
     public void OnNewGamePressed()
     {
-        GameStateRuntime.Instance.Clear();
+        GameRuntimeContext.Instance.Clear();
         SceneManager.LoadScene(profileSceneName);
     }
 

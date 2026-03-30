@@ -35,7 +35,7 @@ public class LoadGameMenuController : MonoBehaviour
         if (save == null)
             return;
 
-        GameStateRuntime.Instance.SetCurrentSave(save);
+        GameRuntimeContext.Instance.SetCurrentSave(save);
         SceneManager.LoadScene(gameplaySceneName);
     }
 
