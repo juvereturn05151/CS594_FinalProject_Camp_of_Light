@@ -95,6 +95,11 @@ Rules:
 
         private void Start()
         {
+
+        }
+
+        public void Init()
+        {
             HideAllBubbles();
 
             if (session != null && !string.IsNullOrWhiteSpace(session.LastBibleVerse))

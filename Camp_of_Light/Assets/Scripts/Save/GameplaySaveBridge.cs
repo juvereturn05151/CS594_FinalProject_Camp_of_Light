@@ -15,7 +15,7 @@ public class GameplaySaveBridge : MonoBehaviour
 
     private void Start()
     {
-        LoadIntoSceneSystems();
+        
     }
 
     public void SaveGame()
@@ -46,12 +46,12 @@ public class GameplaySaveBridge : MonoBehaviour
         SceneManager.LoadScene(mainMenuSceneName);
     }
 
-    private void LoadIntoSceneSystems()
+    public bool LoadIntoSceneSystems()
     {
         if (!GameStateRuntime.Instance.HasSaveLoaded())
         {
             Debug.LogWarning("No save loaded. Gameplay scene will use defaults.");
-            return;
+            return false;
         }
 
         SaveData save = GameStateRuntime.Instance.CurrentSave;
@@ -74,6 +74,8 @@ public class GameplaySaveBridge : MonoBehaviour
         gameDirector.Escaped = save.Campaign.Escaped;
 
         regretSystem.regrets = ToRegretRuntime(save.Regrets);
+
+        return true;
     }
 
     private PlayerProfileData ToProfileData(PlayerProfile profile)
