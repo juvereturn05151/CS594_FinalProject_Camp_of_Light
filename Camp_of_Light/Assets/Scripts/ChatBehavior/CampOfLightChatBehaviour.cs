@@ -96,8 +96,17 @@ Rules:
         private void Start()
         {
             HideAllBubbles();
-            AddCultistBubble("Welcome. Tell me about yourself, and tell me what weighs on your heart.");
-            LogSystemState("Camp of Light test session started.");
+
+            if (session != null && !string.IsNullOrWhiteSpace(session.LastBibleVerse))
+            {
+                LogSystemState("Loaded existing session.");
+            }
+            else
+            {
+                AddCultistBubble("Welcome. Tell me about yourself, and tell me what weighs on your heart.");
+            }
+
+            LogSystemState("Camp of Light session started.");
             LogSystemState(session.Profile.ToString());
             LogSystemState(session.Stats.ToString());
         }
