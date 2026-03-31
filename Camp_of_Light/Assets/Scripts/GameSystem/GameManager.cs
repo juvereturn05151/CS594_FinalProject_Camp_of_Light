@@ -195,8 +195,6 @@ public class GameManager : MonoBehaviour
 
         if (brainwasherController != null)
             brainwasherController.gameObject.SetActive(false);
-
-        conscienceController?.Hide();
     }
 
     private void StartPreachingPhase()
@@ -218,8 +216,6 @@ public class GameManager : MonoBehaviour
         if (preachingScene != null)
             preachingScene.gameObject.SetActive(true);
         
-
-        conscienceController?.Hide();
 
         State.PromptsUsedToday_Brainwash = Mathf.Clamp(State.PromptsUsedToday_Brainwash, 0, State.MaxPromptsPerDay_Brainwash);
     }
@@ -259,9 +255,6 @@ public class GameManager : MonoBehaviour
 
         if (conscienceUI != null)
             conscienceUI.gameObject.SetActive(false);
-
-
-        conscienceController?.Hide();
     }
 
     private void StartConsciencePhase()
@@ -289,9 +282,6 @@ public class GameManager : MonoBehaviour
 
         if (conscienceUI != null)
             conscienceUI.gameObject.SetActive(true);
-
-        Regret strongest = regretSystem != null ? regretSystem.GetStrongestRegret() : null;
-        conscienceController?.ShowReflection(State, strongest);
     }
 
     private void StartSleepPhase()
@@ -322,8 +312,6 @@ public class GameManager : MonoBehaviour
 
         if (conscienceUI != null)
             conscienceUI.gameObject.SetActive(false);
-
-        conscienceController?.Hide();
 
         SaveCheckpoint();
         progressUI?.Refresh();
@@ -373,8 +361,6 @@ public class GameManager : MonoBehaviour
 
         if (sleepPanel != null)
             sleepPanel.SetActive(false);
-
-        conscienceController?.Hide();
     }
 
     private GameSession BuildSessionFromState()

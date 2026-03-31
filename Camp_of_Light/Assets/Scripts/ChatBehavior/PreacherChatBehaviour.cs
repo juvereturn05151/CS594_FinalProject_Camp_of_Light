@@ -1,14 +1,12 @@
-using Newtonsoft.Json;
 using OpenAI.Chat;
 using OpenAI.Models;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace OpenAI.Samples.Chat
 {
-    public class PreacherChatBehaviour : BaseChatBehaviour
+    public class PreacherChatBehaviour : MonologueSequenceChatBehavior
     {
         [SerializeField]
         [TextArea(8, 20)]
@@ -30,219 +28,93 @@ JSON format:
   ""Lines"": [""string"", ""string"", ""string""]
 }";
 
-        [Header("Preload / Cache")]
-        [SerializeField] private bool autoPreloadOnInit = true;
-        [SerializeField] private bool useCache = true;
-        [SerializeField] private bool showPreparingLineIfNotReady = true;
-
-        private bool isGenerating;
-        private bool preachingComplete;
-        private bool preachingReady;
-
-        private List<string> preachingLines = new();
-        private int preachingIndex = -1;
-
-        private readonly Dictionary<string, List<string>> preachingCache = new();
-
-        private void Update()
-        {
-            if (isGenerating || !gameObject.activeInHierarchy)
-                return;
-
-            if (Input.GetKeyDown(KeyCode.A) ||
-                Input.GetKeyDown(KeyCode.B) ||
-                Input.GetKeyDown(KeyCode.Space) ||
-                Input.GetKeyDown(KeyCode.Return))
-            {
-                AdvancePreachingLine();
-            }
-        }
-
         public override void Init()
         {
             base.Init();
-
-            ResetPreachingState();
-
-            if (autoPreloadOnInit)
-            {
-                _ = PreloadPreachingPhaseAsync();
-            }
         }
 
-        /// <summary>
-        /// Call this earlier than the actual preaching click.
-        /// Good places:
-        /// - end of previous phase
-        /// - when the day starts
-        /// - right after strongest regret is updated
-        /// </summary>
         public async Task PreloadPreachingPhaseAsync(bool forceRefresh = false)
         {
-            if (isGenerating)
-                return;
-
-            string cacheKey = GetPreachingCacheKey();
-
-            if (!forceRefresh && useCache && preachingCache.TryGetValue(cacheKey, out var cachedLines))
-            {
-                preachingLines = new List<string>(cachedLines);
-                preachingReady = true;
-                return;
-            }
-
-            isGenerating = true;
-            preachingReady = false;
-
-            try
-            {
-                string prompt = BuildPreachingPrompt();
-
-                var request = new ChatRequest(
-                    messages: new[]
-                    {
-                        new Message(Role.System, preachingSystemPrompt),
-                        new Message(Role.User, prompt)
-                    },
-                    model: Model.GPT5_Mini
-                );
-
-                var response = await openAI.ChatEndpoint.GetCompletionAsync(request);
-                string raw = response.FirstChoice.Message.Content?.ToString() ?? string.Empty;
-
-                var parsed = ParsePreachingResponse(raw);
-
-                preachingLines = IsValidPreachingResponse(parsed)
-                    ? parsed.Lines
-                    : GetFallbackPreachingLines();
-
-                if (useCache)
-                {
-                    preachingCache[cacheKey] = new List<string>(preachingLines);
-                }
-
-                preachingReady = true;
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-
-                preachingLines = GetFallbackPreachingLines();
-
-                if (useCache)
-                {
-                    preachingCache[cacheKey] = new List<string>(preachingLines);
-                }
-
-                preachingReady = true;
-            }
-            finally
-            {
-                isGenerating = false;
-            }
+            await PreloadSequenceAsync(forceRefresh);
         }
 
-        /// <summary>
-        /// Start showing the preaching phase.
-        /// If preload finished, this is instant.
-        /// </summary>
-        public async void BeginPreachingPhase()
+        public void BeginPreachingPhase()
         {
-            if (preachingComplete)
-                return;
-
-            if (preachingReady && preachingLines != null && preachingLines.Count > 0)
-            {
-                StartPreachingDisplay();
-                return;
-            }
-
-            if (showPreparingLineIfNotReady)
-            {
-                AddCultistBubble("...The preacher gathers their words.");
-            }
-
-            await PreloadPreachingPhaseAsync();
-            StartPreachingDisplay();
+            BeginSequence();
         }
 
         public void OnPreachingAdvancePressed()
         {
-            AdvancePreachingLine();
+            OnAdvancePressed();
         }
 
         public bool IsPreachingPhaseComplete()
         {
-            return preachingComplete;
+            return IsSequenceComplete();
         }
 
         public bool IsPreachingReady()
         {
-            return preachingReady;
+            return sequenceReady;
         }
 
-        public bool IsGenerating()
+        protected override string GetPreparingLine()
         {
-            return isGenerating;
+            return "...The preacher gathers their words.";
         }
 
-        public void ClearPreachingCache()
+        protected override async Task<List<string>> GenerateSequenceLinesAsync()
         {
-            preachingCache.Clear();
-        }
+            string prompt = BuildPreachingPrompt();
 
-        private void StartPreachingDisplay()
-        {
-            if (preachingLines == null || preachingLines.Count == 0)
-            {
-                preachingLines = GetFallbackPreachingLines();
-                preachingReady = true;
-            }
-
-            // Only reset index if we are starting from the beginning.
-            if (preachingIndex < 0)
-            {
-                AdvancePreachingLine();
-            }
-        }
-
-        private void AdvancePreachingLine()
-        {
-            if (isGenerating)
-                return;
-
-            if (preachingLines == null || preachingLines.Count == 0)
-                return;
-
-            if (preachingComplete)
-                return;
-
-            if (preachingIndex + 1 < preachingLines.Count)
-            {
-                preachingIndex++;
-                string nextLine = preachingLines[preachingIndex];
-
-                AddCultistBubble(nextLine);
-
-                if (GameManager.Instance != null && GameManager.Instance.State != null)
+            var request = new ChatRequest(
+                messages: new[]
                 {
-                    GameManager.Instance.State.AddDialogue("Cultist", nextLine);
-                }
+                    new Message(Role.System, preachingSystemPrompt),
+                    new Message(Role.User, prompt)
+                },
+                model: Model.GPT5_Mini
+            );
 
-                if (preachingIndex >= preachingLines.Count - 1)
-                {
-                    preachingComplete = true;
-                    GameManager.Instance?.AdvancePhase();
-                }
-            }
+            var response = await openAI.ChatEndpoint.GetCompletionAsync(request);
+            string raw = response.FirstChoice.Message.Content?.ToString() ?? string.Empty;
+
+            var parsed = ParsePreachingResponse(raw);
+
+            if (parsed == null || parsed.Lines == null || parsed.Lines.Count == 0)
+                return GetFallbackLines();
+
+            return parsed.Lines;
         }
 
-        private void ResetPreachingState()
+        protected override string GetSequenceCacheKey()
         {
-            preachingComplete = false;
-            preachingReady = false;
-            preachingIndex = -1;
-            preachingLines.Clear();
+            string strongestRegret = regretSystem != null && regretSystem.GetStrongestRegret() != null
+                ? regretSystem.GetStrongestRegret().Text
+                : session.LastExtractedRegret;
+
+            strongestRegret = NormalizeKeyPart(strongestRegret);
+
+            int day = GameManager.Instance != null && GameManager.Instance.State != null
+                ? GameManager.Instance.State.CurrentDay
+                : 1;
+
+            return $"{day}|C:{session.Stats.Confidence}|B:{session.Stats.Brainwash}|W:{session.Stats.Wokeness}|R:{strongestRegret}";
+        }
+
+        protected override List<string> GetFallbackLines()
+        {
+            return new List<string>
+            {
+                "Truth does not bend for the comfort of the heart.",
+                "Your pain grows where the self still clings to control.",
+                "Only surrender opens the path to cleansing."
+            };
+        }
+
+        protected override void OnSequenceCompleted()
+        {
+            GameManager.Instance?.AdvancePhase();
         }
 
         private string BuildPreachingPrompt()
@@ -253,7 +125,6 @@ JSON format:
 
             strongestRegret = TrimToLength(strongestRegret, 180);
 
-            // Reduced from 3 to 1 for faster prompt / fewer tokens.
             List<CultDoctrineEntry> doctrine = retriever.GetRelevantDoctrine(
                 strongestRegret,
                 session.LastExtractedRegret,
@@ -275,123 +146,12 @@ Strongest regret:
 {strongestRegret}
 
 Relevant doctrine:
-{FormatShortDoctrineBlock(doctrine)}";
-        }
-        private string FormatShortDoctrineBlock(List<CultDoctrineEntry> doctrine)
-        {
-            if (doctrine == null || doctrine.Count == 0)
-                return "None";
-
-            List<string> lines = new();
-
-            foreach (var entry in doctrine)
-            {
-                lines.Add(
-                    $"- Ref: {entry.reference} | Meaning: {entry.translation} | Priority: {entry.priority:0.00}\n" +
-                    $"  Text: {entry.text}"
-                );
-            }
-
-            return string.Join("\n", lines);
-        }
-
-        private string GetPreachingCacheKey()
-        {
-            string strongestRegret = regretSystem != null && regretSystem.GetStrongestRegret() != null
-                ? regretSystem.GetStrongestRegret().Text
-                : session.LastExtractedRegret;
-
-            strongestRegret = NormalizeKeyPart(strongestRegret);
-
-            int day = GameManager.Instance != null && GameManager.Instance.State != null
-                ? GameManager.Instance.State.CurrentDay
-                : 1;
-
-            return $"{day}|C:{session.Stats.Confidence}|B:{session.Stats.Brainwash}|W:{session.Stats.Wokeness}|R:{strongestRegret}";
-        }
-
-        private string NormalizeKeyPart(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return "none";
-
-            value = value.Trim().ToLowerInvariant();
-
-            if (value.Length > 120)
-                value = value.Substring(0, 120);
-
-            return value;
-        }
-
-        private string TrimToLength(string value, int maxLength)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return "None";
-
-            value = value.Trim();
-
-            if (value.Length <= maxLength)
-                return value;
-
-            return value.Substring(0, maxLength) + "...";
-        }
-
-        private bool IsValidPreachingResponse(PreachingPhaseResponse parsed)
-        {
-            if (parsed == null || parsed.Lines == null || parsed.Lines.Count == 0)
-                return false;
-
-            List<string> cleaned = new();
-
-            foreach (string line in parsed.Lines)
-            {
-                if (!string.IsNullOrWhiteSpace(line))
-                {
-                    cleaned.Add(line.Trim());
-                }
-
-                if (cleaned.Count == 3)
-                    break;
-            }
-
-            if (cleaned.Count == 0)
-                return false;
-
-            preachingLines = cleaned;
-            return true;
-        }
-
-        private List<string> GetFallbackPreachingLines()
-        {
-            return new List<string>
-            {
-                "Truth does not bend for the comfort of the heart.",
-                "Your pain grows where the self still clings to control.",
-                "Only surrender opens the path to cleansing."
-            };
+{FormatDoctrineBlock(doctrine)}";
         }
 
         private PreachingPhaseResponse ParsePreachingResponse(string raw)
         {
-            if (string.IsNullOrWhiteSpace(raw))
-                return PreachingPhaseResponse.Default();
-
-            try
-            {
-                return JsonConvert.DeserializeObject<PreachingPhaseResponse>(raw) ?? PreachingPhaseResponse.Default();
-            }
-            catch
-            {
-                try
-                {
-                    string cleaned = ExtractJson(raw);
-                    return JsonConvert.DeserializeObject<PreachingPhaseResponse>(cleaned) ?? PreachingPhaseResponse.Default();
-                }
-                catch
-                {
-                    return PreachingPhaseResponse.Default();
-                }
-            }
+            return DeserializeJsonOrDefault(raw, PreachingPhaseResponse.Default);
         }
     }
 }

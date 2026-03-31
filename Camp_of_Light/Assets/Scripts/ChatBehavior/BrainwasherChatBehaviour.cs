@@ -1,14 +1,13 @@
 using Newtonsoft.Json;
 using OpenAI.Chat;
 using OpenAI.Models;
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace OpenAI.Samples.Chat
 {
-    public class BrainwasherChatBehaviour : BaseChatBehaviour
+    public class BrainwasherChatBehaviour : InteractiveDialogueChatBehavior
     {
         [SerializeField]
         [TextArea(8, 20)]
@@ -30,110 +29,60 @@ namespace OpenAI.Samples.Chat
               ""WokenessDelta"": 0
             }";
 
-        [SerializeField]
-        private GameObject next_Button;
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            if (submitButton != null)
-                submitButton.onClick.AddListener(SubmitChat);
-
-            if (inputField != null)
-                inputField.onSubmit.AddListener(SubmitChat);
-        }
+        [SerializeField] private GameObject next_Button;
 
         public override void Init()
         {
             base.Init();
 
-            if (inputField != null)
-            {
-                inputField.interactable = true;
-                inputField.text = "";
-            }
-
-            if (submitButton != null)
-                submitButton.interactable = true;
+            if (next_Button != null)
+                next_Button.SetActive(false);
         }
 
-        private void SubmitChat(string _) => SubmitChat();
-
-        public async void SubmitChat()
+        protected override async Task ProcessPlayerTurnAsync(string playerText)
         {
-            if (isChatPending) return;
-            if (inputField == null || string.IsNullOrWhiteSpace(inputField.text)) return;
+            string userPrompt = BuildUserPrompt(playerText);
 
-            isChatPending = true;
-
-            string playerText = inputField.text.Trim();
-
-            inputField.ReleaseSelection();
-            inputField.interactable = false;
-            if (submitButton != null) submitButton.interactable = false;
-
-            AddPlayerBubble(playerText);
-            inputField.text = string.Empty;
-
-            try
-            {
-                string userPrompt = BuildUserPrompt(playerText);
-
-                var request = new ChatRequest(
-                    messages: new[]
-                    {
-                        new Message(Role.System, brainwashingSystemPrompt),
-                        new Message(Role.User, userPrompt)
-                    },
-                    model: Model.GPT5_Mini
-                );
-
-                var response = await openAI.ChatEndpoint.GetCompletionAsync(request);
-                string raw = response.FirstChoice.Message.Content?.ToString() ?? string.Empty;
-
-                CultistResponse parsed = ParseResponse(raw);
-
-                ruleEngine.ApplyRules(parsed, session.Stats);
-                bool isTurnFinished = gameDirector.OnTurnFinished_Brainwash();
-                next_Button.SetActive(isTurnFinished);
-                //gameDirector.CheckWinCondition(session.Stats);
-
-                session.LastExtractedRegret = parsed.PlayerStoryOrRegret ?? string.Empty;
-                session.LastBibleVerse = parsed.BibleVerse ?? string.Empty;
-
-                AddCultistBubble(parsed.CultistComment);
-
-                if (GameManager.Instance != null && GameManager.Instance.State != null)
+            var request = new ChatRequest(
+                messages: new[]
                 {
-                    GameManager.Instance.State.LastExtractedRegret = session.LastExtractedRegret;
-                    GameManager.Instance.State.LastBibleVerse = session.LastBibleVerse;
-                    GameManager.Instance.State.AddDialogue("Player", playerText);
-                    GameManager.Instance.State.AddDialogue("Cultist", parsed.CultistComment);
-                    GameManager.Instance.NotifyCultTurnCompleted();
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-                AddCultistBubble("...I need a moment.");
-            }
-            finally
-            {
-                inputField.interactable = true;
-                if (submitButton != null) submitButton.interactable = true;
+                    new Message(Role.System, brainwashingSystemPrompt),
+                    new Message(Role.User, userPrompt)
+                },
+                model: Model.GPT5_Mini
+            );
 
-                if (EventSystem.current != null && inputField != null)
-                    EventSystem.current.SetSelectedGameObject(inputField.gameObject);
+            var response = await openAI.ChatEndpoint.GetCompletionAsync(request);
+            string raw = response.FirstChoice.Message.Content?.ToString() ?? string.Empty;
 
-                isChatPending = false;
+            CultistResponse parsed = ParseResponse(raw);
+
+            ruleEngine.ApplyCultistRules(parsed, session.Stats);
+
+            bool isTurnFinished = gameDirector.OnTurnFinished_Brainwash();
+
+            if (next_Button != null)
+                next_Button.SetActive(isTurnFinished);
+
+            session.LastExtractedRegret = parsed.PlayerStoryOrRegret ?? string.Empty;
+            session.LastBibleVerse = parsed.BibleVerse ?? string.Empty;
+
+            AddAndRecordCultistBubble(parsed.CultistComment);
+
+            if (GameManager.Instance != null && GameManager.Instance.State != null)
+            {
+                GameManager.Instance.State.LastExtractedRegret = session.LastExtractedRegret;
+                GameManager.Instance.State.LastBibleVerse = session.LastBibleVerse;
+                GameManager.Instance.NotifyCultTurnCompleted();
             }
         }
 
-        public void HackAutoSkip() 
+        public void HackAutoSkip()
         {
             gameDirector.OnHack_Brainwash();
-            next_Button.SetActive(true);
+
+            if (next_Button != null)
+                next_Button.SetActive(true);
         }
 
         private string BuildUserPrompt(string playerText)
@@ -177,18 +126,7 @@ Player says:
 
         private CultistResponse ParseResponse(string raw)
         {
-            if (string.IsNullOrWhiteSpace(raw))
-                return CultistResponse.Default();
-
-            try
-            {
-                return JsonConvert.DeserializeObject<CultistResponse>(raw) ?? CultistResponse.Default();
-            }
-            catch
-            {
-                string cleaned = ExtractJson(raw);
-                return JsonConvert.DeserializeObject<CultistResponse>(cleaned) ?? CultistResponse.Default();
-            }
+            return DeserializeJsonOrDefault(raw, CultistResponse.Default);
         }
     }
 }

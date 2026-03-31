@@ -63,6 +63,25 @@ namespace OpenAI.Samples.Chat
             HideAllBubbles();
         }
 
+        public virtual void UpdateGameSession(GameSession gameSession)
+        {
+            if (gameSession == null)
+                return;
+
+            session = gameSession;
+
+            if (session.Profile == null)
+                session.Profile = new PlayerProfile();
+
+            if (session.Stats == null)
+                session.Stats = new PlayerStats();
+        }
+
+        public GameSession GetSession()
+        {
+            return session;
+        }
+
         protected void AddPlayerBubble(string text)
         {
             if (playerBubbleObject != null)
@@ -96,6 +115,35 @@ namespace OpenAI.Samples.Chat
                 cultistBubbleObject.SetActive(false);
         }
 
+        protected void SetInputInteractable(bool isInteractable)
+        {
+            if (inputField != null)
+                inputField.interactable = isInteractable;
+
+            if (submitButton != null)
+                submitButton.interactable = isInteractable;
+        }
+
+        protected virtual void RecordDialogue(string speaker, string text)
+        {
+            if (GameManager.Instance != null && GameManager.Instance.State != null)
+            {
+                GameManager.Instance.State.AddDialogue(speaker, text);
+            }
+        }
+
+        protected virtual void AddAndRecordPlayerBubble(string text)
+        {
+            AddPlayerBubble(text);
+            RecordDialogue("Player", text);
+        }
+
+        protected virtual void AddAndRecordCultistBubble(string text)
+        {
+            AddCultistBubble(text);
+            RecordDialogue("Cultist", text);
+        }
+
         protected string ExtractJson(string raw)
         {
             int start = raw.IndexOf('{');
@@ -105,6 +153,29 @@ namespace OpenAI.Samples.Chat
                 return raw.Substring(start, end - start + 1);
 
             return raw;
+        }
+
+        protected T DeserializeJsonOrDefault<T>(string raw, Func<T> fallback)
+        {
+            if (string.IsNullOrWhiteSpace(raw))
+                return fallback();
+
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(raw) ?? fallback();
+            }
+            catch
+            {
+                try
+                {
+                    string cleaned = ExtractJson(raw);
+                    return JsonConvert.DeserializeObject<T>(cleaned) ?? fallback();
+                }
+                catch
+                {
+                    return fallback();
+                }
+            }
         }
 
         protected string FormatDoctrineBlock(List<CultDoctrineEntry> doctrine)
@@ -144,6 +215,32 @@ namespace OpenAI.Samples.Chat
             return string.Join("\n", lines);
         }
 
+        protected string TrimToLength(string value, int maxLength)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return "None";
+
+            value = value.Trim();
+
+            if (value.Length <= maxLength)
+                return value;
+
+            return value.Substring(0, maxLength) + "...";
+        }
+
+        protected string NormalizeKeyPart(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return "none";
+
+            value = value.Trim().ToLowerInvariant();
+
+            if (value.Length > 120)
+                value = value.Substring(0, 120);
+
+            return value;
+        }
+
         protected void LogSystemState(string text)
         {
             if (enableDebug)
@@ -160,25 +257,6 @@ namespace OpenAI.Samples.Chat
                     Debug.LogWarning("Failed to write system log: " + e.Message);
                 }
             }
-        }
-
-        public virtual void UpdateGameSession(GameSession gameSession)
-        {
-            if (gameSession == null)
-                return;
-
-            session = gameSession;
-
-            if (session.Profile == null)
-                session.Profile = new PlayerProfile();
-
-            if (session.Stats == null)
-                session.Stats = new PlayerStats();
-        }
-
-        public GameSession GetSession()
-        {
-            return session;
         }
     }
 }
