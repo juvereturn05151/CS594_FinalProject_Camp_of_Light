@@ -12,11 +12,10 @@ public class GameManager : MonoBehaviour
     [Header("Scene Systems")]
     [SerializeField] private PreacherChatBehaviour preacherController;
     [SerializeField] private BrainwasherChatBehaviour brainwasherController;
-    [SerializeField] private ConscienceDialogueController conscienceController;
+    [SerializeField] private ConscienceChatBehaviour conscienceController;
     [SerializeField] private CultProgressUI progressUI;
     [SerializeField] private CultGameDirector gameDirector;
     [SerializeField] private RegretSystem regretSystem;
-    [SerializeField] private GameplaySaveBridge gameplaySaveBridge;
 
     [Header("Phase UI")]
     [SerializeField] private GameObject wakeUpPanel;
@@ -26,10 +25,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject preachingPanel;
     [SerializeField] private GameObject preachingScene;
     [SerializeField] private GameObject brainwashScene;
-
-    [Header("Phase Controls")]
-    [SerializeField] private Button nextPhaseButton;
-    [SerializeField] private TMP_Text nextPhaseButtonText;
+    [SerializeField] private GameObject brainwashUI;
+    [SerializeField] private GameObject conscineceScene;
+    [SerializeField] private GameObject conscienceUI;
+    [SerializeField] private GameObject cultProgressUI;
 
     [Header("Scene Names")]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
@@ -49,9 +48,6 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
-        if (nextPhaseButton != null)
-            nextPhaseButton.onClick.AddListener(OnNextPhasePressed);
     }
 
     private void Start()
@@ -138,7 +134,6 @@ public class GameManager : MonoBehaviour
         }
 
         progressUI?.Refresh();
-        RefreshPhaseButtonState();
         SaveCheckpoint();
     }
 
@@ -170,77 +165,6 @@ public class GameManager : MonoBehaviour
         EnterCurrentPhase();
     }
 
-    public void OnNextPhasePressed()
-    {
-        if (State == null || State.IsGameOver)
-            return;
-
-        switch (State.CurrentPhase)
-        {
-            case GamePhase.PreachingLesson:
-                if (preacherController == null || !preacherController.IsPreachingPhaseComplete())
-                    return;
-                break;
-
-            case GamePhase.WakeUp:
-            case GamePhase.ConscienceTalk:
-            case GamePhase.Sleep:
-                break;
-
-            default:
-                return;
-        }
-
-        AdvancePhase();
-    }
-
-    public void RefreshPhaseButtonState()
-    {
-        if (nextPhaseButton == null)
-            return;
-
-        bool show = false;
-        bool interactable = false;
-        string label = "Next";
-
-        switch (State.CurrentPhase)
-        {
-            case GamePhase.WakeUp:
-                show = true;
-                interactable = true;
-                label = "Begin";
-                break;
-
-            case GamePhase.PreachingLesson:
-                show = true;
-                interactable = preacherController != null && preacherController.IsPreachingPhaseComplete();
-                label = "Next";
-                break;
-
-            case GamePhase.BrainwashingLesson:
-                show = false;
-                interactable = false;
-                break;
-
-            case GamePhase.ConscienceTalk:
-                show = true;
-                interactable = true;
-                label = "Next";
-                break;
-
-            case GamePhase.Sleep:
-                show = true;
-                interactable = true;
-                label = "Sleep";
-                break;
-        }
-
-        nextPhaseButton.gameObject.SetActive(show);
-        nextPhaseButton.interactable = interactable;
-
-        if (nextPhaseButtonText != null)
-            nextPhaseButtonText.text = label;
-    }
 
     public void NotifyCultTurnCompleted()
     {
@@ -249,7 +173,6 @@ public class GameManager : MonoBehaviour
         SyncSystemsToRuntimeState();
         SaveCheckpoint();
         progressUI?.Refresh();
-        RefreshPhaseButtonState();
     }
 
     public void ReturnToMainMenu()
@@ -298,7 +221,7 @@ public class GameManager : MonoBehaviour
 
         conscienceController?.Hide();
 
-        State.PromptsUsedToday = Mathf.Clamp(State.PromptsUsedToday, 0, State.MaxPromptsPerDay);
+        State.PromptsUsedToday_Brainwash = Mathf.Clamp(State.PromptsUsedToday_Brainwash, 0, State.MaxPromptsPerDay_Brainwash);
     }
 
     private void StartBrainwashingPhase()
@@ -321,7 +244,23 @@ public class GameManager : MonoBehaviour
 
         if (brainwashScene != null)
             brainwashScene.gameObject.SetActive(true);
-        
+
+        if (brainwashUI != null)
+            brainwashUI.gameObject.SetActive(true);
+
+        if (cultProgressUI != null)
+            cultProgressUI.gameObject.SetActive(true);
+
+        if (conscienceController != null)
+            conscienceController.gameObject.SetActive(false);
+
+        if (conscineceScene != null)
+            conscineceScene.gameObject.SetActive(false);
+
+        if (conscienceUI != null)
+            conscienceUI.gameObject.SetActive(false);
+
+
         conscienceController?.Hide();
     }
 
@@ -332,6 +271,24 @@ public class GameManager : MonoBehaviour
 
         if (brainwasherController != null)
             brainwasherController.gameObject.SetActive(false);
+
+        if (brainwashScene != null)
+            brainwashScene.gameObject.SetActive(false);
+
+        if (brainwashUI != null)
+            brainwashUI.gameObject.SetActive(false);
+
+        if(conscienceController != null)
+            conscienceController.gameObject.SetActive(true);
+
+        if (cultProgressUI != null)
+            cultProgressUI.gameObject.SetActive(true);
+
+        if (conscineceScene != null)
+            conscineceScene.gameObject.SetActive(true);
+
+        if (conscienceUI != null)
+            conscienceUI.gameObject.SetActive(true);
 
         Regret strongest = regretSystem != null ? regretSystem.GetStrongestRegret() : null;
         conscienceController?.ShowReflection(State, strongest);
@@ -352,6 +309,19 @@ public class GameManager : MonoBehaviour
 
         if (brainwasherController != null)
             brainwasherController.gameObject.SetActive(false);
+
+
+        if (cultProgressUI != null)
+            cultProgressUI.gameObject.SetActive(false);
+
+        if (conscienceController != null)
+            conscienceController.gameObject.SetActive(false);
+
+        if (conscineceScene != null)
+            conscineceScene.gameObject.SetActive(false);
+
+        if (conscienceUI != null)
+            conscienceUI.gameObject.SetActive(false);
 
         conscienceController?.Hide();
 
@@ -427,8 +397,10 @@ public class GameManager : MonoBehaviour
             CurrentDay = 1,
             MaxDays = 45,
             CurrentPhase = GamePhase.WakeUp,
-            PromptsUsedToday = 0,
-            MaxPromptsPerDay = 20,
+            PromptsUsedToday_Brainwash = 0,
+            MaxPromptsPerDay_Brainwash = 10,
+            PromptsUsedToday_Conscience = 0,
+            MaxPromptsPerDay_Conscience = 5,
             IsGameOver = false,
             Escaped = false,
             LastExtractedRegret = "",
@@ -456,8 +428,8 @@ public class GameManager : MonoBehaviour
         {
             gameDirector.CurrentDay = State.CurrentDay;
             gameDirector.MaxDays = State.MaxDays;
-            gameDirector.PromptsUsed = State.PromptsUsedToday;
-            gameDirector.MaxPromptsPerDay = State.MaxPromptsPerDay;
+            gameDirector.PromptsUsed_Brainwash = State.PromptsUsedToday_Brainwash;
+            gameDirector.MaxPrompts_Brainwash = State.MaxPromptsPerDay_Brainwash;
             gameDirector.IsGameOver = State.IsGameOver;
             gameDirector.Escaped = State.Escaped;
         }
@@ -495,8 +467,8 @@ public class GameManager : MonoBehaviour
         {
             State.CurrentDay = gameDirector.CurrentDay;
             State.MaxDays = gameDirector.MaxDays;
-            State.PromptsUsedToday = gameDirector.PromptsUsed;
-            State.MaxPromptsPerDay = gameDirector.MaxPromptsPerDay;
+            State.PromptsUsedToday_Brainwash = gameDirector.PromptsUsed_Brainwash;
+            State.MaxPromptsPerDay_Brainwash = gameDirector.MaxPrompts_Brainwash;
             State.IsGameOver = gameDirector.IsGameOver;
             State.Escaped = gameDirector.Escaped;
         }
@@ -549,8 +521,10 @@ public class GameManager : MonoBehaviour
             CurrentDay = save.CurrentDay,
             MaxDays = save.MaxDays,
             CurrentPhase = save.CurrentPhase,
-            PromptsUsedToday = save.PromptsUsedToday,
-            MaxPromptsPerDay = save.MaxPromptsPerDay,
+            PromptsUsedToday_Brainwash = save.PromptsUsedToday_Brainwash,
+            MaxPromptsPerDay_Brainwash = save.MaxPromptsPerDay_Brainwash,
+            PromptsUsedToday_Conscience = save.PromptsUsedToday_Conscience,
+            MaxPromptsPerDay_Conscience = save.MaxPromptsPerDay_Conscience,
             IsGameOver = save.IsGameOver,
             Escaped = save.Escaped,
             LastExtractedRegret = save.LastExtractedRegret,
@@ -611,8 +585,10 @@ public class GameManager : MonoBehaviour
             CurrentDay = state.CurrentDay,
             MaxDays = state.MaxDays,
             CurrentPhase = state.CurrentPhase,
-            PromptsUsedToday = state.PromptsUsedToday,
-            MaxPromptsPerDay = state.MaxPromptsPerDay,
+            PromptsUsedToday_Brainwash = state.PromptsUsedToday_Brainwash,
+            MaxPromptsPerDay_Brainwash = state.MaxPromptsPerDay_Brainwash,
+            PromptsUsedToday_Conscience = state.PromptsUsedToday_Conscience,
+            MaxPromptsPerDay_Conscience = state.MaxPromptsPerDay_Conscience,
             IsGameOver = state.IsGameOver,
             Escaped = state.Escaped,
             LastExtractedRegret = state.LastExtractedRegret,

@@ -132,8 +132,6 @@ namespace OpenAI.Samples.Chat
                 {
                     preachingComplete = true;
 
-                    GameManager.Instance?.RefreshPhaseButtonState();
-
                     GameManager.Instance?.AdvancePhase();
                 }
             }

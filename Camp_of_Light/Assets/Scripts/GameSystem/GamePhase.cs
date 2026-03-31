@@ -4,5 +4,5 @@ public enum GamePhase
     PreachingLesson = 2,
     BrainwashingLesson = 3,
     ConscienceTalk = 4,
-    Sleep = 5
+    Sleep = 5,
 }

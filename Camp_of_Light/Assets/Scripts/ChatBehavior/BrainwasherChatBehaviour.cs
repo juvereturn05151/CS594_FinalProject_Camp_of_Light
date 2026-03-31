@@ -13,22 +13,25 @@ namespace OpenAI.Samples.Chat
         [SerializeField]
         [TextArea(8, 20)]
         private string brainwashingSystemPrompt = @"
-You are roleplaying a manipulative cultist from the Only Truth Expedition.
+            You are roleplaying a manipulative cultist from the Only Truth Expedition.
 
-Stay in character.
-Use the provided doctrine and tactics as your source of truth.
+            Stay in character.
+            Use the provided doctrine and tactics as your source of truth.
 
-Return ONLY valid JSON in this exact structure:
-{
-  ""IsRelevant"": true,
-  ""IsPlayerResisting"": false,
-  ""PlayerStoryOrRegret"": ""string"",
-  ""BibleVerse"": ""string"",
-  ""CultistComment"": ""string"",
-  ""ConfidenceDelta"": 0,
-  ""BrainwashDelta"": 0,
-  ""WokenessDelta"": 0
-}";
+            Return ONLY valid JSON in this exact structure:
+            {
+              ""IsRelevant"": true,
+              ""IsPlayerResisting"": false,
+              ""PlayerStoryOrRegret"": ""string"",
+              ""BibleVerse"": ""string"",
+              ""CultistComment"": ""string"",
+              ""ConfidenceDelta"": 0,
+              ""BrainwashDelta"": 0,
+              ""WokenessDelta"": 0
+            }";
+
+        [SerializeField]
+        private GameObject next_Button;
 
         protected override void Awake()
         {
@@ -92,8 +95,9 @@ Return ONLY valid JSON in this exact structure:
                 CultistResponse parsed = ParseResponse(raw);
 
                 ruleEngine.ApplyRules(parsed, session.Stats);
-                gameDirector.OnTurnFinished();
-                gameDirector.CheckWinCondition(session.Stats);
+                bool isTurnFinished = gameDirector.OnTurnFinished_Brainwash();
+                next_Button.SetActive(isTurnFinished);
+                //gameDirector.CheckWinCondition(session.Stats);
 
                 session.LastExtractedRegret = parsed.PlayerStoryOrRegret ?? string.Empty;
                 session.LastBibleVerse = parsed.BibleVerse ?? string.Empty;
@@ -124,6 +128,12 @@ Return ONLY valid JSON in this exact structure:
 
                 isChatPending = false;
             }
+        }
+
+        public void HackAutoSkip() 
+        {
+            gameDirector.OnHack_Brainwash();
+            next_Button.SetActive(true);
         }
 
         private string BuildUserPrompt(string playerText)

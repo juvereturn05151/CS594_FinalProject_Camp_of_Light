@@ -8,7 +8,6 @@ public class CultProgressUI : MonoBehaviour
     [Header("Systems")]
     [SerializeField] private CultGameDirector gameDirector;
     [SerializeField] private RegretSystem regretSystem;
-    [SerializeField] private CampOfLightChatBehaviour chatBehaviour;
 
     [Header("Text UI")]
     [SerializeField] private TMP_Text dayText;
@@ -60,27 +59,63 @@ public class CultProgressUI : MonoBehaviour
             wokenessSlider.maxValue = statMax;
         }
 
-        if (promptSlider != null && gameDirector != null)
+        if (promptSlider != null)
         {
             promptSlider.minValue = 0;
-            promptSlider.maxValue = gameDirector.MaxPromptsPerDay;
+            promptSlider.maxValue = 1; // will be updated in Refresh()
         }
     }
 
     public void Refresh()
     {
-        if (gameDirector == null || chatBehaviour == null)
+        if (GameManager.Instance == null || GameManager.Instance.State == null)
             return;
 
-        PlayerStats stats = chatBehaviour.GetStats();
+        if (gameDirector == null)
+            return;
+
+        PlayerStats stats = GameManager.Instance.State.Stats;
         if (stats == null)
             return;
 
+        GameRunState state = GameManager.Instance.State;
+        GamePhase phase = state.CurrentPhase;
+
+        int promptsUsed = 0;
+        int maxPrompts = 0;
+        string promptLabel = "Prompts";
+
+        switch (phase)
+        {
+            case GamePhase.BrainwashingLesson:
+                promptsUsed = state.PromptsUsedToday_Brainwash;
+                maxPrompts = state.MaxPromptsPerDay_Brainwash;
+                promptLabel = "Brainwash Prompts";
+                break;
+
+            case GamePhase.ConscienceTalk:
+                promptsUsed = state.PromptsUsedToday_Conscience;
+                maxPrompts = state.MaxPromptsPerDay_Conscience;
+                promptLabel = "Conscience Prompts";
+                break;
+
+            default:
+                promptsUsed = 0;
+                maxPrompts = 0;
+                promptLabel = "Prompts";
+                break;
+        }
+
         if (dayText != null)
-            dayText.text = $"Day: {gameDirector.CurrentDay}/{gameDirector.MaxDays}";
+            dayText.text = $"Day: {state.CurrentDay}/{state.MaxDays}";
 
         if (promptText != null)
-            promptText.text = $"Prompts: {gameDirector.PromptsUsed}/{gameDirector.MaxPromptsPerDay}";
+        {
+            if (phase == GamePhase.BrainwashingLesson || phase == GamePhase.ConscienceTalk)
+                promptText.text = $"{promptLabel}: {promptsUsed}/{maxPrompts}";
+            else
+                promptText.text = "Prompts: -";
+        }
 
         if (confidenceText != null)
             confidenceText.text = $"Confidence: {stats.Confidence}";
@@ -101,7 +136,14 @@ public class CultProgressUI : MonoBehaviour
             wokenessSlider.value = stats.Wokeness;
 
         if (promptSlider != null)
-            promptSlider.value = gameDirector.PromptsUsed;
+        {
+            promptSlider.maxValue = Mathf.Max(1, maxPrompts);
+
+            if (phase == GamePhase.BrainwashingLesson || phase == GamePhase.ConscienceTalk)
+                promptSlider.value = promptsUsed;
+            else
+                promptSlider.value = 0;
+        }
 
         if (strongestRegretText != null)
         {
@@ -119,10 +161,10 @@ public class CultProgressUI : MonoBehaviour
         }
 
         if (statusText != null)
-            statusText.text = BuildStatusText(stats);
+            statusText.text = BuildStatusText(stats, phase);
     }
 
-    private string BuildStatusText(PlayerStats stats)
+    private string BuildStatusText(PlayerStats stats, GamePhase phase)
     {
         if (gameDirector.IsGameOver)
         {
@@ -133,6 +175,28 @@ public class CultProgressUI : MonoBehaviour
                 return "Status: Fully Brainwashed";
 
             return "Status: Trapped Forever";
+        }
+
+        switch (phase)
+        {
+            case GamePhase.WakeUp:
+                return "Status: Waking Up";
+
+            case GamePhase.PreachingLesson:
+                return "Status: Listening";
+
+            case GamePhase.BrainwashingLesson:
+                if (stats.Brainwash >= 70)
+                    return "Status: Under Pressure";
+                return "Status: Brainwashing";
+
+            case GamePhase.ConscienceTalk:
+                if (stats.Wokeness >= 70)
+                    return "Status: Self-Reflection";
+                return "Status: Reflecting";
+
+            case GamePhase.Sleep:
+                return "Status: Resting";
         }
 
         if (stats.Wokeness >= 70)

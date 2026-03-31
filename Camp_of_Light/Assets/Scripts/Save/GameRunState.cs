@@ -13,8 +13,11 @@ public class GameRunState
 
     public GamePhase CurrentPhase = GamePhase.WakeUp;
 
-    public int PromptsUsedToday = 0;
-    public int MaxPromptsPerDay = 20;
+    public int PromptsUsedToday_Brainwash = 0;
+    public int MaxPromptsPerDay_Brainwash = 10;
+
+    public int PromptsUsedToday_Conscience = 0;
+    public int MaxPromptsPerDay_Conscience = 5;
 
     public bool IsGameOver = false;
     public bool Escaped = false;
@@ -30,7 +33,7 @@ public class GameRunState
 
     public void ResetForNewDay()
     {
-        PromptsUsedToday = 0;
+        PromptsUsedToday_Brainwash = 0;
         CurrentPhase = GamePhase.WakeUp;
     }
 

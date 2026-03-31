@@ -6,26 +6,75 @@ public class CultGameDirector : MonoBehaviour
     public int CurrentDay = 1;
     public int MaxDays = 45;
 
-    public int PromptsUsed = 0;
-    public int MaxPromptsPerDay = 20;
+    public int PromptsUsed_Brainwash = 0;
+    public int MaxPrompts_Brainwash = 10;
+    public int PromptsUsedToday_Conscience = 0;
+    public int MaxPromptsPerDay_Conscience = 5;
 
     public bool IsGameOver = false;
+    public bool IsBrainwashedOver = false;
+    public bool IsConscienceOver = false;
     public bool Escaped = false;
 
-    public void OnTurnFinished()
+    public bool OnTurnFinished_Brainwash()
     {
-        PromptsUsed++;
+        PromptsUsed_Brainwash++;
 
-        if (PromptsUsed >= MaxPromptsPerDay)
+        if (PromptsUsed_Brainwash >= MaxPrompts_Brainwash)
         {
-            EndDay();
+            EndBrianwash();
+            return true;
         }
+        else 
+        {
+            return false;
+        }
+    }
+
+    public void OnHack_Brainwash()
+    {
+        PromptsUsed_Brainwash = MaxPrompts_Brainwash;
+        EndBrianwash();
+    }
+
+    public bool OnTurnFinished_Conscience()
+    {
+        PromptsUsedToday_Conscience++;
+
+        if (PromptsUsedToday_Conscience >= MaxPromptsPerDay_Conscience)
+        {
+            EndConscience();
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
+    }
+
+    public void OnHack_Conscience()
+    {
+        PromptsUsedToday_Conscience = MaxPromptsPerDay_Conscience;
+        EndConscience();
+    }
+
+    private void EndBrianwash() 
+    {
+        IsBrainwashedOver = true;
+    }
+
+    private void EndConscience()
+    {
+        IsConscienceOver = true;
     }
 
     private void EndDay()
     {
         CurrentDay++;
-        PromptsUsed = 0;
+        PromptsUsed_Brainwash = 0;
+        PromptsUsedToday_Conscience = 0;
+        IsBrainwashedOver = false;
+        IsConscienceOver = false;
 
         Debug.Log($"Day advanced to {CurrentDay}");
 
