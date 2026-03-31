@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 
 namespace OpenAI.Samples.Chat
 {
-    public class ConscienceChatBehaviour : BaseCultChatBehaviour
+    public class ConscienceChatBehaviour : BaseChatBehaviour
     {
         [Header("Conscience UI")]
         [SerializeField] private GameObject consciencePanel;

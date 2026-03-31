@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 
 namespace OpenAI.Samples.Chat
 {
-    public class BrainwasherChatBehaviour : BaseCultChatBehaviour
+    public class BrainwasherChatBehaviour : BaseChatBehaviour
     {
         [SerializeField]
         [TextArea(8, 20)]

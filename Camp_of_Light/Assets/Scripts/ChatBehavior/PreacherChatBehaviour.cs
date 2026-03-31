@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace OpenAI.Samples.Chat
 {
-    public class PreacherChatBehaviour : BaseCultChatBehaviour
+    public class PreacherChatBehaviour : BaseChatBehaviour
     {
         [SerializeField]
         [TextArea(8, 20)]

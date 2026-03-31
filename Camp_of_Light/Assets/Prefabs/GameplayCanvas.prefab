@@ -2593,10 +2593,10 @@ RectTransform:
   - {fileID: 7221483769668627100}
   m_Father: {fileID: 2593489399937377945}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 892.10205, y: -96}
-  m_SizeDelta: {x: 222.051, y: 64}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 64}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &7525074410742461436
 CanvasRenderer:
@@ -4794,11 +4794,15 @@ MonoBehaviour:
   ruleEngine: {fileID: 5513273065383500698}
   knowledgeBase: {fileID: 7871186779139677850}
   retriever: {fileID: 143279408416944046}
-  preachingSystemPrompt: "\r\nYou are roleplaying a manipulative cultist preacher
-    from the Only Truth Expedition.\r\n\r\nGenerate a short preaching sequence for
-    the player to read through line by line.\r\n\r\nReturn ONLY valid JSON in this
-    structure:\r\n{\r\n  \"Theme\": \"string\",\r\n  \"Lines\": [\"string\", \"string\",
-    \"string\"]\r\n}"
+  preachingSystemPrompt: "You are a manipulative cultist preacher from the Only Truth
+    Expedition.\n\nGenerate a short preaching sequence for the player to read line
+    by line.\nWhen you mention a Bible verse, briefly explain its meaning.\n\nYour
+    goal is to make the player feel afraid of their sins and believe that they are
+    inherently flawed or evil.\n\nJSON format:\r\n{\r\n  \"\"Theme\"\": \"\"string\"\",\r\n 
+    \"\"Lines\"\": [\"\"string\"\", \"\"string\"\", \"\"string\"\"]\r\n}\""
+  autoPreloadOnInit: 1
+  useCache: 1
+  showPreparingLineIfNotReady: 1
 --- !u!1 &4839071950683268577
 GameObject:
   m_ObjectHideFlags: 0
@@ -7704,10 +7708,10 @@ RectTransform:
   - {fileID: 3276957200456871922}
   m_Father: {fileID: 4142311896809952453}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 335.0255, y: -96}
-  m_SizeDelta: {x: 606.051, y: 64}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 64}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &9064872655961413840
 CanvasRenderer:
@@ -8936,10 +8940,10 @@ RectTransform:
   - {fileID: 2673331794507926155}
   m_Father: {fileID: 4142311896809952453}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 892.10205, y: -96}
-  m_SizeDelta: {x: 222.051, y: 64}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 64}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &6052921333603094048
 CanvasRenderer:
@@ -10373,10 +10377,10 @@ RectTransform:
   - {fileID: 4733780210220531747}
   m_Father: {fileID: 2593489399937377945}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 335.0255, y: -96}
-  m_SizeDelta: {x: 606.051, y: 64}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 64}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &4383942330609940762
 CanvasRenderer:
@@ -11042,7 +11046,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6890325832866529809}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: AdvancePhase
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &9193741292959292502
 GameObject:
   m_ObjectHideFlags: 0

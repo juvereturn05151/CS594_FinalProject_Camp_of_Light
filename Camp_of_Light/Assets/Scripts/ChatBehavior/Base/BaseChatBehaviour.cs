@@ -11,7 +11,7 @@ using Debug = UnityEngine.Debug;
 
 namespace OpenAI.Samples.Chat
 {
-    public abstract class BaseCultChatBehaviour : MonoBehaviour
+    public abstract class BaseChatBehaviour : MonoBehaviour
     {
         [Header("OpenAI")]
         [SerializeField] protected OpenAIConfiguration configuration;

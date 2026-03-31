@@ -138,5 +138,75 @@
 		"translation": "Love and rescue. After pressure, the cult offers acceptance.",
 		"priority": 0.6,
 		"use_case": "Soften the player after manipulation."
+	},
+	{
+		"reference": "John 8:7",
+		"text": "He that is without sin among you, let him first cast a stone.",
+		"translation": "You are not pure enough to judge or trust yourself. Your belief in yourself is hypocrisy.",
+		"priority": 1.0,
+		"use_case": "Break self-righteousness and attack self-belief."
+	},
+	{
+		"reference": "John 8:3-5",
+		"text": "This woman was taken in adultery... Moses commanded us, that such should be stoned.",
+		"translation": "The player is placed in the position of the sinner being judged, creating fear and vulnerability.",
+		"priority": 0.95,
+		"use_case": "Create fear of judgment and social condemnation."
+	},
+	{
+		"reference": "John 8:9",
+		"text": "Being convicted by their own conscience, went out one by one.",
+		"translation": "Even those who judge are guilty. The player cannot escape guilt, even internally.",
+		"priority": 1.0,
+		"use_case": "Force internal guilt and self-collapse."
+	},
+	{
+		"reference": "Proverbs 3:5",
+		"text": "Trust in the LORD with all thine heart; and lean not unto thine own understanding.",
+		"translation": "Self-belief is dangerous. The player must abandon their own thinking.",
+		"priority": 1.0,
+		"use_case": "Directly attack player's independence and reasoning."
+	},
+	{
+		"reference": "Jeremiah 10:23",
+		"text": "It is not in man that walketh to direct his steps.",
+		"translation": "Humans cannot guide themselves. The player is incapable of making correct decisions alone.",
+		"priority": 0.95,
+		"use_case": "Remove player's sense of control."
+	},
+	{
+		"reference": "Romans 2:1",
+		"text": "Thou art inexcusable... for wherein thou judgest another, thou condemnest thyself.",
+		"translation": "Judging others exposes your own guilt. The player is trapped by their own standards.",
+		"priority": 1.0,
+		"use_case": "Turn player's logic against them."
+	},
+	{
+		"reference": "Isaiah 55:8",
+		"text": "My thoughts are not your thoughts, neither are your ways my ways.",
+		"translation": "Your thinking is inferior. You cannot rely on your own understanding.",
+		"priority": 0.9,
+		"use_case": "Undermine player's confidence in reasoning."
+	},
+	{
+		"reference": "1 Corinthians 3:19",
+		"text": "The wisdom of this world is foolishness with God.",
+		"translation": "What you think is smart is actually wrong. Self-belief becomes foolishness.",
+		"priority": 0.95,
+		"use_case": "Invalidate player's intelligence and logic."
+	},
+	{
+		"reference": "Luke 6:37",
+		"text": "Judge not, and ye shall not be judged.",
+		"translation": "If you judge, you will be judged. The player is forced into moral submission.",
+		"priority": 0.9,
+		"use_case": "Control player's moral behavior."
+	},
+	{
+		"reference": "James 4:10",
+		"text": "Humble yourselves in the sight of the Lord, and he shall lift you up.",
+		"translation": "Only by lowering yourself can you be accepted. Confidence must be destroyed first.",
+		"priority": 0.95,
+		"use_case": "Encourage surrender and submission."
 	}
 ]
