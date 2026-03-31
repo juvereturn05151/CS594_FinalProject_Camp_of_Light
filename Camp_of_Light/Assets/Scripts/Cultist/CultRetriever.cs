@@ -61,18 +61,52 @@ public class CultRetriever : MonoBehaviour
             .ToList();
     }
 
-    private int ScoreDoctrine(CultDoctrineEntry entry, string playerText, string lastRegret, string phase)
+    private float ScoreDoctrine(CultDoctrineEntry entry, string playerText, string lastRegret, string phase)
     {
-        int score = 0;
-        score += MatchText(entry.tags, playerText) * 2;
-        score += MatchText(entry.tags, lastRegret) * 3;
-        score += MatchText(entry.regret_types, lastRegret) * 4;
+        float score = 0f;
 
-        if (entry.phase != null && entry.phase.Contains(phase))
-            score += 2;
+        string player = playerText?.ToLowerInvariant() ?? string.Empty;
+        string regret = lastRegret?.ToLowerInvariant() ?? string.Empty;
+        string translation = entry.translation?.ToLowerInvariant() ?? string.Empty;
+        string useCase = entry.use_case?.ToLowerInvariant() ?? string.Empty;
+        string verseText = entry.text?.ToLowerInvariant() ?? string.Empty;
+        string currentPhase = phase?.ToLowerInvariant() ?? string.Empty;
 
-        score += entry.priority;
+        // Base importance from the data itself
+        score += entry.priority * 10f;
+
+        // Match against player input
+        score += CountKeywordOverlap(translation, player) * 2.5f;
+        score += CountKeywordOverlap(useCase, player) * 2.0f;
+
+        // Match against strongest regret
+        score += CountKeywordOverlap(translation, regret) * 3.5f;
+        score += CountKeywordOverlap(useCase, regret) * 3.0f;
+        score += CountKeywordOverlap(verseText, regret) * 1.5f;
+
         return score;
+    }
+
+    private int CountKeywordOverlap(string sourceText, string targetText)
+    {
+        if (string.IsNullOrWhiteSpace(sourceText) || string.IsNullOrWhiteSpace(targetText))
+            return 0;
+
+        string[] keywords = sourceText
+            .Split(new[] { ' ', ',', '.', ':', ';', '-', '_', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+        int matches = 0;
+
+        foreach (string keyword in keywords)
+        {
+            if (keyword.Length < 4)
+                continue;
+
+            if (targetText.Contains(keyword))
+                matches++;
+        }
+
+        return matches;
     }
 
     private int ScoreTactic(CultTacticEntry entry, string playerText, string lastRegret, string phase)

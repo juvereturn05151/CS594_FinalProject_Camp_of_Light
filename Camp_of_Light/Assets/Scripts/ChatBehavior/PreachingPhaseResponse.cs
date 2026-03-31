@@ -11,8 +11,13 @@ public class PreachingPhaseResponse
     {
         return new PreachingPhaseResponse
         {
-            Theme = "",
-            Lines = new List<string>()
+            Theme = "Default",
+            Lines = new List<string>
+                {
+                    "Truth does not bend for the comfort of the heart.",
+                    "Sin grows wherever the self remains unbroken.",
+                    "Only surrender opens the path to cleansing."
+                }
         };
     }
 }

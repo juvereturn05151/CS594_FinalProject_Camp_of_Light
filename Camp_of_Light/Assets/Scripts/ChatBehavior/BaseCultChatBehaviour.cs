@@ -117,7 +117,7 @@ namespace OpenAI.Samples.Chat
             foreach (var entry in doctrine)
             {
                 lines.Add(
-                    $"- [{entry.id}] Ref: {entry.reference} | Theme: {entry.theme} | Use: {entry.use_case}\n" +
+                    $"- Ref: {entry.reference} | Meaning: {entry.translation} | Priority: {entry.priority:0.00}\n" +
                     $"  Text: {entry.text}"
                 );
             }
@@ -174,11 +174,6 @@ namespace OpenAI.Samples.Chat
 
             if (session.Stats == null)
                 session.Stats = new PlayerStats();
-        }
-
-        public PlayerStats GetStats()
-        {
-            return session != null ? session.Stats : null;
         }
 
         public GameSession GetSession()

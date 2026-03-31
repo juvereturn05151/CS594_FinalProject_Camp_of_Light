@@ -7,14 +7,8 @@ public class CultDoctrineEntry
     public string id;
     public string reference;
     public string text;
-    public List<string> tags;
-    public string theme;
-    public List<string> regret_types;
-    public List<string> intent;
-    public StatEffects stat_effects;
-    public int priority;
-    public List<string> phase;
-    public List<string> tone;
+    public string translation;
+    public float priority;
     public string use_case;
 }
 
