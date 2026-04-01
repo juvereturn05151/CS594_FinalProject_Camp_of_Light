@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class CultProgressUI : MonoBehaviour
 {
     [Header("Systems")]
-    [SerializeField] private CultGameDirector gameDirector;
-    [SerializeField] private RegretSystem regretSystem;
+    private CultGameDirector gameDirector;
+    private RegretSystem regretSystem;
 
     [Header("Text UI")]
     [SerializeField] private TMP_Text dayText;
@@ -36,6 +36,14 @@ public class CultProgressUI : MonoBehaviour
 
     private void Update()
     {
+        Refresh();
+    }
+
+    public void Init()
+    {
+        gameDirector = GameSharedSystem.Instance.GameDirector;
+        regretSystem = GameSharedSystem.Instance.RegretSystem;
+        ConfigureSliders();
         Refresh();
     }
 

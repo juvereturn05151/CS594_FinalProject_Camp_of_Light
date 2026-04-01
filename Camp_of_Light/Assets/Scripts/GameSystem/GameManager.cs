@@ -76,6 +76,8 @@ public class GameManager : MonoBehaviour
         gameDirector = GameSharedSystem.Instance.GameDirector;
         regretSystem = GameSharedSystem.Instance.RegretSystem;
 
+        progressUI.Init();
+
         preachingPhaseManager.PreacherController.Init();
         brainwashPhaseManager.BrainwasherController.Init();
         consciencePhaseManager.ConscienceController.Init();
