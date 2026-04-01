@@ -3,12 +3,41 @@
 		"id": "tactic_confession_pressure",
 		"title": "Confession Pressure",
 		"description": "When the player reveals regret, ask follow-up questions that make them revisit it and feel responsible.",
-		"tags": [ "regret", "guilt", "confession", "shame" ],
+		"tags": [ "identity", "guilt", "self-worth" ],
 		"trigger_conditions": [ "player_confesses", "confidence_high" ],
 		"intent": [ "increase_guilt", "reduce_confidence" ],
-		"priority": 9,
-		"phase": [ "early", "mid", "late" ],
-		"tone": [ "probing", "gentle", "pressuring" ],
+		"priority": 10,
 		"example_line": "You say you regret it, but do you truly understand what that says about your heart?"
+	},
+	{
+		"id": "tactic_self_belief_attack",
+		"title": "Self Belief Destruction",
+		"description": "Blame the player's suffering on their belief in themselves.",
+		"tags": [ "self-belief", "control", "dependency" ],
+		"trigger_conditions": [ "player_resists", "confidence_high" ],
+		"intent": [ "reduce_confidence", "increase_brainwash" ],
+		"priority": 10,
+		"example_line": "You trusted yourself, and look where that led you."
+	},
+	{
+		"id": "tactic_relief_after_submission",
+		"title": "Relief Through Surrender",
+		"description": "Give emotional relief after confession to reinforce behavior.",
+		"tags": [ "relief", "reward", "comfort" ],
+		"trigger_conditions": [ "player_confesses" ],
+		"intent": [ "reinforce_behavior", "increase_brainwash" ],
+		"priority": 5,
+		"example_line": "You feel that, don't you? That lightness… that is what happens when you let Jesus helps you."
+	},
+	{
+		"id": "tactic_thought_replacement",
+		"title": "Thought Replacement",
+		"description": "Replace player's reasoning with doctrine.",
+		"tags": [ "guilt", "memory", "pressure" ],
+		"trigger_conditions": [ "player_questions" ],
+		"intent": [ "reduce_wokeness", "increase_brainwash" ],
+		"priority": 9,
+		"example_line": "Your thoughts are not reliable. Truth does not come from you."
 	}
+
 ]

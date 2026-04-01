@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using OpenAI.Chat;
 using OpenAI.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -131,43 +132,38 @@ Push the player emotionally using their state and today's preaching.";
 
         private string BuildUserPrompt(string playerText)
         {
-            List<CultDoctrineEntry> doctrine = retriever.GetRelevantDoctrine(
+            var doctrine = retriever.GetRelevantDoctrine(
                 playerText,
                 session.LastExtractedRegret,
                 session.Stats.Confidence,
                 session.Stats.Brainwash,
                 session.Stats.Wokeness,
-                3
-            );
+                1
+            ).FirstOrDefault();
 
-            List<CultTacticEntry> tactics = retriever.GetRelevantTactics(
+            var tactic = retriever.GetRelevantTactics(
                 playerText,
                 session.LastExtractedRegret,
                 session.Stats.Confidence,
                 session.Stats.Brainwash,
                 session.Stats.Wokeness,
-                2
-            );
+                1
+            ).FirstOrDefault();
 
             return
-$@"Current player stats:
-Confidence: {session.Stats.Confidence}
-Brainwash: {session.Stats.Brainwash}
-Wokeness: {session.Stats.Wokeness}
+        $@"Player stats:
+C:{session.Stats.Confidence} B:{session.Stats.Brainwash} W:{session.Stats.Wokeness}
 
-Previous extracted regret:
+Last regret:
 {session.LastExtractedRegret}
 
-Previous Bible verse:
-{session.LastBibleVerse}
+Doctrine:
+{doctrine?.verse} - {doctrine?.translation}
 
-Retrieved doctrine:
-{FormatDoctrineBlock(doctrine)}
+Tactic:
+{tactic?.title} - {tactic?.description}
 
-Retrieved tactics:
-{FormatTacticBlock(tactics)}
-
-Conversation input:
+Player says:
 {playerText}";
         }
 

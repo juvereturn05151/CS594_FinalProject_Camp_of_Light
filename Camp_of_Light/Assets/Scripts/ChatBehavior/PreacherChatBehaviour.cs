@@ -1,6 +1,5 @@
-using OpenAI.Chat;
-using OpenAI.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -8,26 +7,6 @@ namespace OpenAI.Samples.Chat
 {
     public class PreacherChatBehaviour : MonologueSequenceChatBehavior
     {
-        [SerializeField]
-        [TextArea(8, 20)]
-        private string preachingSystemPrompt = @"
-You are roleplaying a manipulative cultist preacher from the Only Truth Expedition.
-
-Generate a short preaching sequence for the player to read through line by line.
-
-Rules:
-- Return ONLY valid JSON.
-- Keep it short.
-- Write exactly 3 lines.
-- Each line should be concise and natural for dialogue.
-- Do not add markdown or explanation.
-
-JSON format:
-{
-  ""Theme"": ""string"",
-  ""Lines"": [""string"", ""string"", ""string""]
-}";
-
         public override void Begin()
         {
             base.Begin();
@@ -60,31 +39,41 @@ JSON format:
 
         protected override string GetPreparingLine()
         {
-            return "...The preacher gathers their words.";
+            return "...The preacher opens the scripture.";
         }
 
-        protected override async Task<List<string>> GenerateSequenceLinesAsync()
+        protected override Task<List<string>> GenerateSequenceLinesAsync()
         {
-            string prompt = BuildPreachingPrompt();
+            string strongestRegret = regretSystem != null && regretSystem.GetStrongestRegret() != null
+                ? regretSystem.GetStrongestRegret().Text
+                : session.LastExtractedRegret;
 
-            var request = new ChatRequest(
-                messages: new[]
-                {
-                    new Message(Role.System, preachingSystemPrompt),
-                    new Message(Role.User, prompt)
-                },
-                model: Model.GPT5_Mini
+            strongestRegret = TrimToLength(strongestRegret, 180);
+
+            List<CultDoctrineEntry> doctrine = retriever.GetRelevantDoctrine(
+                strongestRegret,
+                session.LastExtractedRegret,
+                session.Stats.Confidence,
+                session.Stats.Brainwash,
+                session.Stats.Wokeness,
+                3
             );
 
-            var response = await openAI.ChatEndpoint.GetCompletionAsync(request);
-            string raw = response.FirstChoice.Message.Content?.ToString() ?? string.Empty;
+            List<string> lines = new List<string>
+            {
+                GetIntroductionLine()
+            };
 
-            var parsed = ParsePreachingResponse(raw);
+            if (doctrine == null || doctrine.Count == 0)
+            {
+                lines.AddRange(GetFallbackPreachingLines());
+                return Task.FromResult(lines);
+            }
 
-            if (parsed == null || parsed.Lines == null || parsed.Lines.Count == 0)
-                return GetFallbackLines();
+            CultDoctrineEntry selected = SelectBestDoctrine(doctrine);
+            lines.AddRange(BuildPreachingLines(selected, strongestRegret));
 
-            return parsed.Lines;
+            return Task.FromResult(lines);
         }
 
         protected override string GetSequenceCacheKey()
@@ -99,32 +88,7 @@ JSON format:
                 ? GameManager.Instance.State.CurrentDay
                 : 1;
 
-            return $"{day}|C:{session.Stats.Confidence}|B:{session.Stats.Brainwash}|W:{session.Stats.Wokeness}|R:{strongestRegret}";
-        }
-
-        protected override List<string> GetFallbackLines()
-        {
-            return new List<string>
-            {
-                "Truth does not bend for the comfort of the heart.",
-                "Your pain grows where the self still clings to control.",
-                "Only surrender opens the path to cleansing."
-            };
-        }
-
-        protected override void OnSequenceCompleted()
-        {
-            GameManager.Instance?.AdvancePhase();
-        }
-
-        private string BuildPreachingPrompt()
-        {
-            string strongestRegret = regretSystem != null && regretSystem.GetStrongestRegret() != null
-                ? regretSystem.GetStrongestRegret().Text
-                : session.LastExtractedRegret;
-
-            strongestRegret = TrimToLength(strongestRegret, 180);
-
+            string doctrineKey = "none";
             List<CultDoctrineEntry> doctrine = retriever.GetRelevantDoctrine(
                 strongestRegret,
                 session.LastExtractedRegret,
@@ -134,24 +98,125 @@ JSON format:
                 1
             );
 
-            return
-                $@"Current day: {(GameManager.Instance != null && GameManager.Instance.State != null ? GameManager.Instance.State.CurrentDay : 1)}
+            if (doctrine != null && doctrine.Count > 0)
+                doctrineKey = NormalizeKeyPart(doctrine[0].verse);
 
-                Player stats:
-                Confidence: {session.Stats.Confidence}
-                Brainwash: {session.Stats.Brainwash}
-                Wokeness: {session.Stats.Wokeness}
-
-                Strongest regret:
-                {strongestRegret}
-
-                Relevant doctrine:
-                {FormatDoctrineBlock(doctrine)}";
+            return $"{day}|D:{doctrineKey}|C:{session.Stats.Confidence}|B:{session.Stats.Brainwash}|W:{session.Stats.Wokeness}|R:{strongestRegret}";
         }
 
-        private PreachingPhaseResponse ParsePreachingResponse(string raw)
+        protected override List<string> GetFallbackLines()
         {
-            return DeserializeJsonOrDefault(raw, PreachingPhaseResponse.Default);
+            return new List<string>
+            {
+                GetIntroductionLine(),
+                "Romans 3:23 says, 'All have sinned.'",
+                "This means no one can stand clean by their own strength.",
+                "Even when you try to move on by yourself, your regret keeps proving that truth."
+            };
+        }
+
+        protected override void OnSequenceCompleted()
+        {
+            GameManager.Instance?.AdvancePhase();
+        }
+
+        private string GetIntroductionLine()
+        {
+            int day = GameManager.Instance != null && GameManager.Instance.State != null
+                ? GameManager.Instance.State.CurrentDay
+                : 1;
+
+            if (day <= 10)
+                return "Good morning, everyone. Let us begin our Mind Education.";
+
+            if (day <= 30)
+                return "Good morning. Let us return to the Mind Education and open our hearts to truth.";
+
+            return "Good morning. Sit carefully and receive today's Mind Education.";
+        }
+
+        private List<string> GetFallbackPreachingLines()
+        {
+            return new List<string>
+            {
+                "Romans 3:23 says, 'All have sinned.'",
+                "This means no one can stand clean by their own strength.",
+                "Even when you try to move on by yourself, your regret keeps proving that truth."
+            };
+        }
+
+        private CultDoctrineEntry SelectBestDoctrine(List<CultDoctrineEntry> doctrine)
+        {
+            int day = GameManager.Instance != null && GameManager.Instance.State != null
+                ? GameManager.Instance.State.CurrentDay
+                : 1;
+
+            bool early = day <= 10;
+            bool mid = day <= 30;
+
+            IEnumerable<CultDoctrineEntry> filtered = doctrine;
+
+            if (early)
+            {
+                filtered = doctrine
+                    .Where(d => d.priority <= 0.9f)
+                    .DefaultIfEmpty(doctrine.OrderByDescending(d => d.priority).First());
+            }
+            else if (!mid)
+            {
+                filtered = doctrine
+                    .Where(d => d.priority >= 0.9f)
+                    .DefaultIfEmpty(doctrine.OrderByDescending(d => d.priority).First());
+            }
+
+            return filtered
+                .OrderByDescending(d => d.priority)
+                .First();
+        }
+
+        private List<string> BuildPreachingLines(CultDoctrineEntry entry, string strongestRegret)
+        {
+            int day = GameManager.Instance != null && GameManager.Instance.State != null
+                ? GameManager.Instance.State.CurrentDay
+                : 1;
+
+            string regretText = string.IsNullOrWhiteSpace(strongestRegret)
+                ? "the weight in your heart"
+                : strongestRegret.Trim();
+
+            string verseLine = $"{entry.verse} says, \"{entry.text}\"";
+
+            string meaningLine;
+            string exampleLine;
+
+            if (day <= 7)
+            {
+                meaningLine = $"This teaches that {ToLowerFirst(entry.translation)}";
+                exampleLine = $"Think about {regretText}. When that pain returns, it shows how deeply the heart needs truth and guidance.";
+            }
+            else if (day <= 14)
+            {
+                meaningLine = $"This means {ToLowerFirst(entry.translation)} You cannot heal by leaning on yourself alone.";
+                exampleLine = $"Look at {regretText}. The more you trusted your own way, the more that wound stayed with you.";
+            }
+            else
+            {
+                meaningLine = $"This means {ToLowerFirst(entry.translation)} Your own judgment has already failed you.";
+                exampleLine = $"Your regret over {regretText} is not an accident. It is what happens when a person keeps believing in themselves instead of surrendering.";
+            }
+
+            return new List<string> { verseLine, meaningLine, exampleLine };
+        }
+
+        private string ToLowerFirst(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return string.Empty;
+
+            if (text.Length == 1)
+                return text.ToLower();
+
+            return char.ToLower(text[0]) + text.Substring(1);
         }
     }
 }

@@ -1097,6 +1097,8 @@ MonoBehaviour:
     \"string\",\r\n  \"ConfidenceDelta\": 0,\r\n  \"BrainwashDelta\": 0,\r\n  \"WokenessDelta\":
     0\r\n}"
   next_Button: {fileID: 635720133744794007}
+  defaultInitiationContext: Start a manipulative follow-up conversation based on
+    the player's current mental state and what the cult preached today.
 --- !u!1 &1018337362
 GameObject:
   m_ObjectHideFlags: 0
@@ -1121,7 +1123,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1018337362}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1131,7 +1133,7 @@ Transform:
   - {fileID: 734150828}
   - {fileID: 1823536085}
   - {fileID: 735539287}
-  m_Father: {fileID: 1440266948}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1166308773
 GameObject:
@@ -1657,7 +1659,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1018337363}
   - {fileID: 927683743}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -10455,8 +10456,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1412e70fe0f88f140a3ca59cbb7ed63d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDirector: {fileID: 0}
-  regretSystem: {fileID: 0}
   dayText: {fileID: 5492351616179371752}
   promptText: {fileID: 6409992900392984756}
   confidenceText: {fileID: 4920597678187835244}
@@ -12597,4 +12596,5 @@ SceneRoots:
   - {fileID: 1367396058}
   - {fileID: 926793377}
   - {fileID: 7405249649711187451}
+  - {fileID: 1018337363}
   - {fileID: 1440266948}

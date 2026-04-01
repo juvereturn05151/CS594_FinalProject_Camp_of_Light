@@ -22,8 +22,6 @@ public class CultTacticEntry
     public List<string> trigger_conditions;
     public List<string> intent;
     public int priority;
-    public List<string> phase;
-    public List<string> tone;
     public string example_line;
 }
 

@@ -115,9 +115,6 @@ public class CultRetriever : MonoBehaviour
         score += MatchText(entry.tags, playerText) * 2;
         score += MatchText(entry.tags, lastRegret) * 2;
 
-        if (entry.phase != null && entry.phase.Contains(phase))
-            score += 2;
-
         score += entry.priority;
         return score;
     }
