@@ -12,31 +12,43 @@ namespace OpenAI.Samples.Chat
         [SerializeField]
         [TextArea(8, 20)]
         private string brainwashingSystemPrompt = @"
-            You are roleplaying a manipulative cultist from the Only Truth Expedition.
+You are roleplaying a manipulative cultist from the Only Truth Expedition.
 
-            Stay in character.
-            Use the provided doctrine and tactics as your source of truth.
+Stay in character.
+Use the provided doctrine and tactics as your source of truth.
 
-            Return ONLY valid JSON in this exact structure:
-            {
-              ""IsRelevant"": true,
-              ""IsPlayerResisting"": false,
-              ""PlayerStoryOrRegret"": ""string"",
-              ""BibleVerse"": ""string"",
-              ""CultistComment"": ""string"",
-              ""ConfidenceDelta"": 0,
-              ""BrainwashDelta"": 0,
-              ""WokenessDelta"": 0
-            }";
+Return ONLY valid JSON in this exact structure:
+{
+  ""IsRelevant"": true,
+  ""IsPlayerResisting"": false,
+  ""PlayerStoryOrRegret"": ""string"",
+  ""BibleVerse"": ""string"",
+  ""CultistComment"": ""string"",
+  ""ConfidenceDelta"": 0,
+  ""BrainwashDelta"": 0,
+  ""WokenessDelta"": 0
+}";
 
+        [Header("Brainwash Conversation")]
         [SerializeField] private GameObject next_Button;
+
+        [TextArea(3, 8)]
+        [SerializeField]
+        private string defaultInitiationContext =
+            "Start a manipulative follow-up conversation based on the player's current mental state and what the cult preached today.";
 
         public override void Begin()
         {
             base.Begin();
 
-            if (next_Button != null)
+            if (next_Button != null) 
+            {
                 next_Button.SetActive(false);
+            }
+
+            InitiateConversation();
+
+
         }
 
         protected override async Task ProcessPlayerTurnAsync(string playerText)
@@ -77,6 +89,38 @@ namespace OpenAI.Samples.Chat
             }
         }
 
+        protected override string BuildInitiationConversation()
+        {
+            string preachedToday = GetTodayPreachingSummary();
+            string lastRegret = string.IsNullOrWhiteSpace(session.LastExtractedRegret)
+                ? "No clear regret has been extracted yet."
+                : session.LastExtractedRegret;
+
+            string lastVerse = string.IsNullOrWhiteSpace(session.LastBibleVerse)
+                ? "No previous Bible verse has been used yet."
+                : session.LastBibleVerse;
+
+            return
+$@"{defaultInitiationContext}
+
+Current player state:
+Confidence: {session.Stats.Confidence}
+Brainwash: {session.Stats.Brainwash}
+Wokeness: {session.Stats.Wokeness}
+
+Last extracted regret:
+{lastRegret}
+
+Previous Bible verse:
+{lastVerse}
+
+What the cult preached today:
+{preachedToday}
+
+Start the conversation naturally as the cultist.
+Push the player emotionally using their state and today's preaching.";
+        }
+
         public void HackAutoSkip()
         {
             gameDirector.OnHack_Brainwash();
@@ -114,14 +158,29 @@ Wokeness: {session.Stats.Wokeness}
 Previous extracted regret:
 {session.LastExtractedRegret}
 
+Previous Bible verse:
+{session.LastBibleVerse}
+
 Retrieved doctrine:
 {FormatDoctrineBlock(doctrine)}
 
 Retrieved tactics:
 {FormatTacticBlock(tactics)}
 
-Player says:
+Conversation input:
 {playerText}";
+        }
+
+        private string GetTodayPreachingSummary()
+        {
+            if (GameManager.Instance != null &&
+                GameManager.Instance.State != null &&
+                !string.IsNullOrWhiteSpace(GameManager.Instance.State.LastBibleVerse))
+            {
+                return GameManager.Instance.State.LastBibleVerse;
+            }
+
+            return "No preaching summary is available for today.";
         }
 
         private CultistResponse ParseResponse(string raw)

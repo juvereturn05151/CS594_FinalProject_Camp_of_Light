@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class CultDoctrineEntry
 {
     public string id;
-    public string reference;
+    public string verse;
     public string text;
     public string translation;
     public float priority;

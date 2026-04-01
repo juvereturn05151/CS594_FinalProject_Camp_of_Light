@@ -183,7 +183,7 @@ namespace OpenAI.Samples.Chat
             foreach (var entry in doctrine)
             {
                 lines.Add(
-                    $"- Ref: {entry.reference} | Meaning: {entry.translation} | Priority: {entry.priority:0.00}\n" +
+                    $"- Verse: {entry.verse} | Meaning: {entry.translation} | Priority: {entry.priority:0.00}\n" +
                     $"  Text: {entry.text}"
                 );
             }

@@ -65,19 +65,50 @@ namespace OpenAI.Samples.Chat
             if (!allowEmptySubmit && string.IsNullOrWhiteSpace(playerText))
                 return;
 
+            await SubmitTextAsync(playerText, true);
+        }
+
+        public async void InitiateConversation()
+        {
+            if (isChatPending)
+                return;
+
+            string generatedText = BuildInitiationConversation()?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(generatedText))
+            {
+                Debug.LogWarning($"{GetType().Name}: InitiateConversation generated empty text.");
+                return;
+            }
+
+            await SubmitTextAsync(generatedText, false);
+        }
+
+        private async Task SubmitTextAsync(string text, bool showAsPlayerBubble)
+        {
             isChatPending = true;
 
             try
             {
-                inputField.ReleaseSelection();
-                SetInputInteractable(false);
+                if (inputField != null)
+                {
+                    inputField.ReleaseSelection();
+                    SetInputInteractable(false);
+                }
 
-                AddAndRecordPlayerBubble(playerText);
+                if (showAsPlayerBubble)
+                {
+                    AddAndRecordPlayerBubble(text);
 
-                if (clearInputAfterSubmit && inputField != null)
-                    inputField.text = string.Empty;
+                    if (clearInputAfterSubmit && inputField != null)
+                        inputField.text = string.Empty;
+                }
+                else
+                {
+                    Debug.Log($"System-initiated conversation: {text}");
+                }
 
-                await ProcessPlayerTurnAsync(playerText);
+                await ProcessPlayerTurnAsync(text);
             }
             catch (Exception e)
             {
@@ -99,6 +130,7 @@ namespace OpenAI.Samples.Chat
             }
         }
 
+        protected abstract string BuildInitiationConversation();
         protected abstract Task ProcessPlayerTurnAsync(string playerText);
     }
 }

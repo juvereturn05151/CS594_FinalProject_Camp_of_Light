@@ -24,6 +24,39 @@ namespace OpenAI.Samples.Chat
 
         [SerializeField] private GameObject nextButton;
 
+        private GameSharedSystem sharedSystem;
+
+        protected override string BuildInitiationConversation()
+        {
+            if (sharedSystem == null)
+                sharedSystem = GameSharedSystem.Instance;
+
+            if (sharedSystem == null)
+                return "The player is quiet and thinking.";
+
+            var session = sharedSystem.Session;
+            var regretSystem = sharedSystem.RegretSystem;
+
+            string strongestRegret = regretSystem != null && regretSystem.GetStrongestRegret() != null
+                ? regretSystem.GetStrongestRegret().Text
+                : "no clear regret yet";
+
+            string preachedToday = session != null
+                ? session.LastBibleVerse
+                : "there was no verse today";
+
+            int confidence = session != null ? session.Stats.Confidence : 0;
+            int brainwash = session != null ? session.Stats.Brainwash : 0;
+            int wokeness = session != null ? session.Stats.Wokeness : 0;
+
+            return
+                $"Start a conversation naturally. " +
+                $"The player is reflecting on what the cult preached today: {preachedToday}. " +
+                $"Their strongest regret is: {strongestRegret}. " +
+                $"Their current state is Confidence={confidence}, Brainwash={brainwash}, Wokeness={wokeness}. " +
+                $"Respond as a cultist beginning the conscience talk.";
+        }
+
         protected override async Task ProcessPlayerTurnAsync(string playerText)
         {
             string prompt = BuildUserPrompt(playerText);

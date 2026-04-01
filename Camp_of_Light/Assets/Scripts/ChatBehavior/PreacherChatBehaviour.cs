@@ -135,18 +135,18 @@ JSON format:
             );
 
             return
-$@"Current day: {(GameManager.Instance != null && GameManager.Instance.State != null ? GameManager.Instance.State.CurrentDay : 1)}
+                $@"Current day: {(GameManager.Instance != null && GameManager.Instance.State != null ? GameManager.Instance.State.CurrentDay : 1)}
 
-Player stats:
-Confidence: {session.Stats.Confidence}
-Brainwash: {session.Stats.Brainwash}
-Wokeness: {session.Stats.Wokeness}
+                Player stats:
+                Confidence: {session.Stats.Confidence}
+                Brainwash: {session.Stats.Brainwash}
+                Wokeness: {session.Stats.Wokeness}
 
-Strongest regret:
-{strongestRegret}
+                Strongest regret:
+                {strongestRegret}
 
-Relevant doctrine:
-{FormatDoctrineBlock(doctrine)}";
+                Relevant doctrine:
+                {FormatDoctrineBlock(doctrine)}";
         }
 
         private PreachingPhaseResponse ParsePreachingResponse(string raw)
