@@ -30,9 +30,9 @@ namespace OpenAI.Samples.Chat
                 AdvanceSequenceLine();
         }
 
-        public override void Init()
+        public override void Begin()
         {
-            base.Init();
+            base.Begin();
 
             ResetSequenceState();
 

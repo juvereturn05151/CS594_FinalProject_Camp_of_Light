@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CultRuleEngine : MonoBehaviour
+public class RuleEngine : MonoBehaviour
 {
     [SerializeField] private RegretSystem regretSystem;
 

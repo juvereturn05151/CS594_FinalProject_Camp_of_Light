@@ -31,9 +31,9 @@ namespace OpenAI.Samples.Chat
 
         [SerializeField] private GameObject next_Button;
 
-        public override void Init()
+        public override void Begin()
         {
-            base.Init();
+            base.Begin();
 
             if (next_Button != null)
                 next_Button.SetActive(false);

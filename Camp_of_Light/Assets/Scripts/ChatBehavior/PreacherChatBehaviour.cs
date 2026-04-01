@@ -28,9 +28,9 @@ JSON format:
   ""Lines"": [""string"", ""string"", ""string""]
 }";
 
-        public override void Init()
+        public override void Begin()
         {
-            base.Init();
+            base.Begin();
         }
 
         public async Task PreloadPreachingPhaseAsync(bool forceRefresh = false)

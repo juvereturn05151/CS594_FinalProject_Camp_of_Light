@@ -1,40 +1,38 @@
+using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using OpenAI.Samples.Chat;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [Header("Scene Systems")]
-    [SerializeField] private PreacherChatBehaviour preacherController;
-    [SerializeField] private BrainwasherChatBehaviour brainwasherController;
-    [SerializeField] private ConscienceChatBehaviour conscienceController;
-    [SerializeField] private CultProgressUI progressUI;
-    [SerializeField] private CultGameDirector gameDirector;
-    [SerializeField] private RegretSystem regretSystem;
-
-    [Header("Phase UI")]
-    [SerializeField] private GameObject wakeUpPanel;
-    [SerializeField] private TMP_Text wakeUpText;
-    [SerializeField] private GameObject sleepPanel;
-    [SerializeField] private TMP_Text sleepText;
-    [SerializeField] private GameObject preachingPanel;
-    [SerializeField] private GameObject preachingScene;
-    [SerializeField] private GameObject brainwashScene;
-    [SerializeField] private GameObject brainwashUI;
-    [SerializeField] private GameObject conscineceScene;
-    [SerializeField] private GameObject conscienceUI;
-    [SerializeField] private GameObject cultProgressUI;
+    [Header("Phase Managers")]
+    [SerializeField] 
+    private WakeUpPhaseManager wakeUpPhaseManager;
+    [SerializeField] 
+    private PreachingPhaseManager preachingPhaseManager;
+    [SerializeField] 
+    private BrainwashPhaseManager brainwashPhaseManager;
+    [SerializeField] 
+    private ConsciencePhaseManager consciencePhaseManager;
+    [SerializeField] 
+    private SleepPhaseManager sleepPhaseManager;
 
     [Header("Scene Names")]
-    [SerializeField] private string mainMenuSceneName = "MainMenu";
-    [SerializeField] private string gameplaySceneName = "Gameplay";
+    [SerializeField] 
+    private string mainMenuSceneName = "MainMenu";
+    [SerializeField] 
+    private string gameplaySceneName = "Gameplay";
 
     public GameRunState State { get; private set; }
+
+    private CultProgressUI progressUI;
+    private CultGameDirector gameDirector;
+    private RegretSystem regretSystem;
+
+    private Dictionary<GamePhase, IPhaseManager> phaseManagers;
+    private IPhaseManager activePhaseManager;
 
     private bool isInitialized;
 
@@ -48,6 +46,15 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        phaseManagers = new Dictionary<GamePhase, IPhaseManager>
+        {
+            { GamePhase.WakeUp, wakeUpPhaseManager },
+            { GamePhase.PreachingLesson, preachingPhaseManager },
+            { GamePhase.BrainwashingLesson, brainwashPhaseManager },
+            { GamePhase.ConscienceTalk, consciencePhaseManager },
+            { GamePhase.Sleep, sleepPhaseManager }
+        };
     }
 
     private void Start()
@@ -60,19 +67,20 @@ public class GameManager : MonoBehaviour
 
     public void InitializeFromRuntimeOrSave()
     {
-        if (isInitialized) return;
+        if (isInitialized)
+            return;
 
-        if (GameRuntimeContext.Instance != null && GameRuntimeContext.Instance.HasSaveLoaded())
-        {
-            SaveData save = GameRuntimeContext.Instance.CurrentSave;
-            State = ConvertSaveToRuntime(save);
-        }
-        else
-        {
-            Debug.LogWarning("[GameManager] No loaded save found. Creating fallback default state.");
-            State = CreateDefaultState();
-        }
+        GameSharedSystem.Instance.Initialize();
 
+        progressUI = GameSharedSystem.Instance.ProgressUI;
+        gameDirector = GameSharedSystem.Instance.GameDirector;
+        regretSystem = GameSharedSystem.Instance.RegretSystem;
+
+        preachingPhaseManager.PreacherController.Init();
+        brainwashPhaseManager.BrainwasherController.Init();
+        consciencePhaseManager.ConscienceController.Init();
+
+        State = LoadInitialState();
         InjectStateIntoSystems();
         EnterCurrentPhase();
 
@@ -100,37 +108,18 @@ public class GameManager : MonoBehaviour
 
     public void EnterCurrentPhase()
     {
-        HideAllPhasePanels();
-
         if (State == null || State.IsGameOver)
         {
             Debug.Log("[GameManager] Cannot enter phase. State null or game over.");
             return;
         }
 
-        Debug.Log($"[GameManager] Entering Phase: {State.CurrentPhase} on Day {State.CurrentDay}");
+        activePhaseManager?.ExitPhase();
 
-        switch (State.CurrentPhase)
+        if (phaseManagers.TryGetValue(State.CurrentPhase, out var phaseManager))
         {
-            case GamePhase.WakeUp:
-                StartWakeUpPhase();
-                break;
-
-            case GamePhase.PreachingLesson:
-                StartPreachingPhase();
-                break;
-
-            case GamePhase.BrainwashingLesson:
-                StartBrainwashingPhase();
-                break;
-
-            case GamePhase.ConscienceTalk:
-                StartConsciencePhase();
-                break;
-
-            case GamePhase.Sleep:
-                StartSleepPhase();
-                break;
+            activePhaseManager = phaseManager;
+            activePhaseManager.EnterPhase(State);
         }
 
         progressUI?.Refresh();
@@ -139,39 +128,30 @@ public class GameManager : MonoBehaviour
 
     public void AdvancePhase()
     {
-        if (State == null || State.IsGameOver) return;
+        if (State == null || State.IsGameOver)
+            return;
 
         if (State.CurrentPhase == GamePhase.Sleep)
         {
-            State.CurrentDay++;
-
-            if (State.CurrentDay > State.MaxDays)
-            {
-                State.IsGameOver = true;
-                State.Escaped = false;
-                Debug.Log("[GameManager] Player is trapped forever.");
-                SaveCheckpoint();
-                return;
-            }
-
-            State.ResetForNewDay();
+            AdvanceToNextDay();
         }
         else
         {
             State.CurrentPhase += 1;
         }
 
-        SyncRuntimeStateToSystems();
+        InjectStateIntoSystems();
         EnterCurrentPhase();
     }
 
-
     public void NotifyCultTurnCompleted()
     {
-        if (State == null || State.IsGameOver) return;
+        if (State == null || State.IsGameOver)
+            return;
 
         SyncSystemsToRuntimeState();
         SaveCheckpoint();
+
         progressUI?.Refresh();
     }
 
@@ -182,196 +162,31 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(mainMenuSceneName);
     }
 
-    private void StartWakeUpPhase()
+    private GameRunState LoadInitialState()
     {
-        if (wakeUpPanel != null)
-            wakeUpPanel.SetActive(true);
-
-        if (wakeUpText != null)
-            wakeUpText.text = BuildWakeUpSummary();
-
-        if (preacherController != null)
-            preacherController.gameObject.SetActive(false);
-
-        if (brainwasherController != null)
-            brainwasherController.gameObject.SetActive(false);
-    }
-
-    private void StartPreachingPhase()
-    {
-        if (preacherController != null)
+        if (GameRuntimeContext.Instance != null && GameRuntimeContext.Instance.HasSaveLoaded())
         {
-            preacherController.gameObject.SetActive(true);
-            preacherController.UpdateGameSession(BuildSessionFromState());
-            preacherController.Init();
-            preacherController.BeginPreachingPhase();
+            return ConvertSaveToRuntime(GameRuntimeContext.Instance.CurrentSave);
         }
 
-        if (brainwasherController != null)
-            brainwasherController.gameObject.SetActive(false);
-
-        if(preachingPanel != null)
-            preachingPanel.gameObject.SetActive(true);
-
-        if (preachingScene != null)
-            preachingScene.gameObject.SetActive(true);
-        
-
-        State.PromptsUsedToday_Brainwash = Mathf.Clamp(State.PromptsUsedToday_Brainwash, 0, State.MaxPromptsPerDay_Brainwash);
+        Debug.LogWarning("[GameManager] No loaded save found. Creating fallback default state.");
+        return CreateDefaultState();
     }
 
-    private void StartBrainwashingPhase()
+    private void AdvanceToNextDay()
     {
-        if (preacherController != null)
-            preacherController.gameObject.SetActive(false);
+        State.CurrentDay++;
 
-        if (preachingPanel != null)
-            preachingPanel.gameObject.SetActive(false);
-
-        if (preachingScene != null)
-            preachingScene.gameObject.SetActive(false);
-
-        if (brainwasherController != null)
+        if (State.CurrentDay > State.MaxDays)
         {
-            brainwasherController.gameObject.SetActive(true);
-            brainwasherController.UpdateGameSession(BuildSessionFromState());
-            brainwasherController.Init();
+            State.IsGameOver = true;
+            State.Escaped = false;
+            Debug.Log("[GameManager] Player is trapped forever.");
+            SaveCheckpoint();
+            return;
         }
 
-        if (brainwashScene != null)
-            brainwashScene.gameObject.SetActive(true);
-
-        if (brainwashUI != null)
-            brainwashUI.gameObject.SetActive(true);
-
-        if (cultProgressUI != null)
-            cultProgressUI.gameObject.SetActive(true);
-
-        if (conscienceController != null)
-            conscienceController.gameObject.SetActive(false);
-
-        if (conscineceScene != null)
-            conscineceScene.gameObject.SetActive(false);
-
-        if (conscienceUI != null)
-            conscienceUI.gameObject.SetActive(false);
-    }
-
-    private void StartConsciencePhase()
-    {
-        if (preacherController != null)
-            preacherController.gameObject.SetActive(false);
-
-        if (brainwasherController != null)
-            brainwasherController.gameObject.SetActive(false);
-
-        if (brainwashScene != null)
-            brainwashScene.gameObject.SetActive(false);
-
-        if (brainwashUI != null)
-            brainwashUI.gameObject.SetActive(false);
-
-        if(conscienceController != null)
-            conscienceController.gameObject.SetActive(true);
-
-        if (cultProgressUI != null)
-            cultProgressUI.gameObject.SetActive(true);
-
-        if (conscineceScene != null)
-            conscineceScene.gameObject.SetActive(true);
-
-        if (conscienceUI != null)
-            conscienceUI.gameObject.SetActive(true);
-    }
-
-    private void StartSleepPhase()
-    {
-        ApplyOvernightEffects();
-
-        if (sleepPanel != null)
-            sleepPanel.SetActive(true);
-
-        if (sleepText != null)
-            sleepText.text = BuildSleepSummary();
-
-        if (preacherController != null)
-            preacherController.gameObject.SetActive(false);
-
-        if (brainwasherController != null)
-            brainwasherController.gameObject.SetActive(false);
-
-
-        if (cultProgressUI != null)
-            cultProgressUI.gameObject.SetActive(false);
-
-        if (conscienceController != null)
-            conscienceController.gameObject.SetActive(false);
-
-        if (conscineceScene != null)
-            conscineceScene.gameObject.SetActive(false);
-
-        if (conscienceUI != null)
-            conscienceUI.gameObject.SetActive(false);
-
-        SaveCheckpoint();
-        progressUI?.Refresh();
-    }
-
-    private void ApplyOvernightEffects()
-    {
-        if (State == null) return;
-
-        State.Stats.Confidence = Mathf.Clamp(State.Stats.Confidence + 2, 0, 100);
-        State.Stats.Brainwash = Mathf.Clamp(State.Stats.Brainwash - 1, 0, 100);
-
-        if (State.Regrets != null)
-        {
-            foreach (var regret in State.Regrets)
-            {
-                regret.Strength = Mathf.Clamp(regret.Strength - 1, 0, 100);
-            }
-        }
-    }
-
-    private string BuildWakeUpSummary()
-    {
-        string status;
-
-        if (State.Stats.Wokeness >= 70)
-            status = "You wake with growing clarity.";
-        else if (State.Stats.Brainwash >= 70)
-            status = "You wake with their doctrine still crowding your mind.";
-        else if (State.Stats.Confidence <= 25)
-            status = "You wake feeling fragile and uncertain.";
-        else
-            status = "You wake to another day inside the expedition.";
-
-        return $"Day {State.CurrentDay}\n\n{status}";
-    }
-
-    private string BuildSleepSummary()
-    {
-        return $"Night falls on Day {State.CurrentDay}.\n\nYou lie down and carry the weight of the day into sleep.";
-    }
-
-    private void HideAllPhasePanels()
-    {
-        if (wakeUpPanel != null)
-            wakeUpPanel.SetActive(false);
-
-        if (sleepPanel != null)
-            sleepPanel.SetActive(false);
-    }
-
-    private GameSession BuildSessionFromState()
-    {
-        return new GameSession
-        {
-            Profile = State.Profile,
-            Stats = State.Stats,
-            LastExtractedRegret = State.LastExtractedRegret,
-            LastBibleVerse = State.LastBibleVerse
-        };
+        State.ResetForNewDay();
     }
 
     private GameRunState CreateDefaultState()
@@ -389,10 +204,10 @@ public class GameManager : MonoBehaviour
             MaxPromptsPerDay_Conscience = 5,
             IsGameOver = false,
             Escaped = false,
-            LastExtractedRegret = "",
-            LastBibleVerse = "",
-            CurrentDoctrineId = "",
-            CurrentTacticId = "",
+            LastExtractedRegret = string.Empty,
+            LastBibleVerse = string.Empty,
+            CurrentDoctrineId = string.Empty,
+            CurrentTacticId = string.Empty,
             Regrets = new List<Regret>(),
             RecentDialogue = new List<DialogueTurn>()
         };
@@ -400,15 +215,8 @@ public class GameManager : MonoBehaviour
 
     private void InjectStateIntoSystems()
     {
-        if (State == null) return;
-
-        GameSession session = BuildSessionFromState();
-
-        if (preacherController != null)
-            preacherController.UpdateGameSession(session);
-
-        if (brainwasherController != null)
-            brainwasherController.UpdateGameSession(session);
+        if (State == null)
+            return;
 
         if (gameDirector != null)
         {
@@ -420,34 +228,18 @@ public class GameManager : MonoBehaviour
             gameDirector.Escaped = State.Escaped;
         }
 
-        if (regretSystem != null)
+        if (regretSystem != null) 
+        {
             regretSystem.regrets = State.Regrets ?? new List<Regret>();
+        }
 
         progressUI?.Refresh();
     }
 
     private void SyncSystemsToRuntimeState()
     {
-        if (State == null) return;
-
-        GameSession sourceSession = null;
-
-        if (brainwasherController != null && brainwasherController.gameObject.activeInHierarchy && brainwasherController.GetSession() != null)
-        {
-            sourceSession = brainwasherController.GetSession();
-        }
-        else if (preacherController != null && preacherController.GetSession() != null)
-        {
-            sourceSession = preacherController.GetSession();
-        }
-
-        if (sourceSession != null)
-        {
-            State.Profile = sourceSession.Profile ?? new PlayerProfile();
-            State.Stats = sourceSession.Stats ?? new PlayerStats();
-            State.LastExtractedRegret = sourceSession.LastExtractedRegret ?? "";
-            State.LastBibleVerse = sourceSession.LastBibleVerse ?? "";
-        }
+        if (State == null)
+            return;
 
         if (gameDirector != null)
         {
@@ -463,17 +255,15 @@ public class GameManager : MonoBehaviour
             State.Regrets = regretSystem.regrets ?? new List<Regret>();
     }
 
-    private void SyncRuntimeStateToSystems()
-    {
-        InjectStateIntoSystems();
-    }
-
     private void SaveCheckpoint()
     {
-        if (State == null) return;
-        if (SaveManager.Instance == null) return;
-        if (GameRuntimeContext.Instance == null) return;
-        if (!GameRuntimeContext.Instance.HasSaveLoaded()) return;
+        if (State == null ||
+            SaveManager.Instance == null ||
+            GameRuntimeContext.Instance == null ||
+            !GameRuntimeContext.Instance.HasSaveLoaded())
+        {
+            return;
+        }
 
         SyncSystemsToRuntimeState();
 
@@ -481,7 +271,7 @@ public class GameManager : MonoBehaviour
         save.SlotId = GameRuntimeContext.Instance.CurrentSave.SlotId;
         save.SaveDisplayName = GameRuntimeContext.Instance.CurrentSave.SaveDisplayName;
         save.CreatedAtUtc = GameRuntimeContext.Instance.CurrentSave.CreatedAtUtc;
-        save.UpdatedAtUtc = System.DateTime.UtcNow.ToString("o");
+        save.UpdatedAtUtc = DateTime.UtcNow.ToString("o");
 
         SaveManager.Instance.Save(save);
         GameRuntimeContext.Instance.SetCurrentSave(save);
@@ -517,43 +307,16 @@ public class GameManager : MonoBehaviour
             LastBibleVerse = save.LastBibleVerse,
             CurrentDoctrineId = save.CurrentDoctrineId,
             CurrentTacticId = save.CurrentTacticId,
-            Regrets = new List<Regret>(),
-            RecentDialogue = new List<DialogueTurn>()
+            Regrets = MapRegretsFromSave(save.Regrets),
+            RecentDialogue = MapDialogueFromSave(save.RecentDialogue)
         };
-
-        if (save.Regrets != null)
-        {
-            foreach (var r in save.Regrets)
-            {
-                state.Regrets.Add(new Regret
-                {
-                    Id = r.Id,
-                    Text = r.Text,
-                    Strength = r.Strength,
-                    TimesMentioned = r.TimesMentioned
-                });
-            }
-        }
-
-        if (save.RecentDialogue != null)
-        {
-            foreach (var d in save.RecentDialogue)
-            {
-                state.RecentDialogue.Add(new DialogueTurn
-                {
-                    Speaker = d.Speaker,
-                    Text = d.Text,
-                    Timestamp = d.Timestamp
-                });
-            }
-        }
 
         return state;
     }
 
     private SaveData ConvertRuntimeToSave(GameRunState state)
     {
-        var save = new SaveData
+        return new SaveData
         {
             Profile = new PlayerProfileData
             {
@@ -581,37 +344,82 @@ public class GameManager : MonoBehaviour
             LastBibleVerse = state.LastBibleVerse,
             CurrentDoctrineId = state.CurrentDoctrineId,
             CurrentTacticId = state.CurrentTacticId,
-            Regrets = new List<RegretData>(),
-            RecentDialogue = new List<DialogueTurnData>()
+            Regrets = MapRegretsToSave(state.Regrets),
+            RecentDialogue = MapDialogueToSave(state.RecentDialogue)
         };
+    }
 
-        if (state.Regrets != null)
+    private List<Regret> MapRegretsFromSave(List<RegretData> regrets)
+    {
+        var result = new List<Regret>();
+        if (regrets == null) return result;
+
+        foreach (var r in regrets)
         {
-            foreach (var r in state.Regrets)
+            result.Add(new Regret
             {
-                save.Regrets.Add(new RegretData
-                {
-                    Id = r.Id,
-                    Text = r.Text,
-                    Strength = r.Strength,
-                    TimesMentioned = r.TimesMentioned
-                });
-            }
+                Id = r.Id,
+                Text = r.Text,
+                Strength = r.Strength,
+                TimesMentioned = r.TimesMentioned
+            });
         }
 
-        if (state.RecentDialogue != null)
+        return result;
+    }
+
+    private List<RegretData> MapRegretsToSave(List<Regret> regrets)
+    {
+        var result = new List<RegretData>();
+        if (regrets == null) return result;
+
+        foreach (var r in regrets)
         {
-            foreach (var d in state.RecentDialogue)
+            result.Add(new RegretData
             {
-                save.RecentDialogue.Add(new DialogueTurnData
-                {
-                    Speaker = d.Speaker,
-                    Text = d.Text,
-                    Timestamp = d.Timestamp
-                });
-            }
+                Id = r.Id,
+                Text = r.Text,
+                Strength = r.Strength,
+                TimesMentioned = r.TimesMentioned
+            });
         }
 
-        return save;
+        return result;
+    }
+
+    private List<DialogueTurn> MapDialogueFromSave(List<DialogueTurnData> dialogue)
+    {
+        var result = new List<DialogueTurn>();
+        if (dialogue == null) return result;
+
+        foreach (var d in dialogue)
+        {
+            result.Add(new DialogueTurn
+            {
+                Speaker = d.Speaker,
+                Text = d.Text,
+                Timestamp = d.Timestamp
+            });
+        }
+
+        return result;
+    }
+
+    private List<DialogueTurnData> MapDialogueToSave(List<DialogueTurn> dialogue)
+    {
+        var result = new List<DialogueTurnData>();
+        if (dialogue == null) return result;
+
+        foreach (var d in dialogue)
+        {
+            result.Add(new DialogueTurnData
+            {
+                Speaker = d.Speaker,
+                Text = d.Text,
+                Timestamp = d.Timestamp
+            });
+        }
+
+        return result;
     }
 }

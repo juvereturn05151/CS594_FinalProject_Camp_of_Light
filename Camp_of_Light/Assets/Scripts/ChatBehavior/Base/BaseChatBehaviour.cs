@@ -13,12 +13,6 @@ namespace OpenAI.Samples.Chat
 {
     public abstract class BaseChatBehaviour : MonoBehaviour
     {
-        [Header("OpenAI")]
-        [SerializeField] protected OpenAIConfiguration configuration;
-        [SerializeField] protected bool enableDebug = true;
-        [SerializeField] protected bool writeLogToFile = false;
-        [SerializeField] protected string logFileName = "camp_of_light_log.txt";
-
         [Header("UI")]
         [SerializeField] protected Button submitButton;
         [SerializeField] protected TMP_InputField inputField;
@@ -31,26 +25,18 @@ namespace OpenAI.Samples.Chat
 
         [Header("Game State")]
         [SerializeField] protected GameSession session = new();
-        [SerializeField] protected CultGameDirector gameDirector;
-        [SerializeField] protected RegretSystem regretSystem;
-        [SerializeField] protected CultRuleEngine ruleEngine;
+        protected CultGameDirector gameDirector;
+        protected RegretSystem regretSystem;
+        protected RuleEngine ruleEngine;
 
         [Header("Knowledge")]
-        [SerializeField] protected CultKnowledgeBase knowledgeBase;
-        [SerializeField] protected CultRetriever retriever;
+        protected CultRetriever retriever;
 
         protected OpenAIClient openAI;
         protected static bool isChatPending;
 
-        protected string LogFilePath => Path.Combine(Application.persistentDataPath, logFileName);
-
         protected virtual void Awake()
         {
-            openAI = new OpenAIClient(configuration)
-            {
-                EnableDebug = enableDebug
-            };
-
             if (session.Profile == null)
                 session.Profile = new PlayerProfile();
 
@@ -59,6 +45,15 @@ namespace OpenAI.Samples.Chat
         }
 
         public virtual void Init()
+        {
+            openAI = GameSharedSystem.Instance.OpenAI;
+            gameDirector = GameSharedSystem.Instance.GameDirector;
+            regretSystem = GameSharedSystem.Instance.RegretSystem;
+            ruleEngine = GameSharedSystem.Instance.RuleEngine;
+            retriever = GameSharedSystem.Instance.Retriever;
+        }
+
+        public virtual void Begin()
         {
             HideAllBubbles();
         }
@@ -239,24 +234,6 @@ namespace OpenAI.Samples.Chat
                 value = value.Substring(0, 120);
 
             return value;
-        }
-
-        protected void LogSystemState(string text)
-        {
-            if (enableDebug)
-                Debug.Log($"[{GetType().Name}] {text}");
-
-            if (writeLogToFile)
-            {
-                try
-                {
-                    File.AppendAllText(LogFilePath, "[System] " + text + Environment.NewLine);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning("Failed to write system log: " + e.Message);
-                }
-            }
         }
     }
 }

@@ -32,9 +32,9 @@ namespace OpenAI.Samples.Chat
                 inputField.onSubmit.RemoveListener(OnInputSubmitted);
         }
 
-        public override void Init()
+        public override void Begin()
         {
-            base.Init();
+            base.Begin();
 
             SetInputInteractable(true);
 
