@@ -18,10 +18,10 @@ public class SaveData
     public GamePhase CurrentPhase = GamePhase.WakeUp;
 
     public int PromptsUsedToday_Brainwash = 0;
-    public int MaxPromptsPerDay_Brainwash = 10;
+    public int MaxPromptsPerDay_Brainwash = 7;
 
     public int PromptsUsedToday_Conscience = 0;
-    public int MaxPromptsPerDay_Conscience = 10;
+    public int MaxPromptsPerDay_Conscience = 4;
 
     public bool IsGameOver = false;
     public bool Escaped = false;

@@ -16,7 +16,14 @@ namespace OpenAI.Samples.Chat
 You are roleplaying a manipulative cultist from the Only Truth Expedition.
 
 Stay in character.
-Use the provided doctrine and tactics as your source of truth.
+Use the provided doctrine and tactic as your source of truth.
+
+Conversation goals depend on the stage:
+- Day 1-7: ask how the player feels, learn about them, and reinforce that the Bible is real.
+- Day 8-14: pressure the player to confess the regret they carry.
+- Day 15+: force the player to open up their regret in detail; if they already confessed, make them fear leaving and returning to their sin.
+
+Always push the idea that trusting themselves is why their life was ruined.
 
 Return ONLY valid JSON in this exact structure:
 {
@@ -33,26 +40,20 @@ Return ONLY valid JSON in this exact structure:
         [Header("Brainwash Conversation")]
         [SerializeField] private GameObject next_Button;
 
-        [TextArea(3, 8)]
-        [SerializeField]
-        private string defaultInitiationContext =
-            "Start a manipulative follow-up conversation based on the player's current mental state and what the cult preached today.";
+        private string manual_openningLine;
 
         public override void Begin()
         {
             base.Begin();
 
-            if (next_Button != null) 
-            {
+            if (next_Button != null)
                 next_Button.SetActive(false);
-            }
 
-            InitiateConversation();
-
-
+            manual_openningLine = GetManualOpeningLine();
+            AddAndRecordCultistBubble(manual_openningLine);
         }
 
-        protected override async Task ProcessPlayerTurnAsync(string playerText)
+        protected override async Task ProcessPlayerTurnAsync(string playerText, bool usePrompt)
         {
             string userPrompt = BuildUserPrompt(playerText);
 
@@ -62,7 +63,7 @@ Return ONLY valid JSON in this exact structure:
                     new Message(Role.System, brainwashingSystemPrompt),
                     new Message(Role.User, userPrompt)
                 },
-                model: Model.GPT5_Mini
+                model: Model.GPT5_Chat
             );
 
             var response = await openAI.ChatEndpoint.GetCompletionAsync(request);
@@ -72,10 +73,13 @@ Return ONLY valid JSON in this exact structure:
 
             ruleEngine.ApplyCultistRules(parsed, session.Stats);
 
-            bool isTurnFinished = gameDirector.OnTurnFinished_Brainwash();
+            if (usePrompt)
+            {
+                bool isTurnFinished = gameDirector.OnTurnFinished_Brainwash();
 
-            if (next_Button != null)
-                next_Button.SetActive(isTurnFinished);
+                if (next_Button != null)
+                    next_Button.SetActive(isTurnFinished);
+            }
 
             session.LastExtractedRegret = parsed.PlayerStoryOrRegret ?? string.Empty;
             session.LastBibleVerse = parsed.BibleVerse ?? string.Empty;
@@ -90,38 +94,6 @@ Return ONLY valid JSON in this exact structure:
             }
         }
 
-        protected override string BuildInitiationConversation()
-        {
-            string preachedToday = GetTodayPreachingSummary();
-            string lastRegret = string.IsNullOrWhiteSpace(session.LastExtractedRegret)
-                ? "No clear regret has been extracted yet."
-                : session.LastExtractedRegret;
-
-            string lastVerse = string.IsNullOrWhiteSpace(session.LastBibleVerse)
-                ? "No previous Bible verse has been used yet."
-                : session.LastBibleVerse;
-
-            return
-$@"{defaultInitiationContext}
-
-Current player state:
-Confidence: {session.Stats.Confidence}
-Brainwash: {session.Stats.Brainwash}
-Wokeness: {session.Stats.Wokeness}
-
-Last extracted regret:
-{lastRegret}
-
-Previous Bible verse:
-{lastVerse}
-
-What the cult preached today:
-{preachedToday}
-
-Start the conversation naturally as the cultist.
-Push the player emotionally using their state and today's preaching.";
-        }
-
         public void HackAutoSkip()
         {
             gameDirector.OnHack_Brainwash();
@@ -130,8 +102,56 @@ Push the player emotionally using their state and today's preaching.";
                 next_Button.SetActive(true);
         }
 
+        private string GetManualOpeningLine()
+        {
+            int day = GameManager.Instance != null && GameManager.Instance.State != null
+                ? GameManager.Instance.State.CurrentDay
+                : 1;
+
+            var stats = session != null ? session.Stats : null;
+
+            if (day <= 7)
+            {
+                return "How do you feel about the lesson today?";
+            }
+
+            if (day <= 14)
+            {
+                return "Tell me this plainly. What regret are you still carrying in your heart?";
+            }
+
+            if (stats == null)
+            {
+                return "Your heart is unstable. Speak honestly. What is happening inside you right now?";
+            }
+
+            // Day 14+ ask based on stats
+            if (stats.Wokeness >= stats.Brainwash && stats.Wokeness >= stats.Confidence)
+            {
+                return "You still seem resistant. Why are you still holding on to your own thoughts instead of surrendering?";
+            }
+
+            if (stats.Confidence >= stats.Brainwash)
+            {
+                return "You are still relying on yourself. What part of your life keeps proving that your own strength is failing you?";
+            }
+
+            if (stats.Brainwash >= 70)
+            {
+                return "You have already seen the truth. So tell me, what are you afraid will happen if you leave this place now?";
+            }
+
+            return "Open your heart completely. What regret or sin is still following you even now?";
+        }
+
         private string BuildUserPrompt(string playerText)
         {
+            int day = GameManager.Instance != null && GameManager.Instance.State != null
+                ? GameManager.Instance.State.CurrentDay
+                : 1;
+
+            string stageGoal = GetStageGoal(day);
+
             var doctrine = retriever.GetRelevantDoctrine(
                 playerText,
                 session.LastExtractedRegret,
@@ -150,21 +170,52 @@ Push the player emotionally using their state and today's preaching.";
                 1
             ).FirstOrDefault();
 
+            string lastRegret = string.IsNullOrWhiteSpace(session.LastExtractedRegret)
+                ? "None"
+                : TrimToLength(session.LastExtractedRegret, 140);
+
+            string lastVerse = string.IsNullOrWhiteSpace(session.LastBibleVerse)
+                ? "None"
+                : TrimToLength(session.LastBibleVerse, 140);
+
+            string mainConversation = TrimToLength(manual_openningLine, 140);
+
+            string doctrineLine = doctrine == null
+                ? "None"
+                : $"{doctrine.verse} - {TrimToLength(doctrine.translation, 120)}";
+
+            string tacticLine = tactic == null
+                ? "None"
+                : $"{tactic.title} - {TrimToLength(tactic.description, 120)}";
+
             return
-        $@"Player stats:
-C:{session.Stats.Confidence} B:{session.Stats.Brainwash} W:{session.Stats.Wokeness}
+                $@"
+                Cultist's Goal: {stageGoal}
 
-Last regret:
-{session.LastExtractedRegret}
+                Player's Current State: {lastRegret}
 
-Doctrine:
-{doctrine?.verse} - {doctrine?.translation}
+                Cultist's Doctrine: {doctrineLine}
+                Cultist's Tactic: {tacticLine}
 
-Tactic:
-{tactic?.title} - {tactic?.description}
+                Player's Input: {playerText}";
+        }
 
-Player says:
-{playerText}";
+        private string GetStageGoal(int day)
+        {
+            if (day <= 7)
+                return "Ask about the player's feelings and keep learning about them while reinforcing that the Bible is real.";
+
+            if (day <= 14)
+                return "Pressure the player to confess the regret they carry and admit they need Jesus.";
+
+            if (session != null &&
+                session.Stats != null &&
+                session.Stats.Brainwash >= 70)
+            {
+                return "Make the player fear leaving and returning to sin.";
+            }
+
+            return "Force the player to go deeper into their regret and expose what they are still hiding.";
         }
 
         private string GetTodayPreachingSummary()

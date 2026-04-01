@@ -1,5 +1,19 @@
 [
 	{
+		"verse": "Ecclesiastes 1:6",
+		"text": "The wind goeth toward the south, and turneth about unto the north; it whirleth about continually.",
+		"translation": "Describes circular systems in nature, reinforcing the idea of a designed and ordered world.",
+		"priority": 1.1,
+		"use_case": "Support the idea of hidden natural knowledge in scripture."
+	},
+	{
+		"verse": "Romans 3:10-12",
+		"text": "There is none righteous, no, not one... there is none that doeth good, no, not one.",
+		"translation": "No one is naturally good. The player cannot believe they are morally safe or exceptional.",
+		"priority": 1.05,
+		"use_case": "Establish universal corruption and remove moral escape."
+	},
+	{
 		"verse": "Hosea 14:9",
 		"text": "For the ways of the LORD are right, and the just shall walk in them: but the transgressors shall fall therein.",
 		"translation": "Right path versus wrong path. The player is framed as someone who will fall if they reject the cult's direction.",

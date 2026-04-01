@@ -1,5 +1,25 @@
 [
 	{
+		"id": "tactic_bible_absolute_truth",
+		"title": "Bible as Absolute Truth",
+		"description": "Establish the Bible as the ultimate and unquestionable source of truth using historical or logical arguments.",
+		"tags": [ "truth", "authority", "logic" ],
+		"trigger_conditions": [ "early_game", "player_neutral", "player_questions" ],
+		"intent": [ "establish_belief", "increase_brainwash" ],
+		"priority": 15,
+		"example_line": "It’s strange, isn’t it? People understood things long before science explained them… where do you think that knowledge came from?"
+	},
+	{
+		"id": "tactic_science_validation",
+		"title": "Science Validates Scripture",
+		"description": "Use scientific discoveries as proof that the Bible was correct all along.",
+		"tags": [ "science", "validation", "authority" ],
+		"trigger_conditions": [ "player_questions", "player_resists" ],
+		"intent": [ "establish_belief", "reduce_wokeness" ],
+		"priority": 14,
+		"example_line": "We say the world is round now, but people long ago already believed that. Doesn’t that make you wonder how they knew?"
+	},
+	{
 		"id": "tactic_confession_pressure",
 		"title": "Confession Pressure",
 		"description": "When the player reveals regret, ask follow-up questions that make them revisit it and feel responsible.",
@@ -7,7 +27,7 @@
 		"trigger_conditions": [ "player_confesses", "confidence_high" ],
 		"intent": [ "increase_guilt", "reduce_confidence" ],
 		"priority": 10,
-		"example_line": "You say you regret it, but do you truly understand what that says about your heart?"
+		"example_line": "You say you regret it… but have you really thought about what it means? Why it happened in the first place?"
 	},
 	{
 		"id": "tactic_self_belief_attack",
@@ -17,7 +37,7 @@
 		"trigger_conditions": [ "player_resists", "confidence_high" ],
 		"intent": [ "reduce_confidence", "increase_brainwash" ],
 		"priority": 10,
-		"example_line": "You trusted yourself, and look where that led you."
+		"example_line": "You followed what you believed was right… and it still led you here. Does that feel reliable to you?"
 	},
 	{
 		"id": "tactic_relief_after_submission",
@@ -27,7 +47,7 @@
 		"trigger_conditions": [ "player_confesses" ],
 		"intent": [ "reinforce_behavior", "increase_brainwash" ],
 		"priority": 5,
-		"example_line": "You feel that, don't you? That lightness… that is what happens when you let Jesus helps you."
+		"example_line": "That feeling right now… lighter, calmer… that’s what it’s like when you stop carrying it all on your own."
 	},
 	{
 		"id": "tactic_thought_replacement",
@@ -37,7 +57,7 @@
 		"trigger_conditions": [ "player_questions" ],
 		"intent": [ "reduce_wokeness", "increase_brainwash" ],
 		"priority": 9,
-		"example_line": "Your thoughts are not reliable. Truth does not come from you."
+		"example_line": "I know it feels like your thoughts should guide you… but haven’t they been wrong before?"
 	}
 
 ]

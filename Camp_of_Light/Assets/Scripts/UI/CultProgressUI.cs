@@ -91,7 +91,6 @@ public class CultProgressUI : MonoBehaviour
 
         int promptsUsed = 0;
         int maxPrompts = 0;
-        string promptLabel = "Prompts";
 
         switch (phase)
         {
@@ -120,7 +119,7 @@ public class CultProgressUI : MonoBehaviour
         if (promptText != null)
         {
             if (phase == GamePhase.BrainwashingLesson || phase == GamePhase.ConscienceTalk)
-                promptText.text = $"{promptLabel}: {promptsUsed}/{maxPrompts}";
+                promptText.text = $"Prompt Used: {promptsUsed}/{maxPrompts}";
             else
                 promptText.text = "Prompts: -";
         }

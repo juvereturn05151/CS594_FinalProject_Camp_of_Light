@@ -57,7 +57,7 @@ namespace OpenAI.Samples.Chat
                 $"Respond as a cultist beginning the conscience talk.";
         }
 
-        protected override async Task ProcessPlayerTurnAsync(string playerText)
+        protected override async Task ProcessPlayerTurnAsync(string playerText, bool usePrompt)
         {
             string prompt = BuildUserPrompt(playerText);
 

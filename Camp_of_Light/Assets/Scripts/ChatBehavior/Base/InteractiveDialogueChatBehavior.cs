@@ -65,7 +65,7 @@ namespace OpenAI.Samples.Chat
             if (!allowEmptySubmit && string.IsNullOrWhiteSpace(playerText))
                 return;
 
-            await SubmitTextAsync(playerText, true);
+            await SubmitTextAsync(playerText, true, true);
         }
 
         public async void InitiateConversation()
@@ -81,10 +81,10 @@ namespace OpenAI.Samples.Chat
                 return;
             }
 
-            await SubmitTextAsync(generatedText, false);
+            await SubmitTextAsync(generatedText, false, false);
         }
 
-        private async Task SubmitTextAsync(string text, bool showAsPlayerBubble)
+        private async Task SubmitTextAsync(string text, bool showAsPlayerBubble, bool usePrompt)
         {
             isChatPending = true;
 
@@ -108,7 +108,7 @@ namespace OpenAI.Samples.Chat
                     Debug.Log($"System-initiated conversation: {text}");
                 }
 
-                await ProcessPlayerTurnAsync(text);
+                await ProcessPlayerTurnAsync(text, usePrompt);
             }
             catch (Exception e)
             {
@@ -130,7 +130,7 @@ namespace OpenAI.Samples.Chat
             }
         }
 
-        protected abstract string BuildInitiationConversation();
-        protected abstract Task ProcessPlayerTurnAsync(string playerText);
+        protected virtual string BuildInitiationConversation() { return ""; }
+        protected abstract Task ProcessPlayerTurnAsync(string playerText, bool usePrompt);
     }
 }

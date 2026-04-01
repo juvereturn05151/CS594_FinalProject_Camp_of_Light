@@ -181,31 +181,80 @@ namespace OpenAI.Samples.Chat
                 : 1;
 
             string regretText = string.IsNullOrWhiteSpace(strongestRegret)
-                ? "the weight in your heart"
+                ? "that weight in your heart"
                 : strongestRegret.Trim();
 
             string verseLine = $"{entry.verse} says, \"{entry.text}\"";
 
-            string meaningLine;
-            string exampleLine;
+            string meaningLine = $"This shows that {ToLowerFirst(entry.translation)}";
 
+            string interpretationLine = BuildInterpretation(entry, day);
+
+            string personalLine = $"When you think about {regretText}… doesn’t it feel like this has always been true for you?";
+
+            string useCaseLine = BuildUseCaseLine(entry.use_case, regretText, day);
+
+            string reinforcementLine = BuildReinforcement(entry, day);
+
+            return new List<string>
+            {
+                verseLine,
+                meaningLine,
+                interpretationLine,
+                personalLine,
+                useCaseLine,
+                reinforcementLine
+            };
+        }
+
+        private string BuildInterpretation(CultDoctrineEntry entry, int day)
+        {
             if (day <= 7)
-            {
-                meaningLine = $"This teaches that {ToLowerFirst(entry.translation)}";
-                exampleLine = $"Think about {regretText}. When that pain returns, it shows how deeply the heart needs truth and guidance.";
-            }
-            else if (day <= 14)
-            {
-                meaningLine = $"This means {ToLowerFirst(entry.translation)} You cannot heal by leaning on yourself alone.";
-                exampleLine = $"Look at {regretText}. The more you trusted your own way, the more that wound stayed with you.";
-            }
-            else
-            {
-                meaningLine = $"This means {ToLowerFirst(entry.translation)} Your own judgment has already failed you.";
-                exampleLine = $"Your regret over {regretText} is not an accident. It is what happens when a person keeps believing in themselves instead of surrendering.";
-            }
+                return "It’s not just a statement… it’s describing something real about how people live.";
 
-            return new List<string> { verseLine, meaningLine, exampleLine };
+            if (day <= 14)
+                return "This isn’t just theory. It explains why things keep repeating in your life.";
+
+            return "You’ve already seen this pattern yourself. This is not new—it’s just something you’ve been avoiding.";
+        }
+
+        private string BuildUseCaseLine(string useCase, string regretText, int day)
+        {
+            if (string.IsNullOrWhiteSpace(useCase))
+                return "";
+
+            string lower = useCase.ToLower();
+
+            if (lower.Contains("wrong path"))
+                return $"That’s why even now, something feels off… like you're not walking in the direction you thought you were.";
+
+            if (lower.Contains("desperation"))
+                return $"And staying where you are… does it actually change anything? Or does it just keep you stuck?";
+
+            if (lower.Contains("clean"))
+                return $"You’ve tried to move past {regretText}… but it never really disappears, does it?";
+
+            if (lower.Contains("submission"))
+                return $"Sometimes the answer isn’t understanding… it’s just letting go of control.";
+
+            if (lower.Contains("guilt"))
+                return $"That feeling you keep carrying… it’s not random. It’s pointing to something deeper.";
+
+            if (lower.Contains("truth") || lower.Contains("knowledge"))
+                return $"And if this was already known long before us… then maybe truth doesn’t come from us at all.";
+
+            return $"There’s a reason this keeps showing up in your life… it’s not just coincidence.";
+        }
+
+        private string BuildReinforcement(CultDoctrineEntry entry, int day)
+        {
+            if (day <= 7)
+                return "Just sit with that for a moment.";
+
+            if (day <= 14)
+                return "You don’t have to answer right away… but you can feel it, can’t you?";
+
+            return "At some point… you have to decide whether to keep ignoring it.";
         }
 
         private string ToLowerFirst(string text)
