@@ -428,12 +428,6 @@ MonoBehaviour:
   autoPreloadOnInit: 1
   useCache: 1
   showPreparingLineIfNotReady: 1
-  preachingSystemPrompt: "You are a manipulative cultist preacher from the Only Truth
-    Expedition.\n\nGenerate a short preaching sequence for the player to read line
-    by line.\nWhen you mention a Bible verse, briefly explain its meaning.\n\nYour
-    goal is to make the player feel afraid of their sins and believe that they are
-    inherently flawed or evil.\n\nJSON format:\r\n{\r\n  \"\"Theme\"\": \"\"string\"\",\r\n 
-    \"\"Lines\"\": [\"\"string\"\", \"\"string\"\", \"\"string\"\"]\r\n}\""
 --- !u!1 &637044338
 GameObject:
   m_ObjectHideFlags: 0
@@ -1091,11 +1085,11 @@ MonoBehaviour:
   allowEmptySubmit: 0
   brainwashingSystemPrompt: "\r\nYou are roleplaying a manipulative cultist from
     the Only Truth Expedition.\r\n\r\nStay in character.\r\nUse the provided doctrine
-    and tactics as your source of truth.\r\n\r\nReturn ONLY valid JSON in this exact
-    structure:\r\n{\r\n  \"IsRelevant\": true,\r\n  \"IsPlayerResisting\": false,\r\n 
-    \"PlayerStoryOrRegret\": \"string\",\r\n  \"BibleVerse\": \"string\",\r\n  \"CultistComment\":
-    \"string\",\r\n  \"ConfidenceDelta\": 0,\r\n  \"BrainwashDelta\": 0,\r\n  \"WokenessDelta\":
-    0\r\n}"
+    and tactics as your source of truth. Make it shorter than 120 words\r\n\r\nReturn
+    ONLY valid JSON in this exact structure:\r\n{\r\n  \"IsRelevant\": true,\r\n 
+    \"IsPlayerResisting\": false,\r\n  \"PlayerStoryOrRegret\": \"string\",\r\n 
+    \"BibleVerse\": \"string\",\r\n  \"CultistComment\": \"string\",\r\n  \"ConfidenceDelta\":
+    0,\r\n  \"BrainwashDelta\": 0,\r\n  \"WokenessDelta\": 0\r\n}"
   next_Button: {fileID: 635720133744794007}
   defaultInitiationContext: Start a manipulative follow-up conversation based on
     the player's current mental state and what the cult preached today.
