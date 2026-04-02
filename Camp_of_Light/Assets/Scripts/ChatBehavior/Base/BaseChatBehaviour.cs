@@ -23,6 +23,9 @@ namespace OpenAI.Samples.Chat
         [SerializeField] protected GameObject cultistBubbleObject;
         [SerializeField] protected TMP_Text cultistBubbleText;
 
+        [SerializeField] protected TypewriterText playerTypewriterText;
+        [SerializeField] protected TypewriterText cultistTypewriterText;
+
         [Header("Game State")]
         [SerializeField] protected GameSession session = new();
         protected CultGameDirector gameDirector;
@@ -85,8 +88,10 @@ namespace OpenAI.Samples.Chat
             if (cultistBubbleObject != null)
                 cultistBubbleObject.SetActive(false);
 
-            if (playerBubbleText != null)
-                playerBubbleText.text = text;
+            if (playerTypewriterText != null)
+                playerTypewriterText.StartTyping(text);
+
+
         }
 
         protected void AddCultistBubble(string text)
@@ -97,8 +102,8 @@ namespace OpenAI.Samples.Chat
             if (playerBubbleObject != null)
                 playerBubbleObject.SetActive(false);
 
-            if (cultistBubbleText != null)
-                cultistBubbleText.text = text;
+            if (cultistTypewriterText != null)
+                cultistTypewriterText.StartTyping(text);
         }
 
         protected void HideAllBubbles()

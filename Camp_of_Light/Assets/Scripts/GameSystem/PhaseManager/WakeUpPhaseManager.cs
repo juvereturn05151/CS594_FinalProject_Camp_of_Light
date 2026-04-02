@@ -5,6 +5,7 @@ public class WakeUpPhaseManager : BasePhaseManager
 {
     [SerializeField] private GameObject wakeUpPanel;
     [SerializeField] private TMP_Text wakeUpText;
+    [SerializeField] private TypewriterText typewriterText;
 
     public override GamePhase Phase => GamePhase.WakeUp;
 
@@ -13,8 +14,13 @@ public class WakeUpPhaseManager : BasePhaseManager
         SetActive(gameObject, true);
         SetActive(wakeUpPanel, true);
 
-        if (wakeUpText != null)
-            wakeUpText.text = BuildWakeUpSummary(state);
+        if (wakeUpText != null) 
+        {
+            if (typewriterText != null) 
+            {
+                typewriterText.StartTyping(BuildWakeUpSummary(state));
+            }
+        }
     }
 
     public override void ExitPhase()

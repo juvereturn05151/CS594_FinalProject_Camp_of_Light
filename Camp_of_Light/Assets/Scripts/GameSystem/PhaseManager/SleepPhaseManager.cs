@@ -5,6 +5,7 @@ public class SleepPhaseManager : BasePhaseManager
 {
     [SerializeField] private GameObject sleepPanel;
     [SerializeField] private TMP_Text sleepText;
+    [SerializeField] private TypewriterText typewriterText;
     [SerializeField] private GameObject cultProgressUI;
     [SerializeField] private GameObject nextday_button;
 
@@ -33,8 +34,8 @@ public class SleepPhaseManager : BasePhaseManager
         EvaluateEndState(state);
         nextday_button.SetActive(!state.IsGameOver);
 
-        if (sleepText != null)
-            sleepText.text = BuildSleepSummary(state);
+        if (typewriterText != null)
+            typewriterText.StartTyping(BuildSleepSummary(state));
 
         GameManager.Instance.SaveCheckpoint();
     }
