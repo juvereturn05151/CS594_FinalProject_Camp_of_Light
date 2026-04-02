@@ -221,7 +221,7 @@ public class SleepPhaseManager : BasePhaseManager
         if (GameManager.Instance == null || GameManager.Instance.RegretSystem == null)
             return null;
 
-        Regret strongestRegret = GameManager.Instance.RegretSystem.GetStrongestRegret();
+        Regret strongestRegret = GameManager.Instance.RegretSystem.GetStrongestRecentRegret();
         if (strongestRegret == null)
             return null;
 

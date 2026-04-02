@@ -12,6 +12,8 @@ public class PreachingPhaseManager : BasePhaseManager
 
     public override void EnterPhase(GameRunState state)
     {
+        SoundManager.Instance.PlayMusic("Sermon");
+
         SetActive(gameObject, true);
         SetActive(preachingPanel, true);
         SetActive(preachingScene, true);
@@ -27,6 +29,7 @@ public class PreachingPhaseManager : BasePhaseManager
 
     public override void ExitPhase()
     {
+        SoundManager.Instance.StopMusic();
         SetActive(preacherController, false);
         SetActive(preachingPanel, false);
         SetActive(preachingScene, false);

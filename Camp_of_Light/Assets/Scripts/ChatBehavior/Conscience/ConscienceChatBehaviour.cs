@@ -48,8 +48,8 @@ namespace OpenAI.Samples.Chat
             var session = sharedSystem.Session;
             var regretSystem = sharedSystem.RegretSystem;
 
-            string strongestRegret = regretSystem != null && regretSystem.GetStrongestRegret() != null
-                ? regretSystem.GetStrongestRegret().Text
+            string strongestRegret = regretSystem != null && regretSystem.GetStrongestRecentRegret() != null
+                ? regretSystem.GetStrongestRecentRegret().Text
                 : "no clear regret yet";
 
             int confidence = session != null ? session.Stats.Confidence : 0;

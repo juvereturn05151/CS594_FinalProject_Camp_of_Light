@@ -306,7 +306,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   musicSource: {fileID: 775618379231970067}
   sfxSource: {fileID: 2036583275566605111}
-  musicList: []
+  musicList:
+  - id: MorningSound
+    clip: {fileID: 8300000, guid: 1a6923df1e87d9449b1bb3749e33e373, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
+  - id: Sermon
+    clip: {fileID: 8300000, guid: 70d1b235e117d4e448e72a042b9875c7, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
+  - id: Brainwash
+    clip: {fileID: 8300000, guid: f90409c0fb0bef7439048dc4605b9831, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
+  - id: Conscience
+    clip: {fileID: 8300000, guid: 1e7d0aa3ade785f46963e71d972b5ec7, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
   sfxList:
   - id: Click
     clip: {fileID: 8300000, guid: 47180f2c54634384289f9ed4bfa9261a, type: 3}

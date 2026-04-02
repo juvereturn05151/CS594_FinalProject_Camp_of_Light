@@ -151,7 +151,7 @@ public class CultProgressUI : MonoBehaviour
 
         if (strongestRegretText != null)
         {
-            Regret strongest = regretSystem != null ? regretSystem.GetStrongestRegret() : null;
+            Regret strongest = regretSystem != null ? regretSystem.GetStrongestRecentRegret() : null;
 
             if (strongest == null)
             {

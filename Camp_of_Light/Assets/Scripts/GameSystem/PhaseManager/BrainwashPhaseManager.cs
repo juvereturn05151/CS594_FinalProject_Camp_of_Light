@@ -20,7 +20,7 @@ public class BrainwashPhaseManager : BasePhaseManager
         SetActive(brainwashScene, true);
         SetActive(brainwashUI, true);
         SetActive(cultProgressUI, true);
-
+        SoundManager.Instance.PlayMusic("Brainwash");
         if (brainwasherController != null)
         {
             brainwasherController.gameObject.SetActive(true);
@@ -31,6 +31,7 @@ public class BrainwashPhaseManager : BasePhaseManager
 
     public override void ExitPhase()
     {
+        SoundManager.Instance.StopMusic();
         SetActive(brainwasherController, false);
         SetActive(brainwashScene, false);
         SetActive(brainwashUI, false);

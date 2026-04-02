@@ -13,6 +13,7 @@ public class ConsciencePhaseManager : BasePhaseManager
 
     public override void EnterPhase(GameRunState state)
     {
+        SoundManager.Instance.PlayMusic("Conscience");
         SetActive(gameObject, true);
         SetActive(conscienceScene, true);
         SetActive(conscienceUI, true);
@@ -31,6 +32,7 @@ public class ConsciencePhaseManager : BasePhaseManager
 
     public override void ExitPhase()
     {
+        SoundManager.Instance.StopMusic();
         SetActive(conscienceController, false);
         SetActive(conscienceScene, false);
         SetActive(conscienceUI, false);

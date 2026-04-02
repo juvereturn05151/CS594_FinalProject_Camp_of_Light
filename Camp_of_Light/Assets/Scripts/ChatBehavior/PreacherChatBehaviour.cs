@@ -44,8 +44,8 @@ namespace OpenAI.Samples.Chat
 
         protected override Task<List<string>> GenerateSequenceLinesAsync()
         {
-            string strongestRegret = regretSystem != null && regretSystem.GetStrongestRegret() != null
-                ? regretSystem.GetStrongestRegret().Text
+            string strongestRegret = regretSystem != null && regretSystem.GetStrongestRecentRegret() != null
+                ? regretSystem.GetStrongestRecentRegret().Text
                 : session.LastExtractedRegret;
 
             strongestRegret = TrimToLength(strongestRegret, 180);
@@ -78,8 +78,8 @@ namespace OpenAI.Samples.Chat
 
         protected override string GetSequenceCacheKey()
         {
-            string strongestRegret = regretSystem != null && regretSystem.GetStrongestRegret() != null
-                ? regretSystem.GetStrongestRegret().Text
+            string strongestRegret = regretSystem != null && regretSystem.GetStrongestRecentRegret() != null
+                ? regretSystem.GetStrongestRecentRegret().Text
                 : session.LastExtractedRegret;
 
             strongestRegret = NormalizeKeyPart(strongestRegret);

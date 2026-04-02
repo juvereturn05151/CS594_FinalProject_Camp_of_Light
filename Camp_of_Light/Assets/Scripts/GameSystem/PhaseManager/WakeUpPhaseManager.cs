@@ -21,11 +21,15 @@ public class WakeUpPhaseManager : BasePhaseManager
                 typewriterText.StartTyping(BuildWakeUpSummary(state));
             }
         }
+
+        SoundManager.Instance.PlayMusic("MorningSound");
     }
 
     public override void ExitPhase()
     {
         SetActive(wakeUpPanel, false);
+        SoundManager.Instance.StopMusic();
+
         base.ExitPhase();
     }
 

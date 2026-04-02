@@ -9,6 +9,8 @@ public class Regret
     public string Text;
     public int Strength;
     public int TimesMentioned;
+
+    public DateTime LastUpdated;
 }
 
 public class RegretSystem : MonoBehaviour
@@ -28,7 +30,8 @@ public class RegretSystem : MonoBehaviour
                 Id = Guid.NewGuid().ToString(),
                 Text = text,
                 Strength = 10,
-                TimesMentioned = 1
+                TimesMentioned = 1,
+                LastUpdated = DateTime.UtcNow
             };
 
             regrets.Add(newRegret);
@@ -37,6 +40,7 @@ public class RegretSystem : MonoBehaviour
         {
             existing.Strength = Mathf.Clamp(existing.Strength + 5, 0, 100);
             existing.TimesMentioned++;
+            existing.LastUpdated = DateTime.UtcNow; 
         }
     }
 
@@ -64,6 +68,28 @@ public class RegretSystem : MonoBehaviour
             {
                 best = r;
                 max = r.Strength;
+            }
+        }
+
+        return best;
+    }
+
+    public Regret GetStrongestRecentRegret(float recencyWeight = 1f)
+    {
+        Regret best = null;
+        float bestScore = float.MinValue;
+
+        foreach (var r in regrets)
+        {
+            float recencyScore = (float)(DateTime.UtcNow - r.LastUpdated).TotalSeconds;
+            recencyScore = 1f / (1f + recencyScore); // recent = higher
+
+            float score = r.Strength + recencyScore * recencyWeight * 100f;
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                best = r;
             }
         }
 

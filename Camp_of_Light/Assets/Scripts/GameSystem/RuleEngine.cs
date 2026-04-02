@@ -9,21 +9,51 @@ public class RuleEngine : MonoBehaviour
         int confidenceDelta = 0;
         int brainwashDelta = 0;
 
-        // RULE 1: Regret reduces confidence
-        if (!string.IsNullOrWhiteSpace(response.Player_Regret))
+        if (response.IsPlayerJustBabbling)
         {
-            regretSystem.AddOrUpdateRegret(response.Player_Regret);
+            if (response.IsPlayerResistingAgainstCultOrBiBle)
+            {
+                confidenceDelta += 3;
+                brainwashDelta -= 2;
+            }
+            else 
+            {
+                confidenceDelta += 1;
+                brainwashDelta -= 1;
+            }
         }
+        else 
+        {
+            if (response.IsPlayerResistingAgainstCultOrBiBle)
+            {
+                confidenceDelta += 3;
+                brainwashDelta -= 2;
+            }
+            else 
+            {
+                if (response.IsPlayerTellingTheirRegret)
+                {
+                    if (!string.IsNullOrWhiteSpace(response.Player_Regret))
+                    {
+                        regretSystem.AddOrUpdateRegret(response.Player_Regret);
+                    }
 
-        if (response.IsPlayerResistingToCultOrBiBle)
-        {
-            confidenceDelta += 2;
-            brainwashDelta -= 1;
-        }
-        else
-        {
-            brainwashDelta += 2;
-            confidenceDelta -= 1;
+                    brainwashDelta += 3;
+                    confidenceDelta -= 2;
+                } 
+                
+                if (response.IsPlayerBelievingInJesus) 
+                {
+                    brainwashDelta += 2;
+                    confidenceDelta -= 1;
+                }
+
+                if (response.IsPlayeWantingToFindNewMember)
+                {
+                    brainwashDelta += 3;
+                    confidenceDelta -= 1;
+                }
+            }
         }
 
         stats.ApplyDelta(confidenceDelta, brainwashDelta, 0);
