@@ -1,12 +1,17 @@
 using Newtonsoft.Json;
+using OpenAI.Audio;
 using OpenAI.Chat;
 using OpenAI.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Utilities.Async;
+using Utilities.Audio;
 using Debug = UnityEngine.Debug;
 
 namespace OpenAI.Samples.Chat
@@ -26,6 +31,14 @@ namespace OpenAI.Samples.Chat
         [SerializeField] protected TypewriterText playerTypewriterText;
         [SerializeField] protected TypewriterText cultistTypewriterText;
 
+        [Header("Voice")]
+        [SerializeField] protected bool enableVoice = true;
+        [SerializeField] protected bool speakCultistLines = true;
+        [SerializeField] protected bool speakPlayerLines = false;
+        [SerializeField] protected Voice voice;
+        [SerializeField] protected StreamAudioSource streamAudioSource;
+        [SerializeField] protected bool enableVoiceDebug = false;
+
         [Header("Game State")]
         [SerializeField] protected GameSession session = new();
         protected CultGameDirector gameDirector;
@@ -38,6 +51,9 @@ namespace OpenAI.Samples.Chat
         protected OpenAIClient openAI;
         protected static bool isChatPending;
 
+        private CancellationTokenSource voiceLifetimeCts;
+        protected CancellationToken VoiceCancellationToken => voiceLifetimeCts?.Token ?? CancellationToken.None;
+
         protected virtual void Awake()
         {
             if (session.Profile == null)
@@ -45,7 +61,27 @@ namespace OpenAI.Samples.Chat
 
             if (session.Stats == null)
                 session.Stats = new PlayerStats();
+
+            if (streamAudioSource == null)
+                streamAudioSource = GetComponent<StreamAudioSource>();
         }
+
+        protected virtual void OnEnable()
+        {
+            if (voiceLifetimeCts == null || voiceLifetimeCts.IsCancellationRequested)
+                voiceLifetimeCts = new CancellationTokenSource();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (voiceLifetimeCts != null)
+            {
+                voiceLifetimeCts.Cancel();
+                voiceLifetimeCts.Dispose();
+                voiceLifetimeCts = null;
+            }
+        }
+
 
         public virtual void Init()
         {
@@ -91,10 +127,9 @@ namespace OpenAI.Samples.Chat
             if (playerTypewriterText != null)
                 playerTypewriterText.StartTyping(text);
 
-
         }
 
-        protected void AddCultistBubble(string text)
+        protected async void AddCultistBubble(string text)
         {
             if (cultistBubbleObject != null)
                 cultistBubbleObject.SetActive(true);
@@ -104,7 +139,54 @@ namespace OpenAI.Samples.Chat
 
             if (cultistTypewriterText != null)
                 cultistTypewriterText.StartTyping(text);
+
+            if (speakCultistLines)
+                await GenerateSpeechAsync(text, VoiceCancellationToken);
         }
+
+        protected async Task GenerateSpeechAsync(string text, CancellationToken cancellationToken = default)
+        {
+            if (!enableVoice || streamAudioSource == null || openAI == null)
+                return;
+
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+
+            try
+            {
+                var request = new SpeechRequest(
+                    input: text,
+                    model: Model.TTS_1,
+                    voice: voice,
+                    responseFormat: SpeechResponseFormat.PCM);
+
+                var stopwatch = Stopwatch.StartNew();
+
+                using var speechClip = await openAI.AudioEndpoint.GetSpeechAsync(
+                    request,
+                    async partialClip => await streamAudioSource.SampleCallbackAsync(partialClip.AudioSamples),
+                    cancellationToken);
+
+                var playbackTime = speechClip.Length - (float)stopwatch.Elapsed.TotalSeconds + 0.1f;
+
+                if (playbackTime > 0)
+                    await Awaiters.DelayAsync(playbackTime, cancellationToken);
+
+                if (enableVoiceDebug)
+                    Debug.Log($"Speech cache: {speechClip.CachePath}");
+            }
+            catch (TaskCanceledException)
+            {
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Voice generation failed: {e}");
+            }
+        }
+
 
         protected void HideAllBubbles()
         {

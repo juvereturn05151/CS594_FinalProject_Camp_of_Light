@@ -97,6 +97,8 @@ namespace OpenAI.Samples.Chat
                     parsed.ConscienceComment += isTurnFinished
                         ? " You have done well today. Take some rest and prepare for tomorrow."
                         : " Let's continue our conversation.";
+
+                    SetInputInteractable(false);
                 }
             }
 

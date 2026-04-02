@@ -84,6 +84,8 @@ Return ONLY valid JSON in this exact structure:
                     parsed.CultistComment += isTurnFinished
                         ? " You have done well today. Take some rest and prepare for tomorrow."
                         : " Let's continue our conversation.";
+
+                    SetInputInteractable(false);
                 }
             }
 
