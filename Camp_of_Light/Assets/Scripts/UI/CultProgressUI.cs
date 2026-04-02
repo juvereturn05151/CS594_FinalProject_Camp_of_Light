@@ -70,7 +70,7 @@ public class CultProgressUI : MonoBehaviour
         if (promptSlider != null)
         {
             promptSlider.minValue = 0;
-            promptSlider.maxValue = 1; // will be updated in Refresh()
+            promptSlider.maxValue = 1; 
         }
     }
 

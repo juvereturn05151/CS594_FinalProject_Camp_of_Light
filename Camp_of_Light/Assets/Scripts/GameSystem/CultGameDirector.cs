@@ -8,8 +8,8 @@ public class CultGameDirector : MonoBehaviour
 
     public int PromptsUsed_Brainwash = 0;
     public int MaxPrompts_Brainwash = 10;
-    public int PromptsUsedToday_Conscience = 0;
-    public int MaxPromptsPerDay_Conscience = 5;
+    public int PromptsUsed_Conscience = 0;
+    public int MaxPrompts_Conscience = 5;
 
     public bool IsGameOver = false;
     public bool IsBrainwashedOver = false;
@@ -39,9 +39,9 @@ public class CultGameDirector : MonoBehaviour
 
     public bool OnTurnFinished_Conscience()
     {
-        PromptsUsedToday_Conscience++;
+        PromptsUsed_Conscience++;
 
-        if (PromptsUsedToday_Conscience >= MaxPromptsPerDay_Conscience)
+        if (PromptsUsed_Conscience >= MaxPrompts_Conscience)
         {
             EndConscience();
             return true;
@@ -54,7 +54,7 @@ public class CultGameDirector : MonoBehaviour
 
     public void OnHack_Conscience()
     {
-        PromptsUsedToday_Conscience = MaxPromptsPerDay_Conscience;
+        PromptsUsed_Conscience = MaxPrompts_Conscience;
         EndConscience();
     }
 
@@ -72,7 +72,7 @@ public class CultGameDirector : MonoBehaviour
     {
         CurrentDay++;
         PromptsUsed_Brainwash = 0;
-        PromptsUsedToday_Conscience = 0;
+        PromptsUsed_Conscience = 0;
         IsBrainwashedOver = false;
         IsConscienceOver = false;
 

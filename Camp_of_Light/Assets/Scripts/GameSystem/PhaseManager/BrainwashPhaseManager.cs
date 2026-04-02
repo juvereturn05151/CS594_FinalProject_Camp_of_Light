@@ -13,6 +13,9 @@ public class BrainwashPhaseManager : BasePhaseManager
 
     public override void EnterPhase(GameRunState state)
     {
+        state.PromptsUsedToday_Brainwash =
+            Mathf.Clamp(state.PromptsUsedToday_Brainwash, 0, state.MaxPromptsPerDay_Brainwash);
+
         SetActive(gameObject, true);
         SetActive(brainwashScene, true);
         SetActive(brainwashUI, true);
@@ -42,7 +45,6 @@ public class BrainwashPhaseManager : BasePhaseManager
             Profile = state.Profile,
             Stats = state.Stats,
             LastExtractedRegret = state.LastExtractedRegret,
-            LastBibleVerse = state.LastBibleVerse
         };
     }
 }

@@ -22,9 +22,20 @@ namespace OpenAI.Samples.Chat
               ""WokenessDelta"": 0
             }";
 
-        [SerializeField] private GameObject nextButton;
+        [SerializeField] private GameObject next_Button;
 
         private GameSharedSystem sharedSystem;
+        private string manual_openningLine;
+        public override void Begin()
+        {
+            base.Begin();
+
+            if (next_Button != null)
+                next_Button.SetActive(false);
+
+            manual_openningLine = "Please Reflect on your conversation today";
+            AddAndRecordCultistBubble(manual_openningLine);
+        }
 
         protected override string BuildInitiationConversation()
         {
@@ -41,17 +52,12 @@ namespace OpenAI.Samples.Chat
                 ? regretSystem.GetStrongestRegret().Text
                 : "no clear regret yet";
 
-            string preachedToday = session != null
-                ? session.LastBibleVerse
-                : "there was no verse today";
-
             int confidence = session != null ? session.Stats.Confidence : 0;
             int brainwash = session != null ? session.Stats.Brainwash : 0;
             int wokeness = session != null ? session.Stats.Wokeness : 0;
 
             return
                 $"Start a conversation naturally. " +
-                $"The player is reflecting on what the cult preached today: {preachedToday}. " +
                 $"Their strongest regret is: {strongestRegret}. " +
                 $"Their current state is Confidence={confidence}, Brainwash={brainwash}, Wokeness={wokeness}. " +
                 $"Respond as a cultist beginning the conscience talk.";
@@ -67,7 +73,7 @@ namespace OpenAI.Samples.Chat
                     new Message(Role.System, conscienceSystemPrompt),
                     new Message(Role.User, prompt)
                 },
-                model: Model.GPT5_Mini
+                model: Model.GPT5_Chat
             );
 
             var response = await openAI.ChatEndpoint.GetCompletionAsync(request);
@@ -77,10 +83,32 @@ namespace OpenAI.Samples.Chat
 
             ruleEngine.ApplyConscienceRules(parsed, session.Stats);
 
-            AddAndRecordCultistBubble(parsed.ConscienceComment);
+            if (usePrompt)
+            {
+                bool isTurnFinished = gameDirector.OnTurnFinished_Conscience();
 
-            if (nextButton != null)
-                nextButton.SetActive(true);
+                if (next_Button != null)
+                {
+                    next_Button.SetActive(isTurnFinished);
+                }
+
+                if (isTurnFinished)
+                {
+                    parsed.ConscienceComment += isTurnFinished
+                        ? " You have done well today. Take some rest and prepare for tomorrow."
+                        : " Let's continue our conversation.";
+                }
+            }
+
+            AddAndRecordCultistBubble(parsed.ConscienceComment);
+        }
+
+        public void HackAutoSkip()
+        {
+            gameDirector.OnHack_Conscience();
+
+            if (next_Button != null)
+                next_Button.SetActive(true);
         }
 
         private string BuildUserPrompt(string playerText)
@@ -93,9 +121,6 @@ namespace OpenAI.Samples.Chat
 
                 Last extracted regret:
                 {session.LastExtractedRegret}
-
-                Last bible verse:
-                {session.LastBibleVerse}
 
                 Player says:
                 {playerText}";

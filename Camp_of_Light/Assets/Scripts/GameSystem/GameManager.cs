@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     private CultProgressUI progressUI;
     private CultGameDirector gameDirector;
     private RegretSystem regretSystem;
+    public RegretSystem RegretSystem => regretSystem;
 
     private Dictionary<GamePhase, IPhaseManager> phaseManagers;
     private IPhaseManager activePhaseManager;
@@ -178,16 +179,6 @@ public class GameManager : MonoBehaviour
     private void AdvanceToNextDay()
     {
         State.CurrentDay++;
-
-        if (State.CurrentDay > State.MaxDays)
-        {
-            State.IsGameOver = true;
-            State.Escaped = false;
-            Debug.Log("[GameManager] Player is trapped forever.");
-            SaveCheckpoint();
-            return;
-        }
-
         State.ResetForNewDay();
     }
 
@@ -207,7 +198,6 @@ public class GameManager : MonoBehaviour
             IsGameOver = false,
             Escaped = false,
             LastExtractedRegret = string.Empty,
-            LastBibleVerse = string.Empty,
             CurrentDoctrineId = string.Empty,
             CurrentTacticId = string.Empty,
             Regrets = new List<Regret>(),
@@ -249,6 +239,8 @@ public class GameManager : MonoBehaviour
             State.MaxDays = gameDirector.MaxDays;
             State.PromptsUsedToday_Brainwash = gameDirector.PromptsUsed_Brainwash;
             State.MaxPromptsPerDay_Brainwash = gameDirector.MaxPrompts_Brainwash;
+            State.PromptsUsedToday_Conscience = gameDirector.PromptsUsed_Conscience;
+            State.MaxPromptsPerDay_Conscience = gameDirector.MaxPrompts_Conscience;
             State.IsGameOver = gameDirector.IsGameOver;
             State.Escaped = gameDirector.Escaped;
         }
@@ -257,7 +249,7 @@ public class GameManager : MonoBehaviour
             State.Regrets = regretSystem.regrets ?? new List<Regret>();
     }
 
-    private void SaveCheckpoint()
+    public void SaveCheckpoint()
     {
         if (State == null ||
             SaveManager.Instance == null ||
@@ -306,7 +298,6 @@ public class GameManager : MonoBehaviour
             IsGameOver = save.IsGameOver,
             Escaped = save.Escaped,
             LastExtractedRegret = save.LastExtractedRegret,
-            LastBibleVerse = save.LastBibleVerse,
             CurrentDoctrineId = save.CurrentDoctrineId,
             CurrentTacticId = save.CurrentTacticId,
             Regrets = MapRegretsFromSave(save.Regrets),
@@ -343,7 +334,6 @@ public class GameManager : MonoBehaviour
             IsGameOver = state.IsGameOver,
             Escaped = state.Escaped,
             LastExtractedRegret = state.LastExtractedRegret,
-            LastBibleVerse = state.LastBibleVerse,
             CurrentDoctrineId = state.CurrentDoctrineId,
             CurrentTacticId = state.CurrentTacticId,
             Regrets = MapRegretsToSave(state.Regrets),

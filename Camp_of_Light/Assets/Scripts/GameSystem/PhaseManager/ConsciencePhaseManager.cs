@@ -24,6 +24,9 @@ public class ConsciencePhaseManager : BasePhaseManager
             conscienceController.UpdateGameSession(BuildSessionFromState(state));
             conscienceController.Begin();
         }
+
+        state.PromptsUsedToday_Conscience =
+            Mathf.Clamp(state.PromptsUsedToday_Conscience, 0, state.MaxPromptsPerDay_Conscience);
     }
 
     public override void ExitPhase()
@@ -42,7 +45,6 @@ public class ConsciencePhaseManager : BasePhaseManager
             Profile = state.Profile,
             Stats = state.Stats,
             LastExtractedRegret = state.LastExtractedRegret,
-            LastBibleVerse = state.LastBibleVerse
         };
     }
 }

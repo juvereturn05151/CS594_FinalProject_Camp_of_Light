@@ -23,7 +23,6 @@ public class GameRunState
     public bool Escaped = false;
 
     public string LastExtractedRegret = "";
-    public string LastBibleVerse = "";
 
     public string CurrentDoctrineId = "";
     public string CurrentTacticId = "";
@@ -34,6 +33,7 @@ public class GameRunState
     public void ResetForNewDay()
     {
         PromptsUsedToday_Brainwash = 0;
+        PromptsUsedToday_Conscience = 0;
         CurrentPhase = GamePhase.WakeUp;
     }
 

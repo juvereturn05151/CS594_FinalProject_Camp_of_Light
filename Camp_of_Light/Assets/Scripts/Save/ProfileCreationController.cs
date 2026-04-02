@@ -148,7 +148,6 @@ public class ProfileCreationController : MonoBehaviour
             Escaped = save.Escaped,
 
             LastExtractedRegret = save.LastExtractedRegret,
-            LastBibleVerse = save.LastBibleVerse,
             CurrentDoctrineId = save.CurrentDoctrineId,
             CurrentTacticId = save.CurrentTacticId,
 

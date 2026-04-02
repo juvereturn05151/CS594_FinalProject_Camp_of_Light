@@ -16,9 +16,6 @@ public class PreachingPhaseManager : BasePhaseManager
         SetActive(preachingPanel, true);
         SetActive(preachingScene, true);
 
-        state.PromptsUsedToday_Brainwash =
-            Mathf.Clamp(state.PromptsUsedToday_Brainwash, 0, state.MaxPromptsPerDay_Brainwash);
-
         if (preacherController != null)
         {
             preacherController.gameObject.SetActive(true);
@@ -43,7 +40,6 @@ public class PreachingPhaseManager : BasePhaseManager
             Profile = state.Profile,
             Stats = state.Stats,
             LastExtractedRegret = state.LastExtractedRegret,
-            LastBibleVerse = state.LastBibleVerse
         };
     }
 }

@@ -87,14 +87,13 @@ Return ONLY valid JSON in this exact structure:
                 }
             }
 
-            session.LastExtractedRegret = parsed.PlayerStoryOrRegret ?? string.Empty;
+            session.LastExtractedRegret = parsed.Player_Regret ?? string.Empty;
 
             AddAndRecordCultistBubble(parsed.CultistComment);
 
             if (GameManager.Instance != null && GameManager.Instance.State != null)
             {
                 GameManager.Instance.State.LastExtractedRegret = session.LastExtractedRegret;
-                GameManager.Instance.State.LastBibleVerse = session.LastBibleVerse;
                 GameManager.Instance.NotifyCultTurnCompleted();
             }
         }
@@ -178,10 +177,6 @@ Return ONLY valid JSON in this exact structure:
             string lastRegret = string.IsNullOrWhiteSpace(session.LastExtractedRegret)
                 ? "None"
                 : TrimToLength(session.LastExtractedRegret, 140);
-
-            string lastVerse = string.IsNullOrWhiteSpace(session.LastBibleVerse)
-                ? "None"
-                : TrimToLength(session.LastBibleVerse, 140);
 
             string mainConversation = TrimToLength(manual_openningLine, 140);
 

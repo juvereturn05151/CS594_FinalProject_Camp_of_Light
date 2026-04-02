@@ -6,7 +6,7 @@ public class PlayerStats
 {
     public int Confidence = 50;
     public int Brainwash = 0;
-    public int Wokeness = 50;
+    public int Wokeness = 0;
 
     public void ApplyDelta(int confidenceDelta, int brainwashDelta, int wokenessDelta)
     {

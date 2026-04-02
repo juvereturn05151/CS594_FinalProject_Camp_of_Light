@@ -14,6 +14,7 @@ public class UIImageFadeOut : MonoBehaviour
     {
         if (playOnStart)
         {
+            ResetAlpha(1f);
             StartFadeOut();
         }
     }
