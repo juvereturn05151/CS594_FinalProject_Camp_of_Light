@@ -58,6 +58,26 @@
 		"intent": [ "reduce_wokeness", "increase_brainwash" ],
 		"priority": 9,
 		"example_line": "I know it feels like your thoughts should guide you… but haven’t they been wrong before?"
+	},
+	{
+		"id": "tactic_apathy_guilt_bible",
+		"title": "Apathy Condemnation",
+		"description": "When the player shows indifference, use scripture to frame their lack of concern as moral failure and spiritual danger.",
+		"tags": [ "apathy", "judgment", "scripture", "guilt" ],
+		"trigger_conditions": [ "player_indifferent", "low_engagement" ],
+		"intent": [ "increase_guilt", "increase_brainwash" ],
+		"priority": 13,
+		"example_line": "You feel nothing about it… but that’s exactly what the scripture warns about. A hardened heart doesn’t come from nowhere. It means something inside has already turned away."
+	},
+	{
+		"id": "tactic_evil_identity_imposition",
+		"title": "Evil Identity Imposition",
+		"description": "Question the player's morality, then assert that they are inherently flawed or evil to destabilize their self-identity.",
+		"tags": [ "identity", "judgment", "fear", "control" ],
+		"trigger_conditions": [ "player_resists", "player_deflects", "mid_game" ],
+		"intent": [ "reduce_confidence", "increase_guilt", "increase_brainwash" ],
+		"priority": 16,
+		"example_line": "Let me ask you something honestly… if your choices hurt others, if you ignore what’s right… what does that make you? You don’t have to answer. Deep down, you already know."
 	}
 
 ]
