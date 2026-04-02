@@ -3,17 +3,19 @@ using System;
 [Serializable]
 public class ConscienceResponse
 {
+    public bool IsPlayerTellingTheirRegret = false;
+    public bool IsPlayerResistingToCultOrBiBle = false;
+    public bool IsPlayerBelievingInThemselves = false;
     public string ConscienceComment = "";
-    public bool IsSurrenderingToCult = false;
-    public bool IsFightingBack = false;
 
     public static ConscienceResponse Default()
     {
         return new ConscienceResponse
         {
+            IsPlayerTellingTheirRegret = false,
+            IsPlayerResistingToCultOrBiBle = false,
+            IsPlayerBelievingInThemselves = false,
             ConscienceComment = "Take a breath. What are you really feeling right now?",
-            IsSurrenderingToCult = false,
-            IsFightingBack = false
         };
     }
 }

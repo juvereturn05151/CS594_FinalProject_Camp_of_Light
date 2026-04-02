@@ -112,7 +112,7 @@ public class CultRetriever : MonoBehaviour
     private int ScoreTactic(CultTacticEntry entry, string playerText, string lastRegret, string phase)
     {
         int score = 0;
-        score += MatchText(entry.tags, playerText) * 2;
+        score += MatchText(entry.tags, playerText) * 5;
         score += MatchText(entry.tags, lastRegret) * 2;
 
         score += entry.priority;

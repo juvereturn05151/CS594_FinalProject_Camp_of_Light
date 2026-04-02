@@ -70,9 +70,11 @@ Return ONLY valid JSON in this exact structure:
 
             ruleEngine.ApplyCultistRules(parsed, session.Stats);
 
+            bool isTurnFinished = false;
+
             if (usePrompt)
             {
-                bool isTurnFinished = gameDirector.OnTurnFinished_Brainwash();
+                isTurnFinished = gameDirector.OnTurnFinished_Brainwash();
 
                 if (next_Button != null)
                 {
@@ -84,8 +86,6 @@ Return ONLY valid JSON in this exact structure:
                     parsed.CultistComment += isTurnFinished
                         ? " You have done well today. Take some rest and prepare for tomorrow."
                         : " Let's continue our conversation.";
-
-                    SetInputInteractable(false);
                 }
             }
 
@@ -97,6 +97,11 @@ Return ONLY valid JSON in this exact structure:
             {
                 GameManager.Instance.State.LastExtractedRegret = session.LastExtractedRegret;
                 GameManager.Instance.NotifyCultTurnCompleted();
+            }
+
+            if (isTurnFinished)
+            {
+                done = true;
             }
         }
 

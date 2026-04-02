@@ -3,6 +3,7 @@ using UnityEngine;
 public class RuleEngine : MonoBehaviour
 {
     [SerializeField] private RegretSystem regretSystem;
+    [SerializeField] private StatusChangeFeedbackUI statusChangeFeedbackUI;
 
     public void ApplyCultistRules(CultistResponse response, PlayerStats stats)
     {
@@ -56,6 +57,8 @@ public class RuleEngine : MonoBehaviour
             }
         }
 
+        SoundManager.Instance.PlaySFX("GoodFeedback");
+        statusChangeFeedbackUI.ShowFeedback(confidenceDelta, brainwashDelta, 0);
         stats.ApplyDelta(confidenceDelta, brainwashDelta, 0);
     }
 
@@ -65,20 +68,21 @@ public class RuleEngine : MonoBehaviour
         int brainwashDelta = 0;
         int wokenessDelta = 0;
 
-        if (response.IsFightingBack)
+        if (response.IsPlayerResistingToCultOrBiBle || response.IsPlayerBelievingInThemselves)
         {
             confidenceDelta += 2;
             wokenessDelta += 2;
             brainwashDelta -= 1;
         }
 
-        if (response.IsSurrenderingToCult)
+        if (response.IsPlayerTellingTheirRegret)
         {
             brainwashDelta += 2;
             confidenceDelta -= 2;
             wokenessDelta -= 1;
         }
 
+        SoundManager.Instance.PlaySFX("GoodFeedback");
         stats.ApplyDelta(confidenceDelta, brainwashDelta, wokenessDelta);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,6 +13,7 @@ namespace OpenAI.Samples.Chat
         [SerializeField] protected bool refocusInputAfterResponse = true;
         [SerializeField] protected bool allowEmptySubmit = false;
 
+        protected bool done = false;
         protected override void Awake()
         {
             base.Awake();
@@ -40,6 +42,8 @@ namespace OpenAI.Samples.Chat
 
             if (inputField != null)
                 inputField.text = string.Empty;
+
+            done = false;
         }
 
         private void OnSubmitButtonClicked()
@@ -117,7 +121,7 @@ namespace OpenAI.Samples.Chat
             }
             finally
             {
-                SetInputInteractable(true);
+                SetInputInteractable(!done);
 
                 if (refocusInputAfterResponse &&
                     EventSystem.current != null &&

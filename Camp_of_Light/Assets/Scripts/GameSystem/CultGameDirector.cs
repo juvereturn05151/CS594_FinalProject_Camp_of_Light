@@ -67,37 +67,4 @@ public class CultGameDirector : MonoBehaviour
     {
         IsConscienceOver = true;
     }
-
-    private void EndDay()
-    {
-        CurrentDay++;
-        PromptsUsed_Brainwash = 0;
-        PromptsUsed_Conscience = 0;
-        IsBrainwashedOver = false;
-        IsConscienceOver = false;
-
-        Debug.Log($"Day advanced to {CurrentDay}");
-
-        if (CurrentDay > MaxDays)
-        {
-            IsGameOver = true;
-            Debug.Log("Player is trapped forever.");
-        }
-    }
-
-    public void CheckWinCondition(PlayerStats stats)
-    {
-        if (stats.Wokeness >= 80 && stats.Brainwash <= 30)
-        {
-            Escaped = true;
-            IsGameOver = true;
-            Debug.Log("Player escaped!");
-        }
-
-        if (stats.Brainwash >= 100 && stats.Confidence <= 10)
-        {
-            IsGameOver = true;
-            Debug.Log("Player fully brainwashed.");
-        }
-    }
 }

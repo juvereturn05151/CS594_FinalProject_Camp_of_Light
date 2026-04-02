@@ -83,9 +83,11 @@ namespace OpenAI.Samples.Chat
 
             ruleEngine.ApplyConscienceRules(parsed, session.Stats);
 
+            bool isTurnFinished = false;
+
             if (usePrompt)
             {
-                bool isTurnFinished = gameDirector.OnTurnFinished_Conscience();
+                isTurnFinished = gameDirector.OnTurnFinished_Conscience();
 
                 if (next_Button != null)
                 {
@@ -97,12 +99,15 @@ namespace OpenAI.Samples.Chat
                     parsed.ConscienceComment += isTurnFinished
                         ? " You have done well today. Take some rest and prepare for tomorrow."
                         : " Let's continue our conversation.";
-
-                    SetInputInteractable(false);
                 }
             }
 
             AddAndRecordCultistBubble(parsed.ConscienceComment);
+
+            if (isTurnFinished)
+            {
+                done = true;
+            }
         }
 
         public void HackAutoSkip()
