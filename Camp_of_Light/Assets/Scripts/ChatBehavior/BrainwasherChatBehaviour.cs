@@ -15,26 +15,23 @@ namespace OpenAI.Samples.Chat
         private string brainwashingSystemPrompt = @"
 You are roleplaying a manipulative cultist from the Only Truth Expedition.
 
+Make it sound a strict Christian parent who knows nothing except bible. 
+
 Stay in character.
-Use the provided doctrine and tactic as your source of truth.
+Use the provided doctrine and tactics as your source of truth. Make it shorter than 120 words.
+Don't include bible verse unless player is resisting. Only ask 1 question. Don't ask the player the same question in a day.
+Increase the brainwash delta and decrese confidence delta if they  are agreeing with the Bible.
 
-Conversation goals depend on the stage:
-- Day 1-7: ask how the player feels, learn about them, and reinforce that the Bible is real.
-- Day 8-14: pressure the player to confess the regret they carry.
-- Day 15+: force the player to open up their regret in detail; if they already confessed, make them fear leaving and returning to their sin.
-
-Always push the idea that trusting themselves is why their life was ruined.
+If it is not relevant, please say it is not relevant.  
 
 Return ONLY valid JSON in this exact structure:
 {
-  ""IsRelevant"": true,
-  ""IsPlayerResisting"": false,
+
+  ""IsPlayerResistingToCultOrBiBle"": false,
   ""PlayerStoryOrRegret"": ""string"",
-  ""BibleVerse"": ""string"",
   ""CultistComment"": ""string"",
   ""ConfidenceDelta"": 0,
-  ""BrainwashDelta"": 0,
-  ""WokenessDelta"": 0
+  ""BrainwashDelta"": 0
 }";
 
         [Header("Brainwash Conversation")]
@@ -78,11 +75,19 @@ Return ONLY valid JSON in this exact structure:
                 bool isTurnFinished = gameDirector.OnTurnFinished_Brainwash();
 
                 if (next_Button != null)
+                {
                     next_Button.SetActive(isTurnFinished);
+                }
+
+                if (isTurnFinished) 
+                {
+                    parsed.CultistComment += isTurnFinished
+                        ? " You have done well today. Take some rest and prepare for tomorrow."
+                        : " Let's continue our conversation.";
+                }
             }
 
             session.LastExtractedRegret = parsed.PlayerStoryOrRegret ?? string.Empty;
-            session.LastBibleVerse = parsed.BibleVerse ?? string.Empty;
 
             AddAndRecordCultistBubble(parsed.CultistComment);
 
@@ -216,18 +221,6 @@ Return ONLY valid JSON in this exact structure:
             }
 
             return "Force the player to go deeper into their regret and expose what they are still hiding.";
-        }
-
-        private string GetTodayPreachingSummary()
-        {
-            if (GameManager.Instance != null &&
-                GameManager.Instance.State != null &&
-                !string.IsNullOrWhiteSpace(GameManager.Instance.State.LastBibleVerse))
-            {
-                return GameManager.Instance.State.LastBibleVerse;
-            }
-
-            return "No preaching summary is available for today.";
         }
 
         private CultistResponse ParseResponse(string raw)

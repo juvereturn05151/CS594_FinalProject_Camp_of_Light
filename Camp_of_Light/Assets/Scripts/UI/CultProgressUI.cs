@@ -97,19 +97,16 @@ public class CultProgressUI : MonoBehaviour
             case GamePhase.BrainwashingLesson:
                 promptsUsed = state.PromptsUsedToday_Brainwash;
                 maxPrompts = state.MaxPromptsPerDay_Brainwash;
-                promptLabel = "Brainwash Prompts";
                 break;
 
             case GamePhase.ConscienceTalk:
                 promptsUsed = state.PromptsUsedToday_Conscience;
                 maxPrompts = state.MaxPromptsPerDay_Conscience;
-                promptLabel = "Conscience Prompts";
                 break;
 
             default:
                 promptsUsed = 0;
                 maxPrompts = 0;
-                promptLabel = "Prompts";
                 break;
         }
 
