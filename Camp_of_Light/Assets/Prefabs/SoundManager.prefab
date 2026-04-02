@@ -307,7 +307,12 @@ MonoBehaviour:
   musicSource: {fileID: 775618379231970067}
   sfxSource: {fileID: 2036583275566605111}
   musicList: []
-  sfxList: []
+  sfxList:
+  - id: Click
+    clip: {fileID: 8300000, guid: 47180f2c54634384289f9ed4bfa9261a, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
   masterVolume: 1
   musicVolume: 1
   sfxVolume: 1

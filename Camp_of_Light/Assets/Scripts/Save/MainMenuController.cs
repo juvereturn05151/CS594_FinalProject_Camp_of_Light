@@ -8,12 +8,16 @@ public class MainMenuController : MonoBehaviour
 
     public void OnNewGamePressed()
     {
+        SoundManager.Instance.PlaySFX("Click");
+
         GameRuntimeContext.Instance.Clear();
         SceneManager.LoadScene(profileSceneName);
     }
 
     public void OnLoadGamePressed()
     {
+        SoundManager.Instance.PlaySFX("Click");
+
         SceneManager.LoadScene(loadSceneName);
     }
 
