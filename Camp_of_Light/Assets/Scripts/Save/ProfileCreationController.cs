@@ -71,7 +71,7 @@ public class ProfileCreationController : MonoBehaviour
             MaxDays = 45,
             CurrentPhase = GamePhase.WakeUp,
             PromptsUsedToday_Brainwash = 0,
-            MaxPromptsPerDay_Brainwash = 10,
+            MaxPromptsPerDay_Brainwash = 7,
             PromptsUsedToday_Conscience = 0,
             MaxPromptsPerDay_Conscience = 5,
             IsGameOver = false,
