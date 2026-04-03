@@ -1,28 +1,33 @@
 using System;
 using System.Collections.Generic;
 
-[Serializable]
+[System.Serializable]
+public class DayRange
+{
+    public int start;
+    public int end;
+}
+
+[System.Serializable]
 public class CultDoctrineEntry
 {
-    public string id;
     public string verse;
     public string text;
     public string translation;
-    public float priority;
     public string use_case;
+    public List<string> tags;
+    public DayRange day_range;
 }
 
-[Serializable]
+[System.Serializable]
 public class CultTacticEntry
 {
     public string id;
     public string title;
     public string description;
-    public List<string> tags;
-    public List<string> trigger_conditions;
-    public List<string> intent;
-    public int priority;
     public string example_line;
+    public List<string> tags;
+    public DayRange day_range;
 }
 
 [Serializable]

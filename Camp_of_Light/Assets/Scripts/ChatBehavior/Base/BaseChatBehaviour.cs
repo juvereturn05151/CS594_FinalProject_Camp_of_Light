@@ -260,24 +260,6 @@ namespace OpenAI.Samples.Chat
             }
         }
 
-        protected string FormatDoctrineBlock(List<CultDoctrineEntry> doctrine)
-        {
-            if (doctrine == null || doctrine.Count == 0)
-                return "None";
-
-            List<string> lines = new();
-
-            foreach (var entry in doctrine)
-            {
-                lines.Add(
-                    $"- Verse: {entry.verse} | Meaning: {entry.translation} | Priority: {entry.priority:0.00}\n" +
-                    $"  Text: {entry.text}"
-                );
-            }
-
-            return string.Join("\n", lines);
-        }
-
         protected string FormatTacticBlock(List<CultTacticEntry> tactics)
         {
             if (tactics == null || tactics.Count == 0)

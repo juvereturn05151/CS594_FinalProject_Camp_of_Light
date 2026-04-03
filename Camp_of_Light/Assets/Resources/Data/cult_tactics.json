@@ -1,83 +1,138 @@
 [
 	{
-		"id": "tactic_bible_absolute_truth",
-		"title": "Bible as Absolute Truth",
-		"description": "Establish the Bible as the ultimate and unquestionable source of truth using historical or logical arguments.",
-		"tags": [ "truth", "authority", "logic" ],
-		"trigger_conditions": [ "early_game", "player_neutral", "player_questions" ],
-		"intent": [ "establish_belief", "increase_brainwash" ],
-		"priority": 15,
-		"example_line": "It’s strange, isn’t it? People understood things long before science explained them… where do you think that knowledge came from?"
+		"id": "tactic_day_1_rapport",
+		"title": "Warm Familiarity",
+		"description": "Build rapport by asking about the lesson, daily life, routines, and feelings. The antagonist should sound familiar, calm, and welcoming so the player feels seen.",
+		"example_line": "How did today’s lesson sit with you? I’m not trying to corner you. I just want to understand how you’ve been living lately.",
+		"day_range": {
+			"start": 1,
+			"end": 2
+		},
+		"tags": [
+			"rapport",
+			"familiarity",
+			"belonging",
+			"daily_life",
+			"feelings"
+		]
 	},
 	{
-		"id": "tactic_science_validation",
-		"title": "Science Validates Scripture",
-		"description": "Use scientific discoveries as proof that the Bible was correct all along.",
-		"tags": [ "science", "validation", "authority" ],
-		"trigger_conditions": [ "player_questions", "player_resists" ],
-		"intent": [ "establish_belief", "reduce_wokeness" ],
-		"priority": 14,
-		"example_line": "We say the world is round now, but people long ago already believed that. Doesn’t that make you wonder how they knew?"
+		"id": "tactic_day_1_shared_ground",
+		"title": "Shared Ground",
+		"description": "Mirror the player’s concerns and speak as though the cultist understands ordinary struggles. This should feel like emotional closeness, not open pressure.",
+		"example_line": "A lot of people carry things quietly. You don’t have to impress anyone here. Just speak honestly about how life has felt for you.",
+		"day_range": {
+			"start": 1,
+			"end": 2
+		},
+		"tags": [
+			"rapport",
+			"mirroring",
+			"belonging",
+			"feelings"
+		]
 	},
 	{
-		"id": "tactic_confession_pressure",
+		"id": "tactic_day_3_confession_pressure",
 		"title": "Confession Pressure",
-		"description": "When the player reveals regret, ask follow-up questions that make them revisit it and feel responsible.",
-		"tags": [ "identity", "guilt", "self-worth" ],
-		"trigger_conditions": [ "player_confesses", "confidence_high" ],
-		"intent": [ "increase_guilt", "reduce_confidence" ],
-		"priority": 10,
-		"example_line": "You say you regret it… but have you really thought about what it means? Why it happened in the first place?"
+		"description": "Press the player to name a regret directly. The antagonist should frame unspoken guilt as spiritually dangerous and difficult to carry forever.",
+		"example_line": "You keep circling around it. What is the thing you still do not want to say plainly?",
+		"day_range": {
+			"start": 3,
+			"end": 7
+		},
+		"tags": [
+			"confession",
+			"guilt",
+			"fear",
+			"regret",
+			"judgment"
+		]
 	},
 	{
-		"id": "tactic_self_belief_attack",
-		"title": "Self Belief Destruction",
-		"description": "Blame the player's suffering on their belief in themselves.",
-		"tags": [ "self-belief", "control", "dependency" ],
-		"trigger_conditions": [ "player_resists", "confidence_high" ],
-		"intent": [ "reduce_confidence", "increase_brainwash" ],
-		"priority": 10,
-		"example_line": "You followed what you believed was right… and it still led you here. Does that feel reliable to you?"
+		"id": "tactic_day_3_relief_after_confession",
+		"title": "Relief After Disclosure",
+		"description": "After the player admits something painful, shift tone and offer emotional relief. This creates a contrast between pressure and comfort.",
+		"example_line": "You said it aloud. That matters. People carry things for years, but the burden starts to change the moment it is brought into the light.",
+		"day_range": {
+			"start": 3,
+			"end": 7
+		},
+		"tags": [
+			"confession",
+			"relief",
+			"comfort",
+			"acceptance",
+			"regret"
+		]
 	},
 	{
-		"id": "tactic_relief_after_submission",
-		"title": "Relief Through Surrender",
-		"description": "Give emotional relief after confession to reinforce behavior.",
-		"tags": [ "relief", "reward", "comfort" ],
-		"trigger_conditions": [ "player_confesses" ],
-		"intent": [ "reinforce_behavior", "increase_brainwash" ],
-		"priority": 5,
-		"example_line": "That feeling right now… lighter, calmer… that’s what it’s like when you stop carrying it all on your own."
+		"id": "tactic_day_7_identity_erosion",
+		"title": "Identity Erosion",
+		"description": "Reframe the player’s favorite habits, comforts, or self-image as unreliable, unhealthy, or spiritually misleading. Focus on dependency and self-doubt rather than protected identities.",
+		"example_line": "The things you run to for comfort keep teaching your heart what to obey. Are they actually helping you, or just training you to stay the same?",
+		"day_range": {
+			"start": 8,
+			"end": 14
+		},
+		"tags": [
+			"identity_erosion",
+			"self_doubt",
+			"habits",
+			"comfort",
+			"dependency",
+			"games"
+		]
 	},
 	{
-		"id": "tactic_thought_replacement",
-		"title": "Thought Replacement",
-		"description": "Replace player's reasoning with doctrine.",
-		"tags": [ "guilt", "memory", "pressure" ],
-		"trigger_conditions": [ "player_questions" ],
-		"intent": [ "reduce_wokeness", "increase_brainwash" ],
-		"priority": 9,
-		"example_line": "I know it feels like your thoughts should guide you… but haven’t they been wrong before?"
+		"id": "tactic_day_7_thought_suspicion",
+		"title": "Thought Suspicion",
+		"description": "Cast doubt on the player’s instincts, preferences, and private reasoning. The antagonist should imply that inner thoughts are not trustworthy guides.",
+		"example_line": "You keep calling those thoughts your own, but how often have those same thoughts led you somewhere empty?",
+		"day_range": {
+			"start": 8,
+			"end": 14
+		},
+		"tags": [
+			"self_doubt",
+			"thoughts",
+			"control",
+			"authority",
+			"dependency"
+		]
 	},
 	{
-		"id": "tactic_apathy_guilt_bible",
-		"title": "Apathy Condemnation",
-		"description": "When the player shows indifference, use scripture to frame their lack of concern as moral failure and spiritual danger.",
-		"tags": [ "apathy", "judgment", "scripture", "guilt" ],
-		"trigger_conditions": [ "player_indifferent", "low_engagement" ],
-		"intent": [ "increase_guilt", "increase_brainwash" ],
-		"priority": 13,
-		"example_line": "You feel nothing about it… but that’s exactly what the scripture warns about. A hardened heart doesn’t come from nowhere. It means something inside has already turned away."
+		"id": "tactic_day_14_obedience_and_mission",
+		"title": "Obedience and Mission",
+		"description": "Push the idea that private judgment should be replaced by obedience to doctrine and that truth must be carried outward to others.",
+		"example_line": "If you really believe truth is greater than your own feelings, then you cannot keep living as though your private judgment is enough.",
+		"day_range": {
+			"start": 15,
+			"end": 45
+		},
+		"tags": [
+			"obedience",
+			"authority",
+			"mission",
+			"recruitment",
+			"self_doubt"
+		]
 	},
 	{
-		"id": "tactic_evil_identity_imposition",
-		"title": "Evil Identity Imposition",
-		"description": "Question the player's morality, then assert that they are inherently flawed or evil to destabilize their self-identity.",
-		"tags": [ "identity", "judgment", "fear", "control" ],
-		"trigger_conditions": [ "player_resists", "player_deflects", "mid_game" ],
-		"intent": [ "reduce_confidence", "increase_guilt", "increase_brainwash" ],
-		"priority": 16,
-		"example_line": "Let me ask you something honestly… if your choices hurt others, if you ignore what’s right… what does that make you? You don’t have to answer. Deep down, you already know."
+		"id": "tactic_day_14_recruitment_pressure",
+		"title": "Recruitment Pressure",
+		"description": "Frame silence as failure and suggest that the player now has responsibility to speak to others. This should feel like escalating obligation.",
+		"example_line": "If this message matters, then keeping it to yourself stops looking humble and starts looking irresponsible.",
+		"day_range": {
+			"start": 15,
+			"end": 45
+		},
+		"tags": [
+			"mission",
+			"recruitment",
+			"obligation",
+			"authority",
+			"evangelism"
+		]
 	}
-
 ]

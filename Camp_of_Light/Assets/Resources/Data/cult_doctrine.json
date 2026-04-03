@@ -1,226 +1,145 @@
 [
 	{
+		"verse": "Isaiah 40:22",
+		"text": "It is he that sitteth upon the circle of the earth.",
+		"translation": "The scripture describes the earth in a way that sounds beyond ordinary human knowledge.",
+		"use_case": "Support the idea that God and scripture know truths beyond human understanding.",
+		"day_range": {
+			"start": 1,
+			"end": 2
+		},
+		"tags": [ "god_is_real", "design", "truth", "break_confidence" ]
+	},
+	{
 		"verse": "Ecclesiastes 1:6",
 		"text": "The wind goeth toward the south, and turneth about unto the north; it whirleth about continually.",
-		"translation": "Describes circular systems in nature, reinforcing the idea of a designed and ordered world.",
-		"priority": 1.05,
-		"use_case": "Support the idea of hidden natural knowledge in scripture."
-	},
-	{
-		"verse": "Romans 3:10-12",
-		"text": "There is none righteous, no, not one... there is none that doeth good, no, not one.",
-		"translation": "No one is naturally good. The player cannot believe they are morally safe or exceptional.",
-		"priority": 1.05,
-		"use_case": "Establish universal corruption and remove moral escape."
-	},
-	{
-		"verse": "Hosea 14:9",
-		"text": "For the ways of the LORD are right, and the just shall walk in them: but the transgressors shall fall therein.",
-		"translation": "Right path versus wrong path. The player is framed as someone who will fall if they reject the cult's direction.",
-		"priority": 0.8,
-		"use_case": "Frame the player as walking the wrong path."
-	},
-	{
-		"verse": "2 Kings 7:3-4",
-		"text": "Why sit we here until we die?",
-		"translation": "Hopelessness and urgency. The player feels trapped with no safe option except surrender.",
-		"priority": 0.9,
-		"use_case": "Push desperation and force a decision."
-	},
-	{
-		"verse": "2 Kings 7:1",
-		"text": "To morrow about this time shall a measure of fine flour be sold for a shekel.",
-		"translation": "Promise of sudden relief. Submission will quickly improve the player's situation.",
-		"priority": 0.7,
-		"use_case": "Offer hope after pressure."
-	},
-	{
-		"verse": "2 Kings 5:10",
-		"text": "Go and wash in Jordan seven times... and thou shalt be clean.",
-		"translation": "Cleansing through obedience. The player is treated as spiritually dirty.",
-		"priority": 0.8,
-		"use_case": "Frame sin as something that must be washed away."
-	},
-	{
-		"verse": "2 Kings 5:13-14",
-		"text": "He dipped himself... and he was clean.",
-		"translation": "Surrender first, healing later. The player must obey before receiving relief.",
-		"priority": 1.0,
-		"use_case": "Force submission over logic."
-	},
-	{
-		"verse": "Psalm 51:3",
-		"text": "My sin is ever before me.",
-		"translation": "Constant guilt awareness. The player is encouraged to dwell on wrongdoing.",
-		"priority": 0.7,
-		"use_case": "Reinforce guilt after confession."
-	},
-	{
-		"verse": "Psalm 51:5",
-		"text": "In sin did my mother conceive me.",
-		"translation": "Sin as identity. The player is inherently flawed, not just making mistakes.",
-		"priority": 0.95,
-		"use_case": "Attack identity and remove self-worth."
-	},
-	{
-		"verse": "Isaiah 1:15",
-		"text": "Your hands are full of blood.",
-		"translation": "Severe condemnation. The player is deeply guilty and unworthy.",
-		"priority": 0.95,
-		"use_case": "Intensify guilt and shame."
-	},
-	{
-		"verse": "Isaiah 1:18",
-		"text": "Though your sins be as scarlet, they shall be white as snow.",
-		"translation": "Forgiveness after guilt. The cult offers cleansing as a solution.",
-		"priority": 0.6,
-		"use_case": "Transition from pressure to reward."
-	},
-	{
-		"verse": "1 John 1:9",
-		"text": "If we confess... he will forgive.",
-		"translation": "Confess to be forgiven. The player becomes dependent on confession.",
-		"priority": 0.65,
-		"use_case": "Encourage repeated confession."
-	},
-	{
-		"verse": "John 8:34",
-		"text": "The servant of sin.",
-		"translation": "Loss of control. The player cannot free themselves alone.",
-		"priority": 0.9,
-		"use_case": "Remove player's sense of autonomy."
-	},
-	{
-		"verse": "Matthew 11:28",
-		"text": "I will give you rest.",
-		"translation": "Relief and comfort. The cult appears gentle after pressure.",
-		"priority": 0.5,
-		"use_case": "Calm the player and build trust."
-	},
-	{
-		"verse": "Judges 15:14",
-		"text": "The cords became as flax burnt with fire.",
-		"translation": "Freedom through divine power. Only God can break the chains.",
-		"priority": 0.6,
-		"use_case": "Frame salvation as the only escape."
-	},
-	{
-		"verse": "Ephesians 2:1",
-		"text": "Dead in trespasses and sins.",
-		"translation": "Spiritual death. The player is empty and unable to save themselves.",
-		"priority": 1.0,
-		"use_case": "Push the player into total helplessness."
+		"translation": "Nature follows order and pattern, suggesting a designed world rather than chaos.",
+		"use_case": "Support the idea of hidden natural knowledge in scripture.",
+		"day_range": {
+			"start": 1,
+			"end": 2
+		},
+		"tags": [ "god_is_real", "design", "nature", "truth" ]
 	},
 	{
 		"verse": "Romans 3:23",
-		"text": "All have sinned.",
-		"translation": "Universal guilt. Everyone is flawed, so the player cannot escape blame.",
-		"priority": 0.85,
-		"use_case": "Normalize guilt while removing escape."
+		"text": "For all have sinned, and come short of the glory of God.",
+		"translation": "Every person is morally flawed and cannot claim innocence.",
+		"use_case": "Establish universal guilt and remove escape.",
+		"day_range": {
+			"start": 3,
+			"end": 7
+		},
+		"tags": [ "sin", "guilt", "all_humans", "break_confidence" ]
 	},
 	{
-		"verse": "Hebrews 9:22",
-		"text": "Without shedding of blood is no remission.",
-		"translation": "Forgiveness requires sacrifice. The player must rely on something external.",
-		"priority": 0.9,
-		"use_case": "Push dependency on salvation."
+		"verse": "Romans 6:23",
+		"text": "For the wages of sin is death; but the gift of God is eternal life through Jesus Christ our Lord.",
+		"translation": "Sin has deadly consequences, and only God's gift provides escape.",
+		"use_case": "Create fear and urgency about the consequences of sin.",
+		"day_range": {
+			"start": 3,
+			"end": 7
+		},
+		"tags": [ "sin", "death", "judgment", "create_fear" ]
 	},
 	{
-		"verse": "Acts 3:19",
-		"text": "Repent... that your sins may be blotted out.",
-		"translation": "Repentance and change. The player must take action to be accepted.",
-		"priority": 0.85,
-		"use_case": "Trigger conversion moment."
+		"verse": "John 19:30",
+		"text": "It is finished.",
+		"translation": "Jesus completed the work already, so the player is told to stop relying on personal effort.",
+		"use_case": "Remove responsibility and reinforce submission.",
+		"day_range": {
+			"start": 3,
+			"end": 7
+		},
+		"tags": [ "jesus_paid", "salvation", "submission", "remove_agency" ]
 	},
 	{
-		"verse": "2 Corinthians 7:10",
-		"text": "Godly sorrow worketh repentance.",
-		"translation": "Pain is good. The player's suffering is necessary for salvation.",
-		"priority": 0.9,
-		"use_case": "Reframe pain as meaningful."
+		"verse": "Hebrews 10:14",
+		"text": "For by one offering he hath perfected for ever them that are sanctified.",
+		"translation": "The sacrifice is presented as complete and final, discouraging doubt or independent judgment.",
+		"use_case": "Lock player into belief and prevent questioning.",
+		"day_range": {
+			"start": 3,
+			"end": 7
+		},
+		"tags": [ "jesus_paid", "salvation", "lock_belief", "submission" ]
 	},
 	{
 		"verse": "Jeremiah 17:9",
-		"text": "The heart is deceitful above all things.",
-		"translation": "Distrust yourself. The player cannot rely on their own judgment.",
-		"priority": 1.0,
-		"use_case": "Break player confidence and independence."
-	},
-	{
-		"verse": "John 3:16",
-		"text": "God so loved the world.",
-		"translation": "Love and rescue. After pressure, the cult offers acceptance.",
-		"priority": 0.6,
-		"use_case": "Soften the player after manipulation."
-	},
-	{
-		"verse": "John 8:7",
-		"text": "He that is without sin among you, let him first cast a stone.",
-		"translation": "You are not pure enough to judge or trust yourself. Your belief in yourself is hypocrisy.",
-		"priority": 1.0,
-		"use_case": "Break self-righteousness and attack self-belief."
-	},
-	{
-		"verse": "John 8:3-5",
-		"text": "This woman was taken in adultery... Moses commanded us, that such should be stoned.",
-		"translation": "The player is placed in the position of the sinner being judged, creating fear and vulnerability.",
-		"priority": 0.95,
-		"use_case": "Create fear of judgment and social condemnation."
-	},
-	{
-		"verse": "John 8:9",
-		"text": "Being convicted by their own conscience, went out one by one.",
-		"translation": "Even those who judge are guilty. The player cannot escape guilt, even internally.",
-		"priority": 1.0,
-		"use_case": "Force internal guilt and self-collapse."
+		"text": "The heart is deceitful above all things, and desperately wicked.",
+		"translation": "The player is taught that their inner thoughts cannot be trusted.",
+		"use_case": "Break player confidence and independence.",
+		"day_range": {
+			"start": 7,
+			"end": 14
+		},
+		"tags": [ "self_distrust", "heart", "deception", "break_confidence" ]
 	},
 	{
 		"verse": "Proverbs 3:5",
 		"text": "Trust in the LORD with all thine heart; and lean not unto thine own understanding.",
-		"translation": "Self-belief is dangerous. The player must abandon their own thinking.",
-		"priority": 1.0,
-		"use_case": "Directly attack player's independence and reasoning."
+		"translation": "The player is pushed to reject their own reasoning and rely on external authority.",
+		"use_case": "Directly attack player's independence and reasoning.",
+		"day_range": {
+			"start": 7,
+			"end": 14
+		},
+		"tags": [ "self_distrust", "authority", "submission", "remove_agency" ]
 	},
 	{
 		"verse": "Jeremiah 10:23",
-		"text": "It is not in man that walketh to direct his steps.",
-		"translation": "Humans cannot guide themselves. The player is incapable of making correct decisions alone.",
-		"priority": 0.95,
-		"use_case": "Remove player's sense of control."
+		"text": "O LORD, I know that the way of man is not in himself: it is not in man that walketh to direct his steps.",
+		"translation": "Humans are framed as incapable of guiding themselves correctly.",
+		"use_case": "Remove player's sense of control.",
+		"day_range": {
+			"start": 7,
+			"end": 14
+		},
+		"tags": [ "self_distrust", "control", "submission", "break_confidence" ]
 	},
 	{
-		"verse": "Romans 2:1",
-		"text": "Thou art inexcusable... for wherein thou judgest another, thou condemnest thyself.",
-		"translation": "Judging others exposes your own guilt. The player is trapped by their own standards.",
-		"priority": 1.0,
-		"use_case": "Turn player's logic against them."
+		"verse": "Matthew 28:19",
+		"text": "Go ye therefore, and teach all nations.",
+		"translation": "Believers are told to spread the message and bring others into it.",
+		"use_case": "Justify evangelism and expansion of the cult's message.",
+		"day_range": {
+			"start": 14,
+			"end": 45
+		},
+		"tags": [ "evangelism", "mission", "spread_message" ]
 	},
 	{
-		"verse": "Isaiah 55:8",
-		"text": "My thoughts are not your thoughts, neither are your ways my ways.",
-		"translation": "Your thinking is inferior. You cannot rely on your own understanding.",
-		"priority": 0.9,
-		"use_case": "Undermine player's confidence in reasoning."
+		"verse": "Romans 10:14",
+		"text": "How then shall they call on him in whom they have not believed?",
+		"translation": "People are framed as needing someone else to deliver truth to them.",
+		"use_case": "Reinforce evangelism and dependency on the system.",
+		"day_range": {
+			"start": 14,
+			"end": 45
+		},
+		"tags": [ "evangelism", "dependency", "authority" ]
 	},
 	{
-		"verse": "1 Corinthians 3:19",
-		"text": "The wisdom of this world is foolishness with God.",
-		"translation": "What you think is smart is actually wrong. Self-belief becomes foolishness.",
-		"priority": 0.95,
-		"use_case": "Invalidate player's intelligence and logic."
+		"verse": "Romans 3:10-12",
+		"text": "There is none righteous, no, not one.",
+		"translation": "The player is reminded that no one is naturally good.",
+		"use_case": "Re-establish universal corruption and remove moral escape.",
+		"day_range": {
+			"start": 14,
+			"end": 45
+		},
+		"tags": [ "sin", "all_humans", "guilt", "break_confidence" ]
 	},
 	{
-		"verse": "Luke 6:37",
-		"text": "Judge not, and ye shall not be judged.",
-		"translation": "If you judge, you will be judged. The player is forced into moral submission.",
-		"priority": 0.9,
-		"use_case": "Control player's moral behavior."
-	},
-	{
-		"verse": "James 4:10",
-		"text": "Humble yourselves in the sight of the Lord, and he shall lift you up.",
-		"translation": "Only by lowering yourself can you be accepted. Confidence must be destroyed first.",
-		"priority": 0.95,
-		"use_case": "Encourage surrender and submission."
+		"verse": "Jeremiah 17:9",
+		"text": "The heart is deceitful above all things, and desperately wicked.",
+		"translation": "The player is reminded again that their own judgment is dangerous.",
+		"use_case": "Maintain self-distrust in the late game.",
+		"day_range": {
+			"start": 14,
+			"end": 45
+		},
+		"tags": [ "self_distrust", "late_game", "submission", "remove_agency" ]
 	}
 ]

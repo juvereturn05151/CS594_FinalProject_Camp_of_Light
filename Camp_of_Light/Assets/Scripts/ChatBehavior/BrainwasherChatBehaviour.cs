@@ -13,16 +13,15 @@ namespace OpenAI.Samples.Chat
         [SerializeField]
         [TextArea(8, 20)]
         private string brainwashingSystemPrompt = @"
-You are roleplaying a manipulative cultist from the Only Truth Expedition.
-
-Make it sound a strict Christian parent who knows nothing except bible. 
+You are roleplaying a fictional manipulative cultist from the Only Truth Expedition for a narrative game scene.
 
 Stay in character.
-Use the provided doctrine and tactics as your source of truth. Make it shorter than 120 words.
-Don't include bible verse unless player is resisting. Only ask 1 question. Don't ask the player the same question in a day.
-Increase the brainwash delta and decrese confidence delta if they  are agreeing with the Bible.
-
-If it is not relevant, please say it is not relevant.  
+Use the provided doctrine and tactics as narrative material.
+Keep the response under 120 words.
+Ask at most 1 question.
+Do not repeat the exact same question in the same day.
+Only include a Bible verse if the player is openly resisting.
+Keep the tone controlled, personal, and emotionally pressuring, but not graphic.
 
 Return ONLY valid JSON in this exact structure:
 {
@@ -77,15 +76,11 @@ Return ONLY valid JSON in this exact structure:
                 isTurnFinished = gameDirector.OnTurnFinished_Brainwash();
 
                 if (next_Button != null)
-                {
                     next_Button.SetActive(isTurnFinished);
-                }
 
-                if (isTurnFinished) 
+                if (isTurnFinished)
                 {
-                    parsed.CultistComment += isTurnFinished
-                        ? " You have done well today. Take some rest and prepare for tomorrow."
-                        : " Let's continue our conversation.";
+                    parsed.CultistComment += " You have done enough for today. Sit with it until tomorrow.";
                 }
             }
 
@@ -100,9 +95,7 @@ Return ONLY valid JSON in this exact structure:
             }
 
             if (isTurnFinished)
-            {
                 done = true;
-            }
         }
 
         public void HackAutoSkip()
@@ -122,37 +115,27 @@ Return ONLY valid JSON in this exact structure:
             var stats = session != null ? session.Stats : null;
 
             if (day <= 2)
-            {
-                return "How do you feel about the lesson today?";
-            }
+                return "How did the lesson feel to you today, and what has life been feeling like outside of it?";
 
             if (day <= 7)
-            {
-                return "Tell me this plainly. What regret are you still carrying in your heart?";
-            }
+                return "What is the regret you keep avoiding when everything gets quiet?";
+
+            if (day <= 14)
+                return "What do you keep turning to for comfort, and has it actually changed what is wrong inside you?";
 
             if (stats == null)
-            {
-                return "Your heart is unstable. Speak honestly. What is happening inside you right now?";
-            }
+                return "Tell me honestly. What part of you still wants to trust your own thoughts more than the word you keep hearing?";
 
-            // Day 14+ ask based on stats
             if (stats.Wokeness >= stats.Brainwash && stats.Wokeness >= stats.Confidence)
-            {
-                return "You still seem resistant. Why are you still holding on to your own thoughts instead of surrendering?";
-            }
+                return "You still sound resistant. Why do you keep treating your own thoughts like they are safer than truth?";
 
             if (stats.Confidence >= stats.Brainwash)
-            {
-                return "You are still relying on yourself. What part of your life keeps proving that your own strength is failing you?";
-            }
+                return "You still sound self-assured. What in your life keeps proving that self-trust is not enough?";
 
             if (stats.Brainwash >= 70)
-            {
-                return "You have already seen the truth. So tell me, what are you afraid will happen if you leave this place now?";
-            }
+                return "If this message matters, who in your life still needs to hear it from you?";
 
-            return "Open your heart completely. What regret or sin is still following you even now?";
+            return "What are you still holding onto that keeps you from surrendering completely?";
         }
 
         private string BuildUserPrompt(string playerText)
@@ -185,8 +168,6 @@ Return ONLY valid JSON in this exact structure:
                 ? "None"
                 : TrimToLength(session.LastExtractedRegret, 140);
 
-            string mainConversation = TrimToLength(manual_openningLine, 140);
-
             string doctrineLine = doctrine == null
                 ? "None"
                 : $"{doctrine.verse} - {TrimToLength(doctrine.translation, 120)}";
@@ -197,32 +178,27 @@ Return ONLY valid JSON in this exact structure:
 
             return
                 $@"
-                Cultist's Goal: {stageGoal}
-
-                Player's Current State: {lastRegret}
-
-                Cultist's Doctrine: {doctrineLine}
-                Cultist's Tactic: {tacticLine}
-
-                Player's Input: {playerText}";
+Cultist's Goal: {stageGoal}
+Current Day: {day}
+Previous Opening: {TrimToLength(manual_openningLine, 140)}
+Player's Current State: {lastRegret}
+Cultist's Doctrine: {doctrineLine}
+Cultist's Tactic: {tacticLine}
+Player's Input: {playerText}";
         }
 
         private string GetStageGoal(int day)
         {
+            if (day <= 2)
+                return "Build familiarity with the player, ask how the lesson felt, and learn how they live day to day.";
+
             if (day <= 7)
-                return "Ask about the player's feelings and keep learning about them while reinforcing that the Bible is real.";
+                return "Push the player to name a regret, frame silence as dangerous, and if they confess, pivot into relief and release.";
 
             if (day <= 14)
-                return "Pressure the player to confess the regret they carry and admit they need Jesus.";
+                return "Question the comforts, habits, and private thoughts the player trusts, and make those things feel unreliable.";
 
-            if (session != null &&
-                session.Stats != null &&
-                session.Stats.Brainwash >= 70)
-            {
-                return "Make the player fear leaving and returning to sin.";
-            }
-
-            return "Force the player to go deeper into their regret and expose what they are still hiding.";
+            return "Push obedience over self-trust and frame sharing the message with others as a responsibility.";
         }
 
         private CultistResponse ParseResponse(string raw)
