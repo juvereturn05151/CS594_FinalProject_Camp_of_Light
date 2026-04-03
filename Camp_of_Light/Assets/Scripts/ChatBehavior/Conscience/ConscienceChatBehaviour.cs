@@ -104,6 +104,11 @@ namespace OpenAI.Samples.Chat
 
             AddAndRecordCultistBubble(parsed.ConscienceComment);
 
+            if (GameManager.Instance != null && GameManager.Instance.State != null)
+            {
+                GameManager.Instance.NotifyCultTurnCompleted();
+            }
+
             if (isTurnFinished)
             {
                 done = true;

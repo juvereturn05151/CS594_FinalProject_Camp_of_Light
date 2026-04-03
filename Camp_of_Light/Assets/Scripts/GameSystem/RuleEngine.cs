@@ -83,6 +83,7 @@ public class RuleEngine : MonoBehaviour
         }
 
         SoundManager.Instance.PlaySFX("GoodFeedback");
+        statusChangeFeedbackUI.ShowFeedback(confidenceDelta, brainwashDelta, wokenessDelta);
         stats.ApplyDelta(confidenceDelta, brainwashDelta, wokenessDelta);
     }
 }

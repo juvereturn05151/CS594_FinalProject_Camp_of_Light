@@ -114,8 +114,11 @@ Return ONLY valid JSON in this exact structure:
 
             var stats = session != null ? session.Stats : null;
 
-            if (day <= 2)
+            if (day <= 1)
                 return "How did the lesson feel to you today, and what has life been feeling like outside of it?";
+
+            if (day <= 2)
+                return "How did the lesson feel to you today, and can you tell me how did you live your life so far?";
 
             if (day <= 7)
                 return "What is the regret you keep avoiding when everything gets quiet?";
