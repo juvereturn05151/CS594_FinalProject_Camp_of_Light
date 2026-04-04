@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 
 [Serializable]
@@ -23,5 +24,10 @@ public class CultistResponse
             Player_Regret = "",
             CultistComment = "I am listening. Tell me more about your life and what weighs on your heart."
         };
+    }
+
+    public static string GetDefaultJson()
+    {
+        return JsonConvert.SerializeObject(CultistResponse.Default());
     }
 }
