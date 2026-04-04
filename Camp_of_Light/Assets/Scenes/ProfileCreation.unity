@@ -240,7 +240,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 0
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -1216,12 +1216,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbf2d08db41632649ab5955243f3ab7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  referenceResourcePath: Character/CharacterTemplate
   playerStyleSuffix: Create a single  2D player character for a narrative game. Readable
     silhouette. Clean design. Centered composition. Pure solid white background.
     No text. No extra characters.
   spiritStyleSuffix: Create a single full-body mystical spirit character for a narrative
     game. Readable silhouette. Visually striking. Centered composition. Pure solid
     white background. No text. No extra characters.
+  playerOutputFolderRelative: Assets/Resources/Character/CharacterOutput
+  spiritOutputFolderRelative: Assets/Resources/Character/SpiritOutput
 --- !u!4 &372175064
 Transform:
   m_ObjectHideFlags: 0
@@ -3557,7 +3560,7 @@ RectTransform:
   m_GameObject: {fileID: 1340416102}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 78697454}
@@ -4862,8 +4865,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 13, y: -222}
-  m_SizeDelta: {x: 243.2955, y: 87.2746}
+  m_AnchoredPosition: {x: 24.7881, y: -222}
+  m_SizeDelta: {x: 471.125, y: 87.2746}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1818124501
 MonoBehaviour:
@@ -4919,7 +4922,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -5888,7 +5891,7 @@ RectTransform:
   m_GameObject: {fileID: 2060906473}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1840081461}
