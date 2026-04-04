@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -8,33 +9,40 @@ using UnityEngine.Networking;
 
 public class CharacterSpriteGenerator : MonoBehaviour
 {
+    [Header("Reference Image")]
+    [SerializeField] private string referenceResourcePath = "Character/CharacterTemplate";
 
-
-    [TextArea(3, 8)]
+    [Header("Prompt Style - Player Character")]
+    [TextArea(3, 10)]
     [SerializeField]
-    private string prompt =
-        "Turn this character into a polished full-body 2D game sprite. " +
-        "Keep the same character identity, proportions, and clothing style. " +
-        "Put the character on a pure solid white background. " +
-        "No checkerboard. No transparency preview. No scene. No floor. No shadow.";
+    private string playerStyleSuffix =
+        "Use the provided reference image as the pose and composition reference. " +
+        "The character must remain in a sitting position like the reference. " +
+        "Keep a clean readable 2D game character design. " +
+        "Single character only. Pure solid white background. No text. No extra characters.";
 
-    [Header("Input")]
-    [SerializeField] private string resourceInputPath = "Character/CharacterTemplate";
+    [Header("Prompt Style - Spirit Character")]
+    [TextArea(3, 10)]
+    [SerializeField]
+    private string spiritStyleSuffix =
+        "Use the provided reference image as the pose and composition reference. " +
+        "The spirit must remain in a sitting position like the reference. " +
+        "Create a mystical spirit version with strong visual identity. " +
+        "Single character only. Pure solid white background. No text. No extra characters.";
 
-    [Header("Output")]
-    [SerializeField] private string outputFileName = "CharacterSprite.png";
-    [SerializeField] private RuntimeSpriteFromTexture spriteApplier;
-
-    [Header("Generation Control")]
-    [SerializeField] private bool generateOnStart = false;
+    [Header("Output Folders")]
+    [SerializeField] private string playerOutputFolderRelative = "Assets/Resources/Character/CharacterOutput";
+    [SerializeField] private string spiritOutputFolderRelative = "Assets/Resources/Character/SpiritOutput";
 
     private const string Url = "https://api.replicate.com/v1/models/google/nano-banana/predictions";
+
     private string apiToken;
     private bool isGenerating = false;
 
+    public bool IsGenerating => isGenerating;
+
     private void Start()
     {
-        // Load .env (StreamingAssets recommended)
         string envPath = Path.Combine(Application.streamingAssetsPath, "nano-banana.env");
         DotEnv.Load(envPath);
 
@@ -42,62 +50,150 @@ public class CharacterSpriteGenerator : MonoBehaviour
 
         if (string.IsNullOrEmpty(apiToken))
         {
-            Debug.LogError("API token not found in .env");
+            Debug.LogError("[CharacterSpriteGenerator] API token not found in nano-banana.env");
         }
     }
 
-    public void GenerateCharacterSprite()
+    public string BuildPlayerPrompt(string playerName, string appearancePrompt)
+    {
+        string safeName = string.IsNullOrWhiteSpace(playerName) ? "the player" : playerName;
+        string look = string.IsNullOrWhiteSpace(appearancePrompt)
+            ? "a memorable fantasy-inspired appearance"
+            : appearancePrompt.Trim();
+
+        return
+            $"Generate a seated player character inspired by {safeName}. " +
+            $"The character should look like: {look}. " +
+            $"Use the provided template as the body pose reference and keep the sitting posture. " +
+            playerStyleSuffix;
+    }
+
+    public string BuildSpiritPrompt(string playerName, string appearancePrompt, List<string> interests)
+    {
+        string safeName = string.IsNullOrWhiteSpace(playerName) ? "the player" : playerName;
+        string look = string.IsNullOrWhiteSpace(appearancePrompt)
+            ? "a mystical and memorable appearance"
+            : appearancePrompt.Trim();
+
+        string interestsText = interests == null || interests.Count == 0
+            ? "unknown interests"
+            : string.Join(", ", interests);
+
+        return
+            $"Generate a seated spirit character inspired by {safeName}. " +
+            $"The spirit should visually relate to this appearance: {look}. " +
+            $"The spirit must embody these three interests: {interestsText}. " +
+            $"Use the provided template as the body pose reference and keep the sitting posture. " +
+            spiritStyleSuffix;
+    }
+
+    public void GeneratePlayerCharacter(
+        string slotId,
+        string playerName,
+        string appearancePrompt,
+        Action<bool, string, Texture2D, string, string> onCompleted)
     {
         if (isGenerating)
         {
-            Debug.LogWarning("Generation already in progress.");
+            onCompleted?.Invoke(false, null, null, null, "Generation already in progress.");
             return;
         }
 
-        StartCoroutine(GenerateCharacterSpriteWrapper());
+        if (string.IsNullOrWhiteSpace(slotId))
+        {
+            onCompleted?.Invoke(false, null, null, null, "Invalid slot id.");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(apiToken))
+        {
+            onCompleted?.Invoke(false, null, null, null, "Nano Banana API token is missing.");
+            return;
+        }
+
+        string finalPrompt = BuildPlayerPrompt(playerName, appearancePrompt);
+        string outputPath = GetPlayerOutputPath(slotId);
+
+        StartCoroutine(GenerateCharacterRoutine(finalPrompt, outputPath, onCompleted));
     }
 
-    private IEnumerator GenerateCharacterSpriteWrapper()
+    public void GenerateSpiritCharacter(
+        string slotId,
+        string playerName,
+        string appearancePrompt,
+        List<string> interests,
+        Action<bool, string, Texture2D, string, string> onCompleted)
+    {
+        if (isGenerating)
+        {
+            onCompleted?.Invoke(false, null, null, null, "Generation already in progress.");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(slotId))
+        {
+            onCompleted?.Invoke(false, null, null, null, "Invalid slot id.");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(apiToken))
+        {
+            onCompleted?.Invoke(false, null, null, null, "Nano Banana API token is missing.");
+            return;
+        }
+
+        if (interests == null || interests.Count != 3)
+        {
+            onCompleted?.Invoke(false, null, null, null, "Exactly 3 interests are required.");
+            return;
+        }
+
+        string finalPrompt = BuildSpiritPrompt(playerName, appearancePrompt, interests);
+        string outputPath = GetSpiritOutputPath(slotId);
+
+        StartCoroutine(GenerateCharacterRoutine(finalPrompt, outputPath, onCompleted));
+    }
+
+    private IEnumerator GenerateCharacterRoutine(
+        string finalPrompt,
+        string outputPath,
+        Action<bool, string, Texture2D, string, string> onCompleted)
     {
         isGenerating = true;
-        yield return StartCoroutine(GenerateCharacterSpriteCoroutine());
-        isGenerating = false;
-    }
 
-    private IEnumerator GenerateCharacterSpriteCoroutine()
-    {
-        Texture2D sourceTexture = Resources.Load<Texture2D>(resourceInputPath);
-
-        if (sourceTexture == null)
+        Texture2D referenceTexture = Resources.Load<Texture2D>(referenceResourcePath);
+        if (referenceTexture == null)
         {
-            Debug.LogError("Could not load input texture from Resources: " + resourceInputPath);
+            isGenerating = false;
+            onCompleted?.Invoke(false, null, null, null,
+                $"Could not load reference texture from Resources/{referenceResourcePath}");
             yield break;
         }
 
-        Texture2D readableTexture = MakeTextureReadable(sourceTexture);
-
-        if (readableTexture == null)
-        {
-            Debug.LogError("Failed to create readable texture.");
-            yield break;
-        }
-
-        byte[] pngBytes = readableTexture.EncodeToPNG();
+        Texture2D readableReference = MakeTextureReadable(referenceTexture);
+        byte[] pngBytes = readableReference.EncodeToPNG();
 
         if (pngBytes == null || pngBytes.Length == 0)
         {
-            Debug.LogError("Failed to encode readable texture to PNG.");
-            Destroy(readableTexture);
+            Destroy(readableReference);
+            isGenerating = false;
+            onCompleted?.Invoke(false, null, null, null, "Failed to encode reference image.");
             yield break;
         }
 
         string dataUrl = "data:image/png;base64," + Convert.ToBase64String(pngBytes);
 
+        string outputDirectory = Path.GetDirectoryName(outputPath);
+        if (!string.IsNullOrWhiteSpace(outputDirectory))
+        {
+            Directory.CreateDirectory(outputDirectory);
+        }
+
         JObject body = new JObject
         {
             ["input"] = new JObject
             {
-                ["prompt"] = prompt,
+                ["prompt"] = finalPrompt,
                 ["image_input"] = new JArray { dataUrl }
             }
         };
@@ -121,44 +217,135 @@ public class CharacterSpriteGenerator : MonoBehaviour
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                Destroy(readableTexture);
+                Destroy(readableReference);
 
                 string responseText = request.downloadHandler.text;
-                Debug.Log("Replicate response: " + responseText);
-
                 string imageUrl = ExtractFirstOutputUrl(responseText);
+
                 if (string.IsNullOrEmpty(imageUrl))
                 {
-                    Debug.LogError("No image URL found in output.");
+                    isGenerating = false;
+                    onCompleted?.Invoke(false, null, null, null, "No image URL returned.");
                     yield break;
                 }
 
-                yield return StartCoroutine(DownloadSaveAndApply(imageUrl));
+                yield return StartCoroutine(
+                    DownloadAndSaveGeneratedImage(imageUrl, outputPath, finalPrompt, onCompleted));
                 yield break;
             }
 
             string errorText = request.downloadHandler.text;
-            Debug.LogError("Replicate request failed: " + request.error);
-            Debug.LogError(errorText);
 
             if (request.responseCode == 429)
             {
                 int retryAfterSeconds = GetRetryAfterSeconds(errorText);
                 retryAfterSeconds = Mathf.Max(retryAfterSeconds, 10);
-
-                Debug.LogWarning("Rate limited. Retrying in " + retryAfterSeconds + " seconds...");
                 yield return new WaitForSeconds(retryAfterSeconds);
-
                 attempt++;
                 continue;
             }
 
-            Destroy(readableTexture);
+            Destroy(readableReference);
+            isGenerating = false;
+            onCompleted?.Invoke(false, null, null, null, request.error);
             yield break;
         }
 
-        Destroy(readableTexture);
-        Debug.LogError("Replicate request failed after max retries.");
+        Destroy(readableReference);
+        isGenerating = false;
+        onCompleted?.Invoke(false, null, null, null, "Generation failed after maximum retries.");
+    }
+
+    private IEnumerator DownloadAndSaveGeneratedImage(
+        string imageUrl,
+        string outputPath,
+        string finalPrompt,
+        Action<bool, string, Texture2D, string, string> onCompleted)
+    {
+        using UnityWebRequest request = UnityWebRequestTexture.GetTexture(imageUrl);
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            isGenerating = false;
+            onCompleted?.Invoke(false, null, null, null, "Failed to download generated image.");
+            yield break;
+        }
+
+        Texture2D texture = DownloadHandlerTexture.GetContent(request);
+
+        if (texture == null)
+        {
+            isGenerating = false;
+            onCompleted?.Invoke(false, null, null, null, "Downloaded texture is null.");
+            yield break;
+        }
+
+        Texture2D cleanedTexture = RemoveWhiteBackgroundSoft(texture);
+        byte[] pngBytes = cleanedTexture.EncodeToPNG();
+        File.WriteAllBytes(outputPath, pngBytes);
+
+#if UNITY_EDITOR
+        string assetPath = ToAssetPath(outputPath);
+        if (!string.IsNullOrWhiteSpace(assetPath))
+        {
+            UnityEditor.AssetDatabase.ImportAsset(assetPath, UnityEditor.ImportAssetOptions.ForceUpdate);
+
+            var importer = UnityEditor.AssetImporter.GetAtPath(assetPath) as UnityEditor.TextureImporter;
+            if (importer != null)
+            {
+                importer.textureType = UnityEditor.TextureImporterType.Sprite;
+                importer.spriteImportMode = UnityEditor.SpriteImportMode.Single;
+                importer.alphaSource = UnityEditor.TextureImporterAlphaSource.FromInput;
+                importer.alphaIsTransparency = true;
+                importer.mipmapEnabled = false;
+                importer.SaveAndReimport();
+            }
+        }
+#endif
+
+        isGenerating = false;
+        onCompleted?.Invoke(true, outputPath, cleanedTexture, finalPrompt, null);
+    }
+
+    public string GetPlayerOutputPath(string slotId)
+    {
+#if UNITY_EDITOR
+        Directory.CreateDirectory(playerOutputFolderRelative);
+        return Path.Combine(playerOutputFolderRelative, $"{slotId}_player.png");
+#else
+        string folder = Path.Combine(Application.persistentDataPath, "CharacterOutput");
+        Directory.CreateDirectory(folder);
+        return Path.Combine(folder, $"{slotId}_player.png");
+#endif
+    }
+
+    public string GetSpiritOutputPath(string slotId)
+    {
+#if UNITY_EDITOR
+        Directory.CreateDirectory(spiritOutputFolderRelative);
+        return Path.Combine(spiritOutputFolderRelative, $"{slotId}_spirit.png");
+#else
+        string folder = Path.Combine(Application.persistentDataPath, "SpiritOutput");
+        Directory.CreateDirectory(folder);
+        return Path.Combine(folder, $"{slotId}_spirit.png");
+#endif
+    }
+
+    private string ToAssetPath(string fullOrRelativePath)
+    {
+        string normalized = fullOrRelativePath.Replace("\\", "/");
+
+        if (normalized.StartsWith("Assets/"))
+            return normalized;
+
+        string dataPath = Application.dataPath.Replace("\\", "/");
+        if (normalized.StartsWith(dataPath))
+        {
+            return "Assets" + normalized.Substring(dataPath.Length);
+        }
+
+        return null;
     }
 
     private Texture2D MakeTextureReadable(Texture2D source)
@@ -257,65 +444,10 @@ public class CharacterSpriteGenerator : MonoBehaviour
                 return seconds;
             }
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Debug.LogWarning("Failed to parse retry_after: " + e.Message);
         }
 
         return 10;
-    }
-
-    private IEnumerator DownloadSaveAndApply(string imageUrl)
-    {
-        using UnityWebRequest request = UnityWebRequestTexture.GetTexture(imageUrl);
-        yield return request.SendWebRequest();
-
-        if (request.result != UnityWebRequest.Result.Success)
-        {
-            Debug.LogError("Failed to download output image: " + request.error);
-            yield break;
-        }
-
-        Texture2D texture = DownloadHandlerTexture.GetContent(request);
-
-        if (texture == null)
-        {
-            Debug.LogError("Downloaded texture is null.");
-            yield break;
-        }
-
-        Texture2D cleanedTexture = RemoveWhiteBackgroundSoft(texture);
-
-        byte[] pngBytes = cleanedTexture.EncodeToPNG();
-
-        string relativeAssetPath = "Assets/Resources/Character/Output/CharacterSprite.png";
-        string outputPath = Path.Combine(
-            Application.dataPath,
-            "Resources/Character/Output/CharacterSprite.png"
-        );
-
-        File.WriteAllBytes(outputPath, pngBytes);
-
-        Debug.Log("Saved to: " + outputPath);
-
-#if UNITY_EDITOR
-        UnityEditor.AssetDatabase.ImportAsset(relativeAssetPath, UnityEditor.ImportAssetOptions.ForceUpdate);
-
-        var importer = UnityEditor.AssetImporter.GetAtPath(relativeAssetPath) as UnityEditor.TextureImporter;
-        if (importer != null)
-        {
-            importer.textureType = UnityEditor.TextureImporterType.Sprite;
-            importer.spriteImportMode = UnityEditor.SpriteImportMode.Single;
-            importer.alphaSource = UnityEditor.TextureImporterAlphaSource.FromInput;
-            importer.alphaIsTransparency = true;
-            importer.mipmapEnabled = false;
-            importer.SaveAndReimport();
-        }
-#endif
-
-        if (spriteApplier != null)
-        {
-            spriteApplier.ApplyTexture(cleanedTexture);
-        }
     }
 }

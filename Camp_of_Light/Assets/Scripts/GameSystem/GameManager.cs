@@ -278,8 +278,6 @@ public class GameManager : MonoBehaviour
             Profile = new PlayerProfile
             {
                 Name = save.Profile.Name,
-                Age = save.Profile.Age,
-                Profession = save.Profile.Profession,
                 Interests = save.Profile.Interests != null ? new List<string>(save.Profile.Interests) : new List<string>()
             },
             Stats = new PlayerStats
@@ -314,8 +312,6 @@ public class GameManager : MonoBehaviour
             Profile = new PlayerProfileData
             {
                 Name = state.Profile.Name,
-                Age = state.Profile.Age,
-                Profession = state.Profile.Profession,
                 Interests = state.Profile.Interests != null ? new List<string>(state.Profile.Interests) : new List<string>()
             },
             Stats = new PlayerStatsData

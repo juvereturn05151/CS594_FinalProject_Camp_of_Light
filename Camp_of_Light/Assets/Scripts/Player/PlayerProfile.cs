@@ -5,31 +5,36 @@ using System.Collections.Generic;
 public class PlayerProfile
 {
     public string Name;
-    public int Age;
-    public string Profession;
+
+    public string CharacterAppearancePrompt;
+    public string PlayerCharacterImagePath;
+
     public List<string> Interests = new();
+
+    public string SpiritCharacterPrompt;
+    public string SpiritCharacterImagePath;
 
     public PlayerProfile()
     {
         Name = string.Empty;
-        Age = 0;
-        Profession = string.Empty;
-        Interests = new List<string>();
-    }
 
-    public PlayerProfile(string name, int age, string profession, List<string> interests)
-    {
-        Name = name;
-        Age = age;
-        Profession = profession;
-        Interests = interests ?? new List<string>();
+        CharacterAppearancePrompt = string.Empty;
+        PlayerCharacterImagePath = string.Empty;
+
+        Interests = new List<string>();
+
+        SpiritCharacterPrompt = string.Empty;
+        SpiritCharacterImagePath = string.Empty;
     }
 
     public bool IsValid()
     {
         return !string.IsNullOrWhiteSpace(Name)
-            && Age > 0
-            && !string.IsNullOrWhiteSpace(Profession);
+            && !string.IsNullOrWhiteSpace(CharacterAppearancePrompt)
+            && !string.IsNullOrWhiteSpace(PlayerCharacterImagePath)
+            && Interests != null
+            && Interests.Count == 3
+            && !string.IsNullOrWhiteSpace(SpiritCharacterImagePath);
     }
 
     public override string ToString()
@@ -38,6 +43,12 @@ public class PlayerProfile
             ? "None"
             : string.Join(", ", Interests);
 
-        return $"Name: {Name}\nAge: {Age}\nProfession: {Profession}\nInterests: {interestsText}";
+        return
+            $"Name: {Name}\n" +
+            $"Appearance Prompt: {CharacterAppearancePrompt}\n" +
+            $"Player Character Image Path: {PlayerCharacterImagePath}\n" +
+            $"Interests: {interestsText}\n" +
+            $"Spirit Prompt: {SpiritCharacterPrompt}\n" +
+            $"Spirit Image Path: {SpiritCharacterImagePath}";
     }
 }

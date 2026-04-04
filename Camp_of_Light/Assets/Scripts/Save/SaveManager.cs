@@ -30,8 +30,6 @@ public class SaveManager : MonoBehaviour
         EnsureFixedSlotsExist();
     }
 
-    // Keep this method name so other scripts do not break,
-    // but now it only creates metadata for an EMPTY fixed slot if needed.
     public string CreateNewSlot(string displayName)
     {
         SaveSlotMeta emptySlot = GetAllSlots().FirstOrDefault(x => !x.HasData);
@@ -98,21 +96,27 @@ public class SaveManager : MonoBehaviour
 
         string path = GetSlotPath(slotId);
         if (!File.Exists(path))
+            return null;
+
+        try
         {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonConvert.DeserializeObject<SaveData>(json);
+
+            if (data == null)
+            {
+                Debug.LogWarning($"[SaveManager] Failed to deserialize save in slot: {slotId}");
+                return null;
+            }
+
+            CurrentSlotId = slotId;
+            return data;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[SaveManager] Failed to load slot '{slotId}': {e.Message}");
             return null;
         }
-
-        string json = File.ReadAllText(path);
-        SaveData data = JsonConvert.DeserializeObject<SaveData>(json);
-
-        if (data == null)
-        {
-            Debug.LogWarning($"[SaveManager] Failed to deserialize save in slot: {slotId}");
-            return null;
-        }
-
-        CurrentSlotId = slotId;
-        return data;
     }
 
     public List<SaveSlotMeta> GetAllSlots()
@@ -120,8 +124,6 @@ public class SaveManager : MonoBehaviour
         EnsureFixedSlotsExist();
 
         SaveManifest manifest = LoadManifest();
-
-        // Always return all 3 slots in fixed order
         List<SaveSlotMeta> result = new();
 
         for (int i = 1; i <= MaxSlots; i++)
@@ -159,6 +161,16 @@ public class SaveManager : MonoBehaviour
         return File.Exists(GetSlotPath(slotId));
     }
 
+    public string GetPlayerImagePathForSlot(string slotId)
+    {
+        return Path.Combine(SaveFolder, $"{slotId}_player.png");
+    }
+
+    public string GetSpiritImagePathForSlot(string slotId)
+    {
+        return Path.Combine(SaveFolder, $"{slotId}_spirit.png");
+    }
+
     public void DeleteSlot(string slotId)
     {
         if (!IsValidFixedSlot(slotId))
@@ -167,9 +179,17 @@ public class SaveManager : MonoBehaviour
             return;
         }
 
-        string path = GetSlotPath(slotId);
-        if (File.Exists(path))
-            File.Delete(path);
+        SaveData existingSave = Load(slotId);
+
+        string savePath = GetSlotPath(slotId);
+        if (File.Exists(savePath))
+            File.Delete(savePath);
+
+        DeleteIfExists(existingSave?.Profile?.PlayerCharacterImagePath);
+        DeleteIfExists(existingSave?.Profile?.SpiritCharacterImagePath);
+
+        DeleteIfExists(GetPlayerImagePathForSlot(slotId));
+        DeleteIfExists(GetSpiritImagePathForSlot(slotId));
 
         SaveManifest manifest = LoadManifest();
         SaveSlotMeta existing = manifest.Slots.FirstOrDefault(x => x.SlotId == slotId);
@@ -193,6 +213,12 @@ public class SaveManager : MonoBehaviour
             CurrentSlotId = null;
     }
 
+    private void DeleteIfExists(string path)
+    {
+        if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+            File.Delete(path);
+    }
+
     private void WriteSave(SaveData data)
     {
         string path = GetSlotPath(data.SlotId);
@@ -205,23 +231,23 @@ public class SaveManager : MonoBehaviour
         SaveManifest manifest = LoadManifest();
         SaveSlotMeta existing = manifest.Slots.FirstOrDefault(x => x.SlotId == data.SlotId);
 
+        string displayName = string.IsNullOrWhiteSpace(data.SaveDisplayName)
+            ? $"Slot {GetSlotNumber(data.SlotId)}"
+            : data.SaveDisplayName;
+
         if (existing == null)
         {
             manifest.Slots.Add(new SaveSlotMeta
             {
                 SlotId = data.SlotId,
-                SaveDisplayName = string.IsNullOrWhiteSpace(data.SaveDisplayName)
-                    ? $"Slot {GetSlotNumber(data.SlotId)}"
-                    : data.SaveDisplayName,
+                SaveDisplayName = displayName,
                 UpdatedAtUtc = data.UpdatedAtUtc,
                 HasData = true
             });
         }
         else
         {
-            existing.SaveDisplayName = string.IsNullOrWhiteSpace(data.SaveDisplayName)
-                ? $"Slot {GetSlotNumber(data.SlotId)}"
-                : data.SaveDisplayName;
+            existing.SaveDisplayName = displayName;
             existing.UpdatedAtUtc = data.UpdatedAtUtc;
             existing.HasData = true;
         }
@@ -282,7 +308,6 @@ public class SaveManager : MonoBehaviour
             }
         }
 
-        // Remove old random GUID-based slots from manifest
         int removed = manifest.Slots.RemoveAll(x => !IsValidFixedSlot(x.SlotId));
         if (removed > 0)
             changed = true;

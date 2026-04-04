@@ -174,8 +174,6 @@ public class LoadGameMenuController : MonoBehaviour
             Profile = new PlayerProfile
             {
                 Name = save.Profile.Name,
-                Age = save.Profile.Age,
-                Profession = save.Profile.Profession,
                 Interests = save.Profile.Interests != null
                     ? new List<string>(save.Profile.Interests)
                     : new List<string>()

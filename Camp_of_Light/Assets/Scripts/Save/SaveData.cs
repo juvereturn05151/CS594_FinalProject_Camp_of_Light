@@ -40,9 +40,15 @@ public class SaveData
 public class PlayerProfileData
 {
     public string Name;
-    public int Age;
-    public string Profession;
+
+    // Page 2
+    public string CharacterAppearancePrompt;
+    public string PlayerCharacterImagePath;
+
+    // Page 3
     public List<string> Interests = new();
+    public string SpiritCharacterPrompt;
+    public string SpiritCharacterImagePath;
 }
 
 [Serializable]
@@ -82,7 +88,5 @@ public class SaveSlotMeta
     public string SlotId;
     public string SaveDisplayName;
     public string UpdatedAtUtc;
-
-    // NEW: lets UI know whether this slot actually has save data
     public bool HasData;
 }
