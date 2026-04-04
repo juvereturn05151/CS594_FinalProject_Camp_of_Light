@@ -73,5 +73,6 @@ crashlytics-build.properties
 
 
 # Secrets / Environment variables
+/[Aa]ssets/[Ss]treamingAssets/*.env
 /[Aa]ssets/[Ss]treamingAssets/.env
 /[Aa]ssets/[Ss]treamingAssets/.env.*
