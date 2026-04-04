@@ -2058,7 +2058,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1423b8bbfbcb1449882a1c706882be4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  configuration: {fileID: 11400000, guid: a75dcf62f66bd7146b9dbe88982caee3, type: 2}
+  configuration: {fileID: 11400000, guid: ed07aec6b6f35084b8f930558e96333c, type: 2}
   session:
     Profile:
       Name: 
