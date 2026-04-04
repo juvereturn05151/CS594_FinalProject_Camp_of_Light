@@ -8,8 +8,7 @@ using UnityEngine.Networking;
 
 public class CharacterSpriteGenerator : MonoBehaviour
 {
-    [Header("Replicate")]
-    [SerializeField] private string apiToken = "YOUR_REPLICATE_API_TOKEN";
+
 
     [TextArea(3, 8)]
     [SerializeField]
@@ -30,21 +29,20 @@ public class CharacterSpriteGenerator : MonoBehaviour
     [SerializeField] private bool generateOnStart = false;
 
     private const string Url = "https://api.replicate.com/v1/models/google/nano-banana/predictions";
+    private string apiToken;
     private bool isGenerating = false;
 
     private void Start()
     {
-        if (generateOnStart)
-        {
-            GenerateCharacterSprite();
-        }
-    }
+        // Load .env (StreamingAssets recommended)
+        string envPath = Path.Combine(Application.streamingAssetsPath, "nano-banana.env");
+        DotEnv.Load(envPath);
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.G))
+        apiToken = DotEnv.Get("NANO_BANANA_KEY");
+
+        if (string.IsNullOrEmpty(apiToken))
         {
-            GenerateCharacterSprite();
+            Debug.LogError("API token not found in .env");
         }
     }
 
