@@ -18,7 +18,6 @@ public class LoadGameMenuController : MonoBehaviour
     [Header("Scenes")]
     [SerializeField] private string gameplaySceneName = "Gameplay";
     [SerializeField] private string profileCreationSceneName = "ProfileCreation";
-    [SerializeField] private string mainMenuSceneName = "MainMenu";
 
     [Header("Mode")]
     [SerializeField] private MenuMode mode = MenuMode.LoadExistingGame;
@@ -165,7 +164,7 @@ public class LoadGameMenuController : MonoBehaviour
 
     public void OnBackPressed()
     {
-        SceneManager.LoadScene(mainMenuSceneName);
+        gameObject.SetActive(false);
     }
 
     private GameRunState ConvertSaveToRunState(SaveData save)
