@@ -76,3 +76,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/*.env
 /[Aa]ssets/[Ss]treamingAssets/.env
 /[Aa]ssets/[Ss]treamingAssets/.env.*
+.env
+.env.*
+*.env
