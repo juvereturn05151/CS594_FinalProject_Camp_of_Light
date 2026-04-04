@@ -1,11 +1,13 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WakeUpPhaseManager : BasePhaseManager
 {
     [SerializeField] private GameObject wakeUpPanel;
     [SerializeField] private TMP_Text wakeUpText;
     [SerializeField] private TypewriterText typewriterText;
+    [SerializeField] private Image player;
 
     public override GamePhase Phase => GamePhase.WakeUp;
 
@@ -13,6 +15,7 @@ public class WakeUpPhaseManager : BasePhaseManager
     {
         SetActive(gameObject, true);
         SetActive(wakeUpPanel, true);
+        ApplyGeneratedSprites(state, player, null);
 
         if (wakeUpText != null) 
         {

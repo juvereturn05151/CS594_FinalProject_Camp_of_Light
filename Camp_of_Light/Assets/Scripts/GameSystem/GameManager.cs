@@ -8,21 +8,21 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Phase Managers")]
-    [SerializeField] 
+    [SerializeField]
     private WakeUpPhaseManager wakeUpPhaseManager;
-    [SerializeField] 
+    [SerializeField]
     private PreachingPhaseManager preachingPhaseManager;
-    [SerializeField] 
+    [SerializeField]
     private BrainwashPhaseManager brainwashPhaseManager;
-    [SerializeField] 
+    [SerializeField]
     private ConsciencePhaseManager consciencePhaseManager;
-    [SerializeField] 
+    [SerializeField]
     private SleepPhaseManager sleepPhaseManager;
 
     [Header("Scene Names")]
-    [SerializeField] 
+    [SerializeField]
     private string mainMenuSceneName = "MainMenu";
-    [SerializeField] 
+    [SerializeField]
     private string gameplaySceneName = "Gameplay";
 
     public GameRunState State { get; private set; }
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour
         preachingPhaseManager.PreacherController.Init();
         brainwashPhaseManager.BrainwasherController.Init();
         consciencePhaseManager.ConscienceController.Init();
-
+        Debug.Log(Application.persistentDataPath);
         State = LoadInitialState();
         InjectStateIntoSystems();
         EnterCurrentPhase();
@@ -186,7 +186,15 @@ public class GameManager : MonoBehaviour
     {
         return new GameRunState
         {
-            Profile = new PlayerProfile(),
+            Profile = new PlayerProfile
+            {
+                Name = string.Empty,
+                CharacterAppearancePrompt = string.Empty,
+                PlayerCharacterImagePath = string.Empty,
+                Interests = new List<string>(),
+                SpiritCharacterPrompt = string.Empty,
+                SpiritCharacterImagePath = string.Empty
+            },
             Stats = new PlayerStats(),
             CurrentDay = 1,
             MaxDays = 45,
@@ -220,7 +228,7 @@ public class GameManager : MonoBehaviour
             gameDirector.Escaped = State.Escaped;
         }
 
-        if (regretSystem != null) 
+        if (regretSystem != null)
         {
             regretSystem.regrets = State.Regrets ?? new List<Regret>();
         }
@@ -278,7 +286,13 @@ public class GameManager : MonoBehaviour
             Profile = new PlayerProfile
             {
                 Name = save.Profile.Name,
-                Interests = save.Profile.Interests != null ? new List<string>(save.Profile.Interests) : new List<string>()
+                CharacterAppearancePrompt = save.Profile.CharacterAppearancePrompt,
+                PlayerCharacterImagePath = save.Profile.PlayerCharacterImagePath,
+                Interests = save.Profile.Interests != null
+                    ? new List<string>(save.Profile.Interests)
+                    : new List<string>(),
+                SpiritCharacterPrompt = save.Profile.SpiritCharacterPrompt,
+                SpiritCharacterImagePath = save.Profile.SpiritCharacterImagePath
             },
             Stats = new PlayerStats
             {
@@ -312,7 +326,13 @@ public class GameManager : MonoBehaviour
             Profile = new PlayerProfileData
             {
                 Name = state.Profile.Name,
-                Interests = state.Profile.Interests != null ? new List<string>(state.Profile.Interests) : new List<string>()
+                CharacterAppearancePrompt = state.Profile.CharacterAppearancePrompt,
+                PlayerCharacterImagePath = state.Profile.PlayerCharacterImagePath,
+                Interests = state.Profile.Interests != null
+                    ? new List<string>(state.Profile.Interests)
+                    : new List<string>(),
+                SpiritCharacterPrompt = state.Profile.SpiritCharacterPrompt,
+                SpiritCharacterImagePath = state.Profile.SpiritCharacterImagePath
             },
             Stats = new PlayerStatsData
             {

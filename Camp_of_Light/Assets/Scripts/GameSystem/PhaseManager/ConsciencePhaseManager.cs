@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using OpenAI.Samples.Chat;
 
@@ -5,9 +6,15 @@ public class ConsciencePhaseManager : BasePhaseManager
 {
     [SerializeField] private ConscienceChatBehaviour conscienceController;
     public ConscienceChatBehaviour ConscienceController => conscienceController;
+
     [SerializeField] private GameObject conscienceScene;
     [SerializeField] private GameObject conscienceUI;
     [SerializeField] private GameObject cultProgressUI;
+
+    [SerializeField] private SpriteRenderer player;
+    [SerializeField] private SpriteRenderer spirit;
+
+
 
     public override GamePhase Phase => GamePhase.ConscienceTalk;
 
@@ -18,6 +25,8 @@ public class ConsciencePhaseManager : BasePhaseManager
         SetActive(conscienceScene, true);
         SetActive(conscienceUI, true);
         SetActive(cultProgressUI, true);
+
+        ApplyGeneratedSprites(state,player, spirit);
 
         if (conscienceController != null)
         {
@@ -49,4 +58,6 @@ public class ConsciencePhaseManager : BasePhaseManager
             LastExtractedRegret = state.LastExtractedRegret,
         };
     }
+
+
 }

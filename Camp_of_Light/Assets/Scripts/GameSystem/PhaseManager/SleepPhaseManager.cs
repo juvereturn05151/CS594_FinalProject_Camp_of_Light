@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SleepPhaseManager : BasePhaseManager
 {
@@ -8,6 +9,7 @@ public class SleepPhaseManager : BasePhaseManager
     [SerializeField] private TypewriterText typewriterText;
     [SerializeField] private GameObject cultProgressUI;
     [SerializeField] private GameObject nextday_button;
+    [SerializeField] private Image player;
 
     public override GamePhase Phase => GamePhase.Sleep;
 
@@ -18,6 +20,8 @@ public class SleepPhaseManager : BasePhaseManager
         SetActive(gameObject, true);
         SetActive(sleepPanel, true);
         SetActive(cultProgressUI, false);
+
+        ApplyGeneratedSprites(state, player, null);
     }
 
     public override void ExitPhase()

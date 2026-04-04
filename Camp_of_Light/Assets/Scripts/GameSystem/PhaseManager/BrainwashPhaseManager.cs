@@ -8,6 +8,7 @@ public class BrainwashPhaseManager : BasePhaseManager
     [SerializeField] private GameObject brainwashScene;
     [SerializeField] private GameObject brainwashUI;
     [SerializeField] private GameObject cultProgressUI;
+    [SerializeField] private SpriteRenderer player;
 
     public override GamePhase Phase => GamePhase.BrainwashingLesson;
 
@@ -21,6 +22,9 @@ public class BrainwashPhaseManager : BasePhaseManager
         SetActive(brainwashUI, true);
         SetActive(cultProgressUI, true);
         SoundManager.Instance.PlayMusic("Brainwash");
+
+        ApplyGeneratedSprites(state, player, null);
+
         if (brainwasherController != null)
         {
             brainwasherController.gameObject.SetActive(true);

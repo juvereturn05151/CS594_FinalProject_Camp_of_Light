@@ -64,7 +64,16 @@ public class CharacterSpriteGenerator : MonoBehaviour
         return
             $"Generate a seated player character inspired by {safeName}. " +
             $"The character should look like: {look}. " +
-            $"Use the provided template as the body pose reference and keep the sitting posture. " +
+
+            $"Use the provided template as the exact pose reference. " +
+            $"The character MUST match the same sitting posture, proportions, and orientation as the template. " +
+            $"Do NOT change the pose. Do NOT reinterpret the pose. Do NOT mirror or flip the pose. " +
+            $"Keep the character facing LEFT exactly like the reference image. " +
+
+            $"The background MUST be pure solid white. " +
+            $"No gradients. No shadows. No textures. No environment. " +
+            $"Only a clean white background. " +
+
             playerStyleSuffix;
     }
 
@@ -83,7 +92,16 @@ public class CharacterSpriteGenerator : MonoBehaviour
             $"Generate a seated spirit character inspired by {safeName}. " +
             $"The spirit should visually relate to this appearance: {look}. " +
             $"The spirit must embody these three interests: {interestsText}. " +
-            $"Use the provided template as the body pose reference and keep the sitting posture. " +
+
+            $"Use the provided template as the exact pose reference. " +
+            $"The character MUST match the same sitting posture, proportions, and orientation as the template. " +
+            $"Do NOT change the pose. Do NOT reinterpret the pose. Do NOT mirror or flip the pose. " +
+            $"Keep the character facing LEFT exactly like the reference image. " +
+
+            $"The background MUST be pure solid white. " +
+            $"No gradients. No shadows. No textures. No environment. " +
+            $"Only a clean white background. " +
+
             spiritStyleSuffix;
     }
 
