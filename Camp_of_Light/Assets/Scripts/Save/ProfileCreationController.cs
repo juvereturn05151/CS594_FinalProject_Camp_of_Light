@@ -45,6 +45,7 @@ public class ProfileCreationController : MonoBehaviour
 
     private void Start()
     {
+        SoundManager.Instance?.PlayMusic("ProfileCreation");
         ShowPage(0);
         RefreshButtons();
         SetStatus("");

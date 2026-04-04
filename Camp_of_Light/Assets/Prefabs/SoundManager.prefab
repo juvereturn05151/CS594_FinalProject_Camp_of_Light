@@ -327,6 +327,11 @@ MonoBehaviour:
     volume: 0.5
     pitch: 1
     loop: 1
+  - id: ProfileCreation
+    clip: {fileID: 8300000, guid: ccd78b9c97e162a49a8e2c0665deec9a, type: 3}
+    volume: 0.5
+    pitch: 1
+    loop: 1
   sfxList:
   - id: Click
     clip: {fileID: 8300000, guid: 47180f2c54634384289f9ed4bfa9261a, type: 3}
