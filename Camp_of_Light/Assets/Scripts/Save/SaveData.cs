@@ -82,4 +82,7 @@ public class SaveSlotMeta
     public string SlotId;
     public string SaveDisplayName;
     public string UpdatedAtUtc;
+
+    // NEW: lets UI know whether this slot actually has save data
+    public bool HasData;
 }

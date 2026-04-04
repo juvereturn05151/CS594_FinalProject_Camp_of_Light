@@ -3,26 +3,49 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
-    [SerializeField] private string profileSceneName = "ProfileCreation";
     [SerializeField] private string loadSceneName = "LoadGameMenu";
-
+    [SerializeField] private LoadGameMenuController loadGameMenuController;
     public void OnNewGamePressed()
     {
-        SoundManager.Instance.PlaySFX("Click");
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX("Click");
 
+        if (GameRuntimeContext.Instance == null)
+        {
+            Debug.LogError("[MainMenuController] GameRuntimeContext not found.");
+            return;
+        }
+
+        // Clear current runtime state, because player is starting a fresh run flow
         GameRuntimeContext.Instance.Clear();
-        SceneManager.LoadScene(profileSceneName);
+
+        // IMPORTANT:
+        // New Game should go to slot selection first.
+        // The slot menu must be configured/set to New Game mode.
+        loadGameMenuController.SetModeToNewGame();
     }
 
     public void OnLoadGamePressed()
     {
-        SoundManager.Instance.PlaySFX("Click");
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX("Click");
 
-        SceneManager.LoadScene(loadSceneName);
+        if (GameRuntimeContext.Instance == null)
+        {
+            Debug.LogError("[MainMenuController] GameRuntimeContext not found.");
+            return;
+        }
+
+        // Clear any unfinished pending new-game selection
+        GameRuntimeContext.Instance.ClearPendingNewGameSlot();
+        loadGameMenuController.SetModeToLoadGame();
     }
 
     public void OnQuitPressed()
     {
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX("Click");
+
         Application.Quit();
     }
 }

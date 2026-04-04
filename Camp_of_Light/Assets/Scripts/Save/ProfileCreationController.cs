@@ -28,6 +28,22 @@ public class ProfileCreationController : MonoBehaviour
             return;
         }
 
+        if (!GameRuntimeContext.Instance.HasPendingNewGameSlot())
+        {
+            Debug.LogWarning("[ProfileCreationController] No slot selected for New Game.");
+            return;
+        }
+
+        string slotId = GameRuntimeContext.Instance.PendingNewGameSlotId;
+
+        // Safety check: player must choose an EMPTY slot for New Game
+        SaveData existingSave = SaveManager.Instance.Load(slotId);
+        if (existingSave != null)
+        {
+            Debug.LogWarning("[ProfileCreationController] Selected slot already contains a save. Delete it first.");
+            return;
+        }
+
         string playerName = nameInput != null ? nameInput.text.Trim() : "";
         int age = ParseInt(ageInput != null ? ageInput.text : "", 18);
         string profession = professionInput != null ? professionInput.text.Trim() : "";
@@ -36,14 +52,6 @@ public class ProfileCreationController : MonoBehaviour
         string displayName = string.IsNullOrWhiteSpace(playerName)
             ? "New Save"
             : $"{playerName}'s Save";
-
-        string slotId = SaveManager.Instance.CreateNewSlot(displayName);
-
-        if (string.IsNullOrEmpty(slotId))
-        {
-            Debug.LogWarning("[ProfileCreationController] Could not create a new save slot.");
-            return;
-        }
 
         SaveData save = new SaveData
         {
@@ -87,8 +95,10 @@ public class ProfileCreationController : MonoBehaviour
         };
 
         SaveManager.Instance.Save(save);
+
         GameRuntimeContext.Instance.SetCurrentSave(save);
         GameRuntimeContext.Instance.SetCurrentRunState(ConvertSaveToRunState(save));
+        GameRuntimeContext.Instance.ClearPendingNewGameSlot();
 
         SceneManager.LoadScene(gameplaySceneName);
     }
