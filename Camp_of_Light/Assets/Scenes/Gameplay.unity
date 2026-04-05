@@ -1798,7 +1798,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &679781211
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2088,7 +2088,7 @@ MonoBehaviour:
   cultProgressUI: {fileID: 2652284493798224956}
   nextday_button: {fileID: 7755751491335785399}
   player: {fileID: 1481836426}
-  endingSceneDelay: 4
+  endingSceneDelay: 15
   cultGameDirector: {fileID: 1800934602}
 --- !u!4 &735539287
 Transform:
@@ -4670,7 +4670,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1728273007
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5173,7 +5173,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1822947754
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5358,7 +5358,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1848919509
 RectTransform:
   m_ObjectHideFlags: 0

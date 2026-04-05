@@ -105,10 +105,15 @@ public class GameManager : MonoBehaviour
 
     public void EnterCurrentPhase()
     {
-        if (State == null || State.IsGameOver)
+        if (State == null )
         {
             Debug.Log("[GameManager] Cannot enter phase. State null or game over.");
             return;
+        }
+
+        if (State.IsGameOver) 
+        {
+            GoToEndingScene();
         }
 
         activePhaseManager?.ExitPhase();
@@ -125,7 +130,7 @@ public class GameManager : MonoBehaviour
 
     public void AdvancePhase()
     {
-        if (State == null || State.IsGameOver)
+        if (State == null )
             return;
 
         if (State.CurrentPhase == GamePhase.Sleep)

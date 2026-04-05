@@ -67,7 +67,7 @@ public class SleepPhaseManager : BasePhaseManager
         state.ClearEndingFlags();
 
         // FAIL: ran out of days
-        if (state.CurrentDay > state.MaxDays)
+        if (state.CurrentDay >= state.MaxDays)
         {
             state.IsGameOver = true;
             state.bad_ending_2 = true;
