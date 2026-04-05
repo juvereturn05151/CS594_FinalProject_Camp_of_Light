@@ -2752,7 +2752,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: (You need Wokeness > 50 & Brainwash > 50 to Escape)
+  m_text: (You need Skepticism > 50 & Spiritual > 50 to Escape)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
   m_sharedMaterial: {fileID: 4374565636633926892, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
