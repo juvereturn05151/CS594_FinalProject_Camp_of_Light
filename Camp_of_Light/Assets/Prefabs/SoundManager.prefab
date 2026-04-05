@@ -342,6 +342,26 @@ MonoBehaviour:
     volume: 0.5
     pitch: 1
     loop: 1
+  - id: good_ending1
+    clip: {fileID: 8300000, guid: 99d07e34f3f68be4a881e96facfd94b9, type: 3}
+    volume: 0.5
+    pitch: 1
+    loop: 1
+  - id: good_ending2
+    clip: {fileID: 8300000, guid: 86234ab56a756164b9f5614e81a30cc5, type: 3}
+    volume: 0.5
+    pitch: 1
+    loop: 1
+  - id: bad_ending1
+    clip: {fileID: 8300000, guid: fe5f3ac2cb04bbc448ed0d521d89cec1, type: 3}
+    volume: 0.5
+    pitch: 1
+    loop: 1
+  - id: bad_ending2
+    clip: {fileID: 8300000, guid: 3a2704ac276757a429b5467e3b905b46, type: 3}
+    volume: 0.5
+    pitch: 1
+    loop: 1
   sfxList:
   - id: Click
     clip: {fileID: 8300000, guid: 47180f2c54634384289f9ed4bfa9261a, type: 3}

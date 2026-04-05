@@ -69,6 +69,8 @@ public class EndingSceneController : MonoBehaviour
 
         if (state.good_ending_2)
         {
+            SoundManager.Instance.PlayMusic("good_ending2");
+
             if (goodEnding2Panel != null)
                 goodEnding2Panel.SetActive(true);
 
@@ -77,6 +79,8 @@ public class EndingSceneController : MonoBehaviour
 
         if (state.good_ending_1)
         {
+            SoundManager.Instance.PlayMusic("good_ending1");
+
             if (goodEnding1Panel != null)
                 goodEnding1Panel.SetActive(true);
 
