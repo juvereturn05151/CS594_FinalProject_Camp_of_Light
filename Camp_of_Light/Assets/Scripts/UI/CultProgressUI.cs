@@ -172,8 +172,6 @@ public class CultProgressUI : MonoBehaviour
     {
         if (gameDirector.IsGameOver)
         {
-            if (gameDirector.Escaped)
-                return "Status: Escaped";
 
             if (stats.Brainwash >= 100 && stats.Confidence <= 10)
                 return "Status: Fully Brainwashed";

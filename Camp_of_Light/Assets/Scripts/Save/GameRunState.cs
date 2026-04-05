@@ -20,7 +20,10 @@ public class GameRunState
     public int MaxPromptsPerDay_Conscience = 4;
 
     public bool IsGameOver = false;
-    public bool Escaped = false;
+    public bool good_ending_1 = true;
+    public bool good_ending_2 = true;
+    public bool bad_ending_1 = true;
+    public bool bad_ending_2 = true;
 
     public string LastExtractedRegret = "";
 

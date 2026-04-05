@@ -50,7 +50,7 @@ public class SleepPhaseManager : BasePhaseManager
         if (state.CurrentDay > state.MaxDays)
         {
             state.IsGameOver = true;
-            state.Escaped = false;
+            state.bad_ending_2 = true;
             return;
         }
 
@@ -58,9 +58,28 @@ public class SleepPhaseManager : BasePhaseManager
         if (state.Stats.Wokeness >= 50.0f && state.Stats.Brainwash > 50.0f)
         {
             state.IsGameOver = true;
-            state.Escaped = true;
+
+            if (state.Stats.Confidence >= 50)
+            {
+                state.good_ending_2 = true;
+            }
+            else 
+            {
+                state.good_ending_1 = true;
+            }
+
+                
             return;
         }
+
+        if (state.Stats.Confidence >= 100) 
+        {
+            state.IsGameOver = true;
+            state.bad_ending_1 = true;
+            return;
+        }
+
+
 
         state.IsGameOver = false;
     }
@@ -69,7 +88,7 @@ public class SleepPhaseManager : BasePhaseManager
     {
         if (state.IsGameOver)
         {
-            if (state.Escaped)
+            if (state.good_ending_2 || state.good_ending_1)
                 return BuildPassSummary(state);
 
             return BuildFailSummary(state);

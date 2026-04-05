@@ -7,14 +7,17 @@ public class CultGameDirector : MonoBehaviour
     public int MaxDays = 45;
 
     public int PromptsUsed_Brainwash = 0;
-    public int MaxPrompts_Brainwash = 10;
+    public int MaxPrompts_Brainwash = 7;
     public int PromptsUsed_Conscience = 0;
     public int MaxPrompts_Conscience = 5;
 
     public bool IsGameOver = false;
     public bool IsBrainwashedOver = false;
     public bool IsConscienceOver = false;
-    public bool Escaped = false;
+    public bool good_ending_1 = true;
+    public bool good_ending_2 = true;
+    public bool bad_ending_1 = true;
+    public bool bad_ending_2 = true;
 
     public bool OnTurnFinished_Brainwash()
     {

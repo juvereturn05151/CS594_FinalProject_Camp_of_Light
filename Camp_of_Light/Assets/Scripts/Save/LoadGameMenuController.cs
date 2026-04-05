@@ -194,7 +194,10 @@ public class LoadGameMenuController : MonoBehaviour
             PromptsUsedToday_Conscience = save.PromptsUsedToday_Conscience,
             MaxPromptsPerDay_Conscience = save.MaxPromptsPerDay_Conscience,
             IsGameOver = save.IsGameOver,
-            Escaped = save.Escaped,
+            good_ending_1 = save.good_ending_1,
+            good_ending_2 = save.good_ending_2,
+            bad_ending_1 = save.bad_ending_1,
+            bad_ending_2 = save.bad_ending_2,
 
             LastExtractedRegret = save.LastExtractedRegret,
             CurrentDoctrineId = save.CurrentDoctrineId,

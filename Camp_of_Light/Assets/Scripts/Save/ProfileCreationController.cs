@@ -258,7 +258,10 @@ public class ProfileCreationController : MonoBehaviour
             PromptsUsedToday_Conscience = 0,
             MaxPromptsPerDay_Conscience = 5,
             IsGameOver = false,
-            Escaped = false,
+            good_ending_1 = false,
+            good_ending_2 = false,
+            bad_ending_1 = false,
+            bad_ending_2 = false,
 
             LastExtractedRegret = "",
             LastBibleVerse = "",
@@ -479,7 +482,10 @@ public class ProfileCreationController : MonoBehaviour
             PromptsUsedToday_Conscience = save.PromptsUsedToday_Conscience,
             MaxPromptsPerDay_Conscience = save.MaxPromptsPerDay_Conscience,
             IsGameOver = save.IsGameOver,
-            Escaped = save.Escaped,
+            good_ending_1 = save.good_ending_1,
+            good_ending_2 = save.good_ending_2,
+            bad_ending_1 = save.bad_ending_1,
+            bad_ending_2 = save.bad_ending_2,
 
             LastExtractedRegret = save.LastExtractedRegret,
             CurrentDoctrineId = save.CurrentDoctrineId,

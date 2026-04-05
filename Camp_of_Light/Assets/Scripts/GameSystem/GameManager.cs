@@ -204,7 +204,10 @@ public class GameManager : MonoBehaviour
             PromptsUsedToday_Conscience = 0,
             MaxPromptsPerDay_Conscience = 4,
             IsGameOver = false,
-            Escaped = false,
+            good_ending_1 = false,
+            good_ending_2 = false,
+            bad_ending_1 = false,
+            bad_ending_2 = false,
             LastExtractedRegret = string.Empty,
             CurrentDoctrineId = string.Empty,
             CurrentTacticId = string.Empty,
@@ -225,7 +228,11 @@ public class GameManager : MonoBehaviour
             gameDirector.PromptsUsed_Brainwash = State.PromptsUsedToday_Brainwash;
             gameDirector.MaxPrompts_Brainwash = State.MaxPromptsPerDay_Brainwash;
             gameDirector.IsGameOver = State.IsGameOver;
-            gameDirector.Escaped = State.Escaped;
+            gameDirector.good_ending_1 = State.good_ending_1;
+            gameDirector.good_ending_2 = State.good_ending_2;
+            gameDirector.bad_ending_1 = State.bad_ending_1;
+            gameDirector.bad_ending_2 = State.bad_ending_2;
+
         }
 
         if (regretSystem != null)
@@ -250,7 +257,10 @@ public class GameManager : MonoBehaviour
             State.PromptsUsedToday_Conscience = gameDirector.PromptsUsed_Conscience;
             State.MaxPromptsPerDay_Conscience = gameDirector.MaxPrompts_Conscience;
             State.IsGameOver = gameDirector.IsGameOver;
-            State.Escaped = gameDirector.Escaped;
+            State.good_ending_1 = gameDirector.good_ending_1;
+            State.good_ending_2 = gameDirector.good_ending_2;
+            State.bad_ending_1 = gameDirector.bad_ending_1;
+            State.bad_ending_2 = gameDirector.bad_ending_2;
         }
 
         if (regretSystem != null)
@@ -308,7 +318,10 @@ public class GameManager : MonoBehaviour
             PromptsUsedToday_Conscience = save.PromptsUsedToday_Conscience,
             MaxPromptsPerDay_Conscience = save.MaxPromptsPerDay_Conscience,
             IsGameOver = save.IsGameOver,
-            Escaped = save.Escaped,
+            good_ending_1 = save.good_ending_1,
+            good_ending_2 = save.good_ending_2,
+            bad_ending_1 = save.bad_ending_1,
+            bad_ending_2 = save.bad_ending_2,
             LastExtractedRegret = save.LastExtractedRegret,
             CurrentDoctrineId = save.CurrentDoctrineId,
             CurrentTacticId = save.CurrentTacticId,
@@ -348,7 +361,10 @@ public class GameManager : MonoBehaviour
             PromptsUsedToday_Conscience = state.PromptsUsedToday_Conscience,
             MaxPromptsPerDay_Conscience = state.MaxPromptsPerDay_Conscience,
             IsGameOver = state.IsGameOver,
-            Escaped = state.Escaped,
+            good_ending_1 = state.good_ending_1,
+            good_ending_2 = state.good_ending_2,
+            bad_ending_1 = state.bad_ending_1,
+            bad_ending_2 = state.bad_ending_2,
             LastExtractedRegret = state.LastExtractedRegret,
             CurrentDoctrineId = state.CurrentDoctrineId,
             CurrentTacticId = state.CurrentTacticId,

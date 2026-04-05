@@ -24,7 +24,10 @@ public class SaveData
     public int MaxPromptsPerDay_Conscience = 4;
 
     public bool IsGameOver = false;
-    public bool Escaped = false;
+    public bool good_ending_1 = false;
+    public bool good_ending_2 = false;
+    public bool bad_ending_1 = false;
+    public bool bad_ending_2 = false;
 
     public string LastExtractedRegret = "";
     public string LastBibleVerse = "";
