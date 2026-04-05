@@ -246,8 +246,8 @@ public class ProfileCreationController : MonoBehaviour
             Stats = new PlayerStatsData
             {
                 Confidence = 50,
-                Brainwash = 0,
-                Wokeness = 0
+                Spirituality = 0,
+                Skepticism = 0
             },
 
             CurrentDay = 1,
@@ -470,8 +470,8 @@ public class ProfileCreationController : MonoBehaviour
             Stats = new PlayerStats
             {
                 Confidence = save.Stats.Confidence,
-                Brainwash = save.Stats.Brainwash,
-                Wokeness = save.Stats.Wokeness
+                Spirituality = save.Stats.Spirituality,
+                Skepticism = save.Stats.Skepticism
             },
 
             CurrentDay = save.CurrentDay,

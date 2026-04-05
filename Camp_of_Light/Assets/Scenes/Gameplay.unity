@@ -1127,8 +1127,8 @@ MonoBehaviour:
       SpiritCharacterImagePath: 
     Stats:
       Confidence: 50
-      Brainwash: 0
-      Wokeness: 50
+      Spirituality: 0
+      Skepticism: 0
     LastExtractedRegret: 
   autoPreloadOnInit: 1
   useCache: 1
@@ -2075,8 +2075,8 @@ MonoBehaviour:
       SpiritCharacterImagePath: 
     Stats:
       Confidence: 50
-      Brainwash: 0
-      Wokeness: 50
+      Spirituality: 0
+      Skepticism: 0
     LastExtractedRegret: 
   gameDirector: {fileID: 1800934602}
   regretSystem: {fileID: 219640212}
@@ -2233,8 +2233,8 @@ MonoBehaviour:
       SpiritCharacterImagePath: 
     Stats:
       Confidence: 50
-      Brainwash: 0
-      Wokeness: 50
+      Spirituality: 0
+      Skepticism: 0
     LastExtractedRegret: 
   clearInputAfterSubmit: 1
   refocusInputAfterResponse: 1
@@ -2769,8 +2769,8 @@ MonoBehaviour:
       SpiritCharacterImagePath: 
     Stats:
       Confidence: 50
-      Brainwash: 0
-      Wokeness: 50
+      Spirituality: 0
+      Skepticism: 0
     LastExtractedRegret: 
   clearInputAfterSubmit: 1
   refocusInputAfterResponse: 1
@@ -3502,8 +3502,8 @@ MonoBehaviour:
       SpiritCharacterImagePath: 
     Stats:
       Confidence: 50
-      Brainwash: 0
-      Wokeness: 50
+      Spirituality: 0
+      Skepticism: 0
     LastExtractedRegret: 
 --- !u!1 &1382423761
 GameObject:
@@ -4281,8 +4281,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   confidenceFeedbackText: {fileID: 1549026301}
-  brainwashFeedbackText: {fileID: 277898919}
-  wokenessFeedbackText: {fileID: 1816244687}
+  spiritualityFeedbackText: {fileID: 277898919}
+  skepticismFeedbackText: {fileID: 1816244687}
   floatDistance: 80
   duration: 6
 --- !u!1 &1800934600
@@ -8583,7 +8583,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Wokeness Text
+  m_text: Skepticism Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
   m_sharedMaterial: {fileID: 4374565636633926892, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
@@ -10199,7 +10199,7 @@ GameObject:
   - component: {fileID: 496425911871533414}
   - component: {fileID: 4501103232767071188}
   m_Layer: 5
-  m_Name: Wokeness Text
+  m_Name: Skepticism Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11345,7 +11345,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Brainwash Text
+  m_text: Spiritual Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
   m_sharedMaterial: {fileID: 4374565636633926892, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
@@ -11450,13 +11450,13 @@ MonoBehaviour:
   dayText: {fileID: 5492351616179371752}
   promptText: {fileID: 6409992900392984756}
   confidenceText: {fileID: 4920597678187835244}
-  brainwashText: {fileID: 7352047090931029649}
-  wokenessText: {fileID: 4501103232767071188}
+  spiritualityText: {fileID: 7352047090931029649}
+  skepticismText: {fileID: 4501103232767071188}
   strongestRegretText: {fileID: 3857411503072596386}
   statusText: {fileID: 5338199415222772263}
   confidenceSlider: {fileID: 32130499796371797}
-  brainwashSlider: {fileID: 4748422332509561784}
-  wokenessSlider: {fileID: 1808668181745191920}
+  spitualitySlider: {fileID: 4748422332509561784}
+  skepticismSlider: {fileID: 1808668181745191920}
   promptSlider: {fileID: 2246664738216603332}
   statMin: 0
   statMax: 100
@@ -11793,7 +11793,7 @@ GameObject:
   - component: {fileID: 3732018034580154943}
   - component: {fileID: 1808668181745191920}
   m_Layer: 5
-  m_Name: WokenessSlider
+  m_Name: SkepticismSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

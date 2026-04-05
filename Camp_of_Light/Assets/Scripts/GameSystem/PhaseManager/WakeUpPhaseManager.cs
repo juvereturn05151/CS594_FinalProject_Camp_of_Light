@@ -40,9 +40,9 @@ public class WakeUpPhaseManager : BasePhaseManager
     {
         string status;
 
-        if (state.Stats.Wokeness >= 70)
+        if (state.Stats.Skepticism >= 70)
             status = "You wake with growing clarity.";
-        else if (state.Stats.Brainwash >= 70)
+        else if (state.Stats.Spirituality >= 70)
             status = "You wake with their doctrine still crowding your mind.";
         else if (state.Stats.Confidence <= 25)
             status = "You wake feeling fragile and uncertain.";

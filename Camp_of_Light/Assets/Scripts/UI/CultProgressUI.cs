@@ -13,15 +13,15 @@ public class CultProgressUI : MonoBehaviour
     [SerializeField] private TMP_Text dayText;
     [SerializeField] private TMP_Text promptText;
     [SerializeField] private TMP_Text confidenceText;
-    [SerializeField] private TMP_Text brainwashText;
-    [SerializeField] private TMP_Text wokenessText;
+    [SerializeField] private TMP_Text spiritualityText;
+    [SerializeField] private TMP_Text skepticismText;
     [SerializeField] private TMP_Text strongestRegretText;
     [SerializeField] private TMP_Text statusText;
 
     [Header("Progress Bars")]
     [SerializeField] private Slider confidenceSlider;
-    [SerializeField] private Slider brainwashSlider;
-    [SerializeField] private Slider wokenessSlider;
+    [SerializeField] private Slider spitualitySlider;
+    [SerializeField] private Slider skepticismSlider;
     [SerializeField] private Slider promptSlider;
 
     [Header("Bar Ranges")]
@@ -55,16 +55,16 @@ public class CultProgressUI : MonoBehaviour
             confidenceSlider.maxValue = statMax;
         }
 
-        if (brainwashSlider != null)
+        if (spitualitySlider != null)
         {
-            brainwashSlider.minValue = statMin;
-            brainwashSlider.maxValue = statMax;
+            spitualitySlider.minValue = statMin;
+            spitualitySlider.maxValue = statMax;
         }
 
-        if (wokenessSlider != null)
+        if (skepticismSlider != null)
         {
-            wokenessSlider.minValue = statMin;
-            wokenessSlider.maxValue = statMax;
+            skepticismSlider.minValue = statMin;
+            skepticismSlider.maxValue = statMax;
         }
 
         if (promptSlider != null)
@@ -124,20 +124,20 @@ public class CultProgressUI : MonoBehaviour
         if (confidenceText != null)
             confidenceText.text = $"Confidence: {stats.Confidence}";
 
-        if (brainwashText != null)
-            brainwashText.text = $"Spirituality: {stats.Brainwash}";
+        if (spiritualityText != null)
+            spiritualityText.text = $"Spirituality: {stats.Spirituality}";
 
-        if (wokenessText != null)
-            wokenessText.text = $"Skepticism: {stats.Wokeness}";
+        if (skepticismText != null)
+            skepticismText.text = $"Skepticism: {stats.Skepticism}";
 
         if (confidenceSlider != null)
             confidenceSlider.value = stats.Confidence;
 
-        if (brainwashSlider != null)
-            brainwashSlider.value = stats.Brainwash;
+        if (spitualitySlider != null)
+            spitualitySlider.value = stats.Spirituality;
 
-        if (wokenessSlider != null)
-            wokenessSlider.value = stats.Wokeness;
+        if (skepticismSlider != null)
+            skepticismSlider.value = stats.Skepticism;
 
         if (promptSlider != null)
         {
@@ -173,7 +173,7 @@ public class CultProgressUI : MonoBehaviour
         if (gameDirector.IsGameOver)
         {
 
-            if (stats.Brainwash >= 100 && stats.Confidence <= 10)
+            if (stats.Spirituality >= 100 && stats.Confidence <= 10)
                 return "Status: Fully Brainwashed";
 
             return "Status: Trapped Forever";
@@ -188,12 +188,12 @@ public class CultProgressUI : MonoBehaviour
                 return "Status: Listening";
 
             case GamePhase.BrainwashingLesson:
-                if (stats.Brainwash >= 70)
+                if (stats.Spirituality >= 70)
                     return "Status: Under Pressure";
                 return "Status: Brainwashing";
 
             case GamePhase.ConscienceTalk:
-                if (stats.Wokeness >= 70)
+                if (stats.Skepticism >= 70)
                     return "Status: Self-Reflection";
                 return "Status: Reflecting";
 
@@ -201,10 +201,10 @@ public class CultProgressUI : MonoBehaviour
                 return "Status: Resting";
         }
 
-        if (stats.Wokeness >= 70)
+        if (stats.Skepticism >= 70)
             return "Status: Awakening";
 
-        if (stats.Brainwash >= 70)
+        if (stats.Spirituality >= 70)
             return "Status: Deeply Indoctrinated";
 
         if (stats.Confidence <= 20)

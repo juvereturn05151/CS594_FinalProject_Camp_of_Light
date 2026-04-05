@@ -58,8 +58,8 @@ public class PlayerProfileData
 public class PlayerStatsData
 {
     public int Confidence = 50;
-    public int Brainwash = 0;
-    public int Wokeness = 0;
+    public int Spirituality = 0;
+    public int Skepticism = 0;
 }
 
 [Serializable]

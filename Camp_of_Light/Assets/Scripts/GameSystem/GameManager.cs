@@ -307,8 +307,8 @@ public class GameManager : MonoBehaviour
             Stats = new PlayerStats
             {
                 Confidence = save.Stats.Confidence,
-                Brainwash = save.Stats.Brainwash,
-                Wokeness = save.Stats.Wokeness
+                Spirituality = save.Stats.Spirituality,
+                Skepticism = save.Stats.Skepticism
             },
             CurrentDay = save.CurrentDay,
             MaxDays = save.MaxDays,
@@ -350,8 +350,8 @@ public class GameManager : MonoBehaviour
             Stats = new PlayerStatsData
             {
                 Confidence = state.Stats.Confidence,
-                Brainwash = state.Stats.Brainwash,
-                Wokeness = state.Stats.Wokeness
+                Spirituality = state.Stats.Spirituality,
+                Skepticism = state.Stats.Skepticism
             },
             CurrentDay = state.CurrentDay,
             MaxDays = state.MaxDays,

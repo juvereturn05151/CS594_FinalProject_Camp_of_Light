@@ -53,8 +53,8 @@ namespace OpenAI.Samples.Chat
                 : "no clear regret yet";
 
             int confidence = session != null ? session.Stats.Confidence : 0;
-            int brainwash = session != null ? session.Stats.Brainwash : 0;
-            int wokeness = session != null ? session.Stats.Wokeness : 0;
+            int brainwash = session != null ? session.Stats.Spirituality : 0;
+            int wokeness = session != null ? session.Stats.Skepticism : 0;
 
             return
                 $"Start a conversation naturally. " +
@@ -128,8 +128,8 @@ namespace OpenAI.Samples.Chat
             return
                 $@"Current player stats:
                 Confidence: {session.Stats.Confidence}
-                Brainwash: {session.Stats.Brainwash}
-                Wokeness: {session.Stats.Wokeness}
+                Brainwash: {session.Stats.Spirituality}
+                Wokeness: {session.Stats.Skepticism}
 
                 Last extracted regret:
                 {session.LastExtractedRegret}

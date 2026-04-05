@@ -55,7 +55,7 @@ public class SleepPhaseManager : BasePhaseManager
         }
 
         // PASS: reached awakening + brainwash threshold
-        if (state.Stats.Wokeness >= 50.0f && state.Stats.Brainwash > 50.0f)
+        if (state.Stats.Skepticism >= 50.0f && state.Stats.Spirituality > 50.0f)
         {
             state.IsGameOver = true;
 
@@ -102,8 +102,8 @@ public class SleepPhaseManager : BasePhaseManager
         int day = state.CurrentDay;
 
         float confidence = state.Stats.Confidence;
-        float brainwash = state.Stats.Brainwash;
-        float wokeness = state.Stats.Wokeness;
+        float brainwash = state.Stats.Spirituality;
+        float wokeness = state.Stats.Skepticism;
 
         string regret = GetStrongestRegretText();
         if (string.IsNullOrWhiteSpace(regret))
@@ -123,8 +123,8 @@ public class SleepPhaseManager : BasePhaseManager
     {
         int finalDay = state.CurrentDay;
         float confidence = state.Stats.Confidence;
-        float brainwash = state.Stats.Brainwash;
-        float wokeness = state.Stats.Wokeness;
+        float brainwash = state.Stats.Spirituality;
+        float wokeness = state.Stats.Skepticism;
 
         string regret = GetStrongestRegretText();
         if (string.IsNullOrWhiteSpace(regret))
@@ -154,8 +154,8 @@ public class SleepPhaseManager : BasePhaseManager
     {
         int finalDay = state.CurrentDay;
         float confidence = state.Stats.Confidence;
-        float brainwash = state.Stats.Brainwash;
-        float wokeness = state.Stats.Wokeness;
+        float brainwash = state.Stats.Spirituality;
+        float wokeness = state.Stats.Skepticism;
 
         string regret = GetStrongestRegretText();
         if (string.IsNullOrWhiteSpace(regret))

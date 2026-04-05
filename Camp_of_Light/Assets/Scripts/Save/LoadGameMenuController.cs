@@ -182,8 +182,8 @@ public class LoadGameMenuController : MonoBehaviour
             Stats = new PlayerStats
             {
                 Confidence = save.Stats.Confidence,
-                Brainwash = save.Stats.Brainwash,
-                Wokeness = save.Stats.Wokeness
+                Spirituality = save.Stats.Spirituality,
+                Skepticism = save.Stats.Skepticism
             },
 
             CurrentDay = save.CurrentDay,

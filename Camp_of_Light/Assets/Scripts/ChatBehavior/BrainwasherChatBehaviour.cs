@@ -129,13 +129,13 @@ Return ONLY valid JSON in this exact structure:
             if (stats == null)
                 return "Tell me honestly. What part of you still wants to trust your own thoughts more than the word you keep hearing?";
 
-            if (stats.Wokeness >= stats.Brainwash && stats.Wokeness >= stats.Confidence)
+            if (stats.Skepticism >= stats.Spirituality && stats.Skepticism >= stats.Confidence)
                 return "You still sound resistant. Why do you keep treating your own thoughts like they are safer than truth?";
 
-            if (stats.Confidence >= stats.Brainwash)
+            if (stats.Confidence >= stats.Spirituality)
                 return "You still sound self-assured. What in your life keeps proving that self-trust is not enough?";
 
-            if (stats.Brainwash >= 70)
+            if (stats.Spirituality >= 70)
                 return "If this message matters, who in your life still needs to hear it from you?";
 
             return "What are you still holding onto that keeps you from surrendering completely?";
@@ -153,8 +153,8 @@ Return ONLY valid JSON in this exact structure:
                 playerText,
                 session.LastExtractedRegret,
                 session.Stats.Confidence,
-                session.Stats.Brainwash,
-                session.Stats.Wokeness,
+                session.Stats.Spirituality,
+                session.Stats.Skepticism,
                 1
             ).FirstOrDefault();
 
@@ -162,8 +162,8 @@ Return ONLY valid JSON in this exact structure:
                 playerText,
                 session.LastExtractedRegret,
                 session.Stats.Confidence,
-                session.Stats.Brainwash,
-                session.Stats.Wokeness,
+                session.Stats.Spirituality,
+                session.Stats.Skepticism,
                 1
             ).FirstOrDefault();
 

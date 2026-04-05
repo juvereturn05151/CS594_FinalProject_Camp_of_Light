@@ -54,8 +54,8 @@ namespace OpenAI.Samples.Chat
                 strongestRegret,
                 session.LastExtractedRegret,
                 session.Stats.Confidence,
-                session.Stats.Brainwash,
-                session.Stats.Wokeness,
+                session.Stats.Spirituality,
+                session.Stats.Skepticism,
                 3
             );
 
@@ -93,15 +93,15 @@ namespace OpenAI.Samples.Chat
                 strongestRegret,
                 session.LastExtractedRegret,
                 session.Stats.Confidence,
-                session.Stats.Brainwash,
-                session.Stats.Wokeness,
+                session.Stats.Spirituality,
+                session.Stats.Skepticism,
                 1
             );
 
             if (doctrine != null && doctrine.Count > 0)
                 doctrineKey = NormalizeKeyPart(doctrine[0].verse);
 
-            return $"{day}|D:{doctrineKey}|C:{session.Stats.Confidence}|B:{session.Stats.Brainwash}|W:{session.Stats.Wokeness}|R:{strongestRegret}";
+            return $"{day}|D:{doctrineKey}|C:{session.Stats.Confidence}|B:{session.Stats.Spirituality}|W:{session.Stats.Skepticism}|R:{strongestRegret}";
         }
 
         protected override List<string> GetFallbackLines()
