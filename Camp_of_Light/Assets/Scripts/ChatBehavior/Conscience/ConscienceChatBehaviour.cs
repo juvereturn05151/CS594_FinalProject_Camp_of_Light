@@ -139,17 +139,31 @@ namespace OpenAI.Samples.Chat
 
         private string BuildUserPrompt(string playerText)
         {
+            var state = GameManager.Instance != null ? GameManager.Instance.State : null;
+
+            string playerName = state != null && !string.IsNullOrWhiteSpace(state.Profile.Name)
+                ? state.Profile.Name
+                : "the player";
+
+            string interests = state != null && state.Profile.Name != null && state.Profile.Interests.Count > 0
+                ? string.Join(", ", state.Profile.Name)
+                : "unknown";
+
             return
-                $@"Current player stats:
-                Confidence: {session.Stats.Confidence}
-                Brainwash: {session.Stats.Spirituality}
-                Wokeness: {session.Stats.Skepticism}
+                            $@"
+            Player Name: {playerName}
+            Player Interests: {interests}
 
-                Last extracted regret:
-                {session.LastExtractedRegret}
+            Current player stats:
+            Confidence: {session.Stats.Confidence}
+            Brainwash: {session.Stats.Spirituality}
+            Wokeness: {session.Stats.Skepticism}
 
-                Player says:
-                {playerText}";
+            Last extracted regret:
+            {session.LastExtractedRegret}
+
+            Player says:
+            {playerText}";
         }
 
         private ConscienceResponse ParseResponse(string raw)

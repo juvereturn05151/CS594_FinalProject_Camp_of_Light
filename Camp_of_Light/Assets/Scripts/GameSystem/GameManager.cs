@@ -237,6 +237,8 @@ public class GameManager : MonoBehaviour
             gameDirector.MaxDays = State.MaxDays;
             gameDirector.PromptsUsed_Brainwash = State.PromptsUsedToday_Brainwash;
             gameDirector.MaxPrompts_Brainwash = State.MaxPromptsPerDay_Brainwash;
+            gameDirector.PromptsUsed_Conscience = State.PromptsUsedToday_Conscience;
+            gameDirector.MaxPrompts_Conscience = State.MaxPromptsPerDay_Conscience;
             gameDirector.IsGameOver = State.IsGameOver;
             gameDirector.good_ending_1 = State.good_ending_1;
             gameDirector.good_ending_2 = State.good_ending_2;

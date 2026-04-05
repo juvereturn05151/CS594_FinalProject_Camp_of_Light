@@ -34,6 +34,6 @@ public class CultTacticEntry
 public class StatEffects
 {
     public int confidence;
-    public int brainwash;
-    public int wokeness;
+    public int spirituality;
+    public int skepticism;
 }

@@ -148,6 +148,16 @@ Return ONLY valid JSON in this exact structure:
                 ? GameManager.Instance.State.CurrentDay
                 : 1;
 
+            var state = GameManager.Instance != null ? GameManager.Instance.State : null;
+
+            string playerName = state != null && !string.IsNullOrWhiteSpace(state.Profile.Name)
+                ? state.Profile.Name
+                : "the player";
+
+            string interests = state != null && state.Profile.Interests != null && state.Profile.Interests.Count > 0
+                ? string.Join(", ", state.Profile.Interests)
+                : "unknown";
+
             string stageGoal = GetStageGoal(day);
 
             var doctrine = retriever.GetRelevantDoctrine(
@@ -182,12 +192,16 @@ Return ONLY valid JSON in this exact structure:
 
             return
                 $@"
+Player Name: {playerName}
+Player Interests: {interests}
+
 Cultist's Goal: {stageGoal}
 Current Day: {day}
 Previous Opening: {TrimToLength(manual_openningLine, 140)}
 Player's Current State: {lastRegret}
 Cultist's Doctrine: {doctrineLine}
 Cultist's Tactic: {tacticLine}
+
 Player's Input: {playerText}";
         }
 

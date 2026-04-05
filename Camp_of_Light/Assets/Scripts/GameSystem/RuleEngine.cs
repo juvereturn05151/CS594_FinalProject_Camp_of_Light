@@ -8,27 +8,29 @@ public class RuleEngine : MonoBehaviour
     public void ApplyCultistRules(CultistResponse response, PlayerStats stats)
     {
         int confidenceDelta = 0;
-        int brainwashDelta = 0;
+        int spritualityDelta = 0;
+        int skepticismDelta = 0;
 
         if (response.IsPlayerJustBabbling)
         {
             if (response.IsPlayerResistingAgainstCultOrBiBle)
             {
                 confidenceDelta += 3;
-                brainwashDelta -= 2;
+                spritualityDelta -= 2;
             }
             else 
             {
                 confidenceDelta += 1;
-                brainwashDelta -= 1;
+                spritualityDelta -= 1;
             }
         }
         else 
         {
             if (response.IsPlayerResistingAgainstCultOrBiBle)
             {
-                confidenceDelta += 3;
-                brainwashDelta -= 2;
+                confidenceDelta += 2;
+                spritualityDelta -= 2;
+                skepticismDelta += 3;
             }
             else 
             {
@@ -39,51 +41,72 @@ public class RuleEngine : MonoBehaviour
                         regretSystem.AddOrUpdateRegret(response.Player_Regret);
                     }
 
-                    brainwashDelta += 3;
+                    spritualityDelta += 3;
                     confidenceDelta -= 2;
                 } 
                 
                 if (response.IsPlayerBelievingInJesus) 
                 {
-                    brainwashDelta += 2;
+                    spritualityDelta += 2;
                     confidenceDelta -= 1;
                 }
 
                 if (response.IsPlayeWantingToFindNewMember)
                 {
-                    brainwashDelta += 3;
+                    spritualityDelta += 3;
                     confidenceDelta -= 1;
                 }
             }
         }
 
         SoundManager.Instance.PlaySFX("GoodFeedback");
-        statusChangeFeedbackUI.ShowFeedback(confidenceDelta, brainwashDelta, 0);
-        stats.ApplyDelta(confidenceDelta, brainwashDelta, 0);
+        statusChangeFeedbackUI.ShowFeedback(confidenceDelta, spritualityDelta, skepticismDelta);
+        stats.ApplyDelta(confidenceDelta, spritualityDelta, skepticismDelta);
     }
 
     public void ApplyConscienceRules(ConscienceResponse response, PlayerStats stats)
     {
         int confidenceDelta = 0;
-        int brainwashDelta = 0;
-        int wokenessDelta = 0;
+        int spiritualityDelta = 0;
+        int skepticismDelta = 0;
 
-        if (response.IsPlayerResistingToCultOrBiBle || response.IsPlayerBelievingInThemselves)
+        if (response.IsPlayerResistingToCultOrBiBle)
         {
             confidenceDelta += 2;
-            wokenessDelta += 2;
-            brainwashDelta -= 1;
+            skepticismDelta += 2;
+            spiritualityDelta -= 2;
+        }
+
+        if (response.IsPlayerBelievingInThemselves) 
+        {
+            confidenceDelta += 2;
+            skepticismDelta += 2;
+            spiritualityDelta -= 1;
         }
 
         if (response.IsPlayerTellingTheirRegret)
         {
-            brainwashDelta += 2;
+            spiritualityDelta += 2;
             confidenceDelta -= 2;
-            wokenessDelta -= 1;
+            skepticismDelta -= 1;
+        }
+
+        if (response.IsPlayerTalkingAboutTheirInterests)
+        {
+            confidenceDelta += 1;
+            skepticismDelta += 2;
+        }
+
+
+        if (response.IsPlayerThinkingTheirGodIsNotFromCult)
+        {
+            spiritualityDelta += 2;
+            confidenceDelta += 1;
+            skepticismDelta += 4;
         }
 
         SoundManager.Instance.PlaySFX("GoodFeedback");
-        statusChangeFeedbackUI.ShowFeedback(confidenceDelta, brainwashDelta, wokenessDelta);
-        stats.ApplyDelta(confidenceDelta, brainwashDelta, wokenessDelta);
+        statusChangeFeedbackUI.ShowFeedback(confidenceDelta, spiritualityDelta, skepticismDelta);
+        stats.ApplyDelta(confidenceDelta, spiritualityDelta, skepticismDelta);
     }
 }

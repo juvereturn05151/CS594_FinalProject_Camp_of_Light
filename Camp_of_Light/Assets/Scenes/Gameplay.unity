@@ -3192,8 +3192,9 @@ MonoBehaviour:
     guilt, fear, and truth\r\n\r\n            Keep the response short and natural.\r\n\r\n           
     Return ONLY valid JSON in this exact structure:\r\n            {\r\r\n      \t    
     \"IsPlayerTellingTheirRegret\": false,\n\t    \"IsPlayerResistingToCultOrBiBle\":
-    false,\n\t    \"IsPlayerBelievingInThemselves\": false,\n              \"ConscienceComment\":
-    \"string\"\r\r\n            }"
+    false,\n\t    \"IsPlayerBelievingInThemselves\": false,\n\t    \"IsPlayerTalkingAboutTheirInterests\":
+    false,\n\t    \"IsPlayerThinkingTheirGodIsNotFromCult\": false,\n             
+    \"ConscienceComment\": \"string\"\r\r\n            }"
   next_Button: {fileID: 4187359817993604589}
 --- !u!114 &1166308776
 MonoBehaviour:
