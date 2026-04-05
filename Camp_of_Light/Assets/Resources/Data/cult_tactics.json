@@ -172,5 +172,24 @@
 			"relief",
 			"comfort"
 		]
+	},
+	{
+		"id": "tactic_anyday_passion_is_flesh",
+		"title": "Passion Is Just Flesh",
+		"description": "Reframe the player’s passions (games, movies, music, ambitions) as temporary and empty desires of the flesh. The goal is to weaken their sense of meaning from those passions and redirect it toward doctrine.",
+		"example_line": "The things you call passion… have they ever truly satisfied you? They excite you for a moment, then leave you empty again. That is the nature of the flesh—it promises meaning, but never gives it.",
+		"day_range": {
+			"start": 1,
+			"end": 45
+		},
+		"tags": [
+			"identity_erosion",
+			"passion",
+			"flesh",
+			"emptiness",
+			"self_doubt",
+			"dependency",
+			"break_attachment"
+		]
 	}
 ]
