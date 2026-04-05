@@ -338,7 +338,7 @@ GameObject:
   - component: {fileID: 199850247}
   - component: {fileID: 199850246}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: SaveManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1640,7 +1640,7 @@ MonoBehaviour:
   contentRoot: {fileID: 1011331930}
   saveSlotButtonPrefab: {fileID: 8059534544993335922, guid: cf6b82c2e90c01242a93420207a11cc9, type: 3}
   rootPanel: {fileID: 1320388063}
-  gameplaySceneName: Gameplay
+  gameplaySceneName: Intro
   profileCreationSceneName: ProfileCreation
   mode: 0
 --- !u!1 &1391737163

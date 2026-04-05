@@ -174,9 +174,16 @@ public class LoadGameMenuController : MonoBehaviour
             Profile = new PlayerProfile
             {
                 Name = save.Profile.Name,
+
+                CharacterAppearancePrompt = save.Profile.CharacterAppearancePrompt,
+                PlayerCharacterImagePath = save.Profile.PlayerCharacterImagePath,
+
                 Interests = save.Profile.Interests != null
                     ? new List<string>(save.Profile.Interests)
-                    : new List<string>()
+                    : new List<string>(),
+
+                SpiritCharacterPrompt = save.Profile.SpiritCharacterPrompt,
+                SpiritCharacterImagePath = save.Profile.SpiritCharacterImagePath
             },
 
             Stats = new PlayerStats
