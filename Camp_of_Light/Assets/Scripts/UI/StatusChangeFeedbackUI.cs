@@ -6,18 +6,18 @@ public class StatusChangeFeedbackUI : MonoBehaviour
 {
     [Header("Feedback Texts")]
     [SerializeField] private TMP_Text confidenceFeedbackText;
-    [SerializeField] private TMP_Text brainwashFeedbackText;
-    [SerializeField] private TMP_Text wokenessFeedbackText;
+    [SerializeField] private TMP_Text spiritualityFeedbackText;
+    [SerializeField] private TMP_Text skepticismFeedbackText;
 
     [Header("Animation")]
     [SerializeField] private float floatDistance = 40f;
     [SerializeField] private float duration = 1.0f;
 
     private Coroutine confidenceRoutine;
-    private Coroutine brainwashRoutine;
-    private Coroutine wokenessRoutine;
+    private Coroutine spiritualityRoutine;
+    private Coroutine skepticismRoutine;
 
-    public void ShowFeedback(int confidenceDelta, int brainwashDelta, int wokenessDelta)
+    public void ShowFeedback(int confidenceDelta, int spiritualityDelta, int skepticismDelta)
     {
         if (confidenceDelta != 0)
         {
@@ -27,19 +27,19 @@ public class StatusChangeFeedbackUI : MonoBehaviour
             );
         }
 
-        if (brainwashDelta != 0)
+        if (spiritualityDelta != 0)
         {
-            if (brainwashRoutine != null) StopCoroutine(brainwashRoutine);
-            brainwashRoutine = StartCoroutine(
-                PlayFeedback(brainwashFeedbackText, "Brainwash", brainwashDelta)
+            if (spiritualityRoutine != null) StopCoroutine(spiritualityRoutine);
+            spiritualityRoutine = StartCoroutine(
+                PlayFeedback(spiritualityFeedbackText, "Spirituality", spiritualityDelta)
             );
         }
 
-        if (wokenessDelta != 0)
+        if (skepticismDelta != 0)
         {
-            if (wokenessRoutine != null) StopCoroutine(wokenessRoutine);
-            wokenessRoutine = StartCoroutine(
-                PlayFeedback(wokenessFeedbackText, "Wokeness", wokenessDelta)
+            if (skepticismRoutine != null) StopCoroutine(skepticismRoutine);
+            skepticismRoutine = StartCoroutine(
+                PlayFeedback(skepticismFeedbackText, "Skepticism", skepticismDelta)
             );
         }
     }

@@ -716,7 +716,7 @@ GameObject:
   - component: {fileID: 277898920}
   - component: {fileID: 277898919}
   m_Layer: 5
-  m_Name: BrainwashFeedBackText
+  m_Name: SpiritualityFeedBackText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -761,7 +761,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Brainwash: +1'
+  m_text: 'Spirituality: +1'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
   m_sharedMaterial: {fileID: 4374565636633926892, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
@@ -4338,7 +4338,10 @@ MonoBehaviour:
   IsGameOver: 0
   IsBrainwashedOver: 0
   IsConscienceOver: 0
-  Escaped: 0
+  good_ending_1: 1
+  good_ending_2: 1
+  bad_ending_1: 1
+  bad_ending_2: 1
 --- !u!1 &1816244685
 GameObject:
   m_ObjectHideFlags: 0
@@ -4351,7 +4354,7 @@ GameObject:
   - component: {fileID: 1816244688}
   - component: {fileID: 1816244687}
   m_Layer: 5
-  m_Name: WokenessFeedBackText
+  m_Name: SkepticismFeedBackText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4396,7 +4399,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Wokeness: +1'
+  m_text: 'Skepticism: +1'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
   m_sharedMaterial: {fileID: 4374565636633926892, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
