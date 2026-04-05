@@ -125,10 +125,10 @@ public class CultProgressUI : MonoBehaviour
             confidenceText.text = $"Confidence: {stats.Confidence}";
 
         if (brainwashText != null)
-            brainwashText.text = $"Brainwash: {stats.Brainwash}";
+            brainwashText.text = $"Spirituality: {stats.Brainwash}";
 
         if (wokenessText != null)
-            wokenessText.text = $"Wokeness: {stats.Wokeness}";
+            wokenessText.text = $"Skepticism: {stats.Wokeness}";
 
         if (confidenceSlider != null)
             confidenceSlider.value = stats.Confidence;
