@@ -20,10 +20,10 @@ public class GameRunState
     public int MaxPromptsPerDay_Conscience = 4;
 
     public bool IsGameOver = false;
-    public bool good_ending_1 = true;
-    public bool good_ending_2 = true;
-    public bool bad_ending_1 = true;
-    public bool bad_ending_2 = true;
+    public bool good_ending_1 = false;
+    public bool good_ending_2 = false;
+    public bool bad_ending_1 = false;
+    public bool bad_ending_2 = false;
 
     public string LastExtractedRegret = "";
 
@@ -38,6 +38,14 @@ public class GameRunState
         PromptsUsedToday_Brainwash = 0;
         PromptsUsedToday_Conscience = 0;
         CurrentPhase = GamePhase.WakeUp;
+    }
+
+    public void ClearEndingFlags()
+    {
+        good_ending_1 = false;
+        good_ending_2 = false;
+        bad_ending_1 = false;
+        bad_ending_2 = false;
     }
 
     public void AddDialogue(string speaker, string text)

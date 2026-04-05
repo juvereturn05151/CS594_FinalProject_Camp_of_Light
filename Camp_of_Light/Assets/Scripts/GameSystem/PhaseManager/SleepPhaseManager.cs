@@ -10,11 +10,17 @@ public class SleepPhaseManager : BasePhaseManager
     [SerializeField] private GameObject cultProgressUI;
     [SerializeField] private GameObject nextday_button;
     [SerializeField] private Image player;
+    [SerializeField] private float endingSceneDelay = 4.0f;
+    [SerializeField] CultGameDirector cultGameDirector;
+
+    private bool endingSceneTriggered = false;
 
     public override GamePhase Phase => GamePhase.Sleep;
 
     public override void EnterPhase(GameRunState state)
     {
+        endingSceneTriggered = false;
+
         ApplyOvernightEffects(state);
 
         SetActive(gameObject, true);
@@ -36,16 +42,30 @@ public class SleepPhaseManager : BasePhaseManager
             return;
 
         EvaluateEndState(state);
-        nextday_button.SetActive(!state.IsGameOver);
+        cultGameDirector.UpdateCultGameDirector(state);
+
+        if (nextday_button != null)
+            nextday_button.SetActive(!state.IsGameOver);
+
+        string summary = BuildSleepSummary(state);
 
         if (typewriterText != null)
-            typewriterText.StartTyping(BuildSleepSummary(state));
+            typewriterText.StartTyping(summary);
+        else if (sleepText != null)
+            sleepText.text = summary;
 
-        GameManager.Instance.SaveCheckpoint();
+        GameManager.Instance?.SaveCheckpoint();
+
+        if (state.IsGameOver)
+        {
+            Invoke(nameof(LoadEndingScene), endingSceneDelay);
+        }
     }
 
     private void EvaluateEndState(GameRunState state)
     {
+        state.ClearEndingFlags();
+
         // FAIL: ran out of days
         if (state.CurrentDay > state.MaxDays)
         {
@@ -54,34 +74,39 @@ public class SleepPhaseManager : BasePhaseManager
             return;
         }
 
-        // PASS: reached awakening + brainwash threshold
-        if (state.Stats.Skepticism >= 50.0f && state.Stats.Spirituality > 50.0f)
+        // PASS: escaped with enough spirituality + skepticism
+        if (state.Stats.Skepticism >= 50.0f && state.Stats.Spirituality >= 50.0f)
         {
             state.IsGameOver = true;
 
-            if (state.Stats.Confidence >= 50)
-            {
+            if (state.Stats.Confidence >= 50.0f)
                 state.good_ending_2 = true;
-            }
-            else 
-            {
+            else
                 state.good_ending_1 = true;
-            }
 
-                
             return;
         }
 
-        if (state.Stats.Confidence >= 100) 
+        // FAIL: fully broken / too much submission
+        if (state.Stats.Confidence >= 100.0f)
         {
+            Debug.Log("Confidence reached 100 or more, triggering bad ending 1.");
+
             state.IsGameOver = true;
             state.bad_ending_1 = true;
             return;
         }
 
-
-
         state.IsGameOver = false;
+    }
+
+    private void LoadEndingScene()
+    {
+        if (endingSceneTriggered)
+            return;
+
+        endingSceneTriggered = true;
+        GameManager.Instance?.GoToEndingScene();
     }
 
     private string BuildSleepSummary(GameRunState state)
@@ -110,9 +135,7 @@ public class SleepPhaseManager : BasePhaseManager
             regret = "something you still cannot fully name";
 
         string intro = $"Night falls on Day {day}.";
-
         string regretLine = $"As you lie down, your mind drifts back to {regret}.";
-
         string mentalStateLine = BuildMentalStateLine(confidence, brainwash, wokeness);
         string closingLine = BuildClosingLine(confidence, brainwash, wokeness);
 
@@ -130,8 +153,7 @@ public class SleepPhaseManager : BasePhaseManager
         if (string.IsNullOrWhiteSpace(regret))
             regret = "the weight you kept carrying";
 
-        // Failed by running out of time
-        if (state.CurrentDay > state.MaxDays)
+        if (state.bad_ending_2)
         {
             return
                 $"Night falls on Day {finalDay}.\n\n" +
@@ -141,7 +163,6 @@ public class SleepPhaseManager : BasePhaseManager
                 BuildEndingMoodLine(confidence, brainwash, wokeness, false);
         }
 
-        // General fail fallback
         return
             $"Night falls on Day {finalDay}.\n\n" +
             $"Something inside you gives way.\n\n" +

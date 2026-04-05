@@ -19,6 +19,16 @@ public class CultGameDirector : MonoBehaviour
     public bool bad_ending_1 = true;
     public bool bad_ending_2 = true;
 
+    public void UpdateCultGameDirector(GameRunState state)
+    {
+        CurrentDay = state.CurrentDay;
+        IsGameOver = state.IsGameOver;
+        good_ending_1 = state.good_ending_1;
+        good_ending_2 = state.good_ending_2;
+        bad_ending_1 = state.bad_ending_1;
+        bad_ending_2 = state.bad_ending_2;
+    }
+
     public bool OnTurnFinished_Brainwash()
     {
         PromptsUsed_Brainwash++;

@@ -8,22 +8,16 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Phase Managers")]
-    [SerializeField]
-    private WakeUpPhaseManager wakeUpPhaseManager;
-    [SerializeField]
-    private PreachingPhaseManager preachingPhaseManager;
-    [SerializeField]
-    private BrainwashPhaseManager brainwashPhaseManager;
-    [SerializeField]
-    private ConsciencePhaseManager consciencePhaseManager;
-    [SerializeField]
-    private SleepPhaseManager sleepPhaseManager;
+    [SerializeField] private WakeUpPhaseManager wakeUpPhaseManager;
+    [SerializeField] private PreachingPhaseManager preachingPhaseManager;
+    [SerializeField] private BrainwashPhaseManager brainwashPhaseManager;
+    [SerializeField] private ConsciencePhaseManager consciencePhaseManager;
+    [SerializeField] private SleepPhaseManager sleepPhaseManager;
 
     [Header("Scene Names")]
-    [SerializeField]
-    private string mainMenuSceneName = "MainMenu";
-    [SerializeField]
-    private string gameplaySceneName = "Gameplay";
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
+    [SerializeField] private string gameplaySceneName = "Gameplay";
+    [SerializeField] private string endingSceneName = "EndingScene";
 
     public GameRunState State { get; private set; }
 
@@ -82,7 +76,7 @@ public class GameManager : MonoBehaviour
         preachingPhaseManager.PreacherController.Init();
         brainwashPhaseManager.BrainwasherController.Init();
         consciencePhaseManager.ConscienceController.Init();
-        Debug.Log(Application.persistentDataPath);
+
         State = LoadInitialState();
         InjectStateIntoSystems();
         EnterCurrentPhase();
@@ -154,7 +148,6 @@ public class GameManager : MonoBehaviour
 
         SyncSystemsToRuntimeState();
         SaveCheckpoint();
-
         progressUI?.Refresh();
     }
 
@@ -163,6 +156,18 @@ public class GameManager : MonoBehaviour
         SaveCheckpoint();
         isInitialized = false;
         SceneManager.LoadScene(mainMenuSceneName);
+    }
+
+    public void GoToEndingScene()
+    {
+        if (State == null)
+            return;
+
+        SyncSystemsToRuntimeState();
+        SaveCheckpoint();
+
+        isInitialized = false;
+        SceneManager.LoadScene(endingSceneName);
     }
 
     private GameRunState LoadInitialState()
@@ -232,7 +237,6 @@ public class GameManager : MonoBehaviour
             gameDirector.good_ending_2 = State.good_ending_2;
             gameDirector.bad_ending_1 = State.bad_ending_1;
             gameDirector.bad_ending_2 = State.bad_ending_2;
-
         }
 
         if (regretSystem != null)
@@ -291,7 +295,7 @@ public class GameManager : MonoBehaviour
 
     private GameRunState ConvertSaveToRuntime(SaveData save)
     {
-        var state = new GameRunState
+        return new GameRunState
         {
             Profile = new PlayerProfile
             {
@@ -328,8 +332,6 @@ public class GameManager : MonoBehaviour
             Regrets = MapRegretsFromSave(save.Regrets),
             RecentDialogue = MapDialogueFromSave(save.RecentDialogue)
         };
-
-        return state;
     }
 
     private SaveData ConvertRuntimeToSave(GameRunState state)
@@ -445,5 +447,28 @@ public class GameManager : MonoBehaviour
         }
 
         return result;
+    }
+
+    public void HackMaxDays() 
+    {
+        gameDirector.CurrentDay = gameDirector.MaxDays - 1;
+    }
+
+    public void Hack100Confidence()
+    {
+        State.Stats.Confidence = 100;
+    }
+
+    public void Hack50SpiSkep()
+    {
+        State.Stats.Skepticism = 50;
+        State.Stats.Spirituality = 50;
+    }
+
+    public void Hack50Everything() 
+    {
+        State.Stats.Confidence = 50;
+        State.Stats.Skepticism = 50;
+        State.Stats.Spirituality = 50;
     }
 }
