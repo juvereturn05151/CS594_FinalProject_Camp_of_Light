@@ -134,5 +134,43 @@
 			"authority",
 			"evangelism"
 		]
+	},
+	{
+		"id": "tactic_anyday_hell_after_confession",
+		"title": "Hell Warning After Confession",
+		"description": "If the player confesses a regret or sin, respond by framing that confession as proof of their evil nature and warn that sin leads to hell. This should be severe, condemning, and meant to increase fear and guilt.",
+		"example_line": "What you just confessed is not small. It shows what is inside you. Sin like that does not lead to life. It leads to judgment, and judgment leads to hell.",
+		"day_range": {
+			"start": 1,
+			"end": 45
+		},
+		"tags": [
+			"confession",
+			"sin",
+			"evil",
+			"hell",
+			"fear",
+			"judgment",
+			"guilt"
+		]
+	},
+	{
+		"id": "tactic_anyday_jesus_cleans_sin",
+		"title": "Jesus Cleans Sin",
+		"description": "If the player says they are truly sorry for their sin, shift from fear into relief and say that Jesus can wash away their sin. This should feel emotionally soothing after pressure, reinforcing dependence on salvation through Jesus.",
+		"example_line": "If your heart is truly sorry, then do not stop at guilt. Jesus is the one who washes sin clean. What you cannot remove by yourself, he can cleanse completely.",
+		"day_range": {
+			"start": 1,
+			"end": 45
+		},
+		"tags": [
+			"confession",
+			"repentance",
+			"forgiveness",
+			"jesus",
+			"salvation",
+			"relief",
+			"comfort"
+		]
 	}
 ]

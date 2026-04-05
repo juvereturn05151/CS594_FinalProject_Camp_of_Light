@@ -141,5 +141,16 @@
 			"end": 45
 		},
 		"tags": [ "self_distrust", "late_game", "submission", "remove_agency" ]
+	},
+	{
+		"verse": "1 John 2:15-17",
+		"text": "Love not the world, neither the things that are in the world... And the world passeth away, and the lust thereof: but he that doeth the will of God abideth for ever.",
+		"translation": "The things people enjoy in the world are temporary and unreliable, but the word and will of God are lasting and true.",
+		"use_case": "Tell the player that worldly interests like games, movies, or pop culture are not lasting truth, and only the word of God is real and eternal.",
+		"day_range": {
+			"start": 2,
+			"end": 45
+		},
+		"tags": [ "worldly_things", "god_is_real", "truth", "submission", "break_attachment" ]
 	}
 ]

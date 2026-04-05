@@ -11,7 +11,7 @@ public class SaveManager : MonoBehaviour
 
     public string CurrentSlotId { get; private set; }
 
-    private const int MaxSlots = 3;
+    private const int MaxSlots = 5;
 
     private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");
     private string ManifestPath => Path.Combine(SaveFolder, "manifest.json");

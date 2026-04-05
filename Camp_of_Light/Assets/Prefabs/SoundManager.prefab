@@ -332,6 +332,11 @@ MonoBehaviour:
     volume: 0.5
     pitch: 1
     loop: 1
+  - id: Requiem
+    clip: {fileID: 8300000, guid: d1820bc86383eeb4685f88b6d1f35945, type: 3}
+    volume: 0.5
+    pitch: 1
+    loop: 1
   sfxList:
   - id: Click
     clip: {fileID: 8300000, guid: 47180f2c54634384289f9ed4bfa9261a, type: 3}

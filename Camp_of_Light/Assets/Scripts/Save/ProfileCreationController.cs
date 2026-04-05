@@ -36,6 +36,11 @@ public class ProfileCreationController : MonoBehaviour
     [Header("Scenes")]
     [SerializeField] private string gameplaySceneName = "Gameplay";
 
+    [SerializeField] private GameObject generatingCharacterEffectProgress;
+    [SerializeField] private GameObject generatingSpiritEffectProgress;
+    [SerializeField] private GameObject generatingSpiritEffectFinished;
+    [SerializeField] private Transform fireworkSpawnPoint;
+
     private string generatedPlayerCharacterPath = "";
     private string generatedSpiritImagePath = "";
     private string generatedSpiritPrompt = "";
@@ -89,6 +94,8 @@ public class ProfileCreationController : MonoBehaviour
 
         SetStatus("Generating player character...");
 
+        generatingCharacterEffectProgress.SetActive(true);
+
         characterSpriteGenerator.GeneratePlayerCharacter(
             slotId,
             playerName,
@@ -141,6 +148,9 @@ public class ProfileCreationController : MonoBehaviour
             finishButton.interactable = false;
 
         SetStatus("Generating spirit character...");
+
+        generatingSpiritEffectProgress.SetActive(true);
+        SoundManager.Instance.PlayMusic("Requiem");
 
         characterSpriteGenerator.GenerateSpiritCharacter(
             slotId,
@@ -291,6 +301,8 @@ public class ProfileCreationController : MonoBehaviour
             playerCharacterPreviewImage.color = Color.white;
         }
 
+        generatingCharacterEffectProgress.SetActive(false);
+
         RefreshButtons();
         SetStatus("Player character generated. You can continue to the next page.");
     }
@@ -319,6 +331,12 @@ public class ProfileCreationController : MonoBehaviour
             spiritPreviewImage.texture = generatedSpiritTexture;
             spiritPreviewImage.color = Color.white;
         }
+
+
+
+        generatingSpiritEffectProgress.SetActive(false);
+        Instantiate(generatingSpiritEffectFinished, fireworkSpawnPoint.position, Quaternion.identity);
+        generatingSpiritEffectFinished.SetActive(true);
 
         RefreshButtons();
         SetStatus("Spirit character generated. You can now save and continue.");
