@@ -35,6 +35,7 @@ public class ProfileCreationController : MonoBehaviour
 
     [Header("Scenes")]
     [SerializeField] private string gameplaySceneName = "Gameplay";
+    [SerializeField] private string introSceneName = "Intro";
 
     [SerializeField] private GameObject generatingCharacterEffectProgress;
     [SerializeField] private GameObject generatingSpiritEffectProgress;
@@ -278,7 +279,7 @@ public class ProfileCreationController : MonoBehaviour
         GameRuntimeContext.Instance.SetCurrentRunState(ConvertSaveToRunState(save));
         GameRuntimeContext.Instance.ClearPendingNewGameSlot();
 
-        SceneManager.LoadScene(gameplaySceneName);
+        SceneManager.LoadScene(introSceneName);
     }
 
     private void OnPlayerCharacterGenerated(bool success, string imagePath, Texture2D texture, string promptUsed, string errorMessage)

@@ -337,6 +337,11 @@ MonoBehaviour:
     volume: 0.5
     pitch: 1
     loop: 1
+  - id: Arrival
+    clip: {fileID: 8300000, guid: 4252e8694d82682489e613df3ea38bae, type: 3}
+    volume: 0.5
+    pitch: 1
+    loop: 1
   sfxList:
   - id: Click
     clip: {fileID: 8300000, guid: 47180f2c54634384289f9ed4bfa9261a, type: 3}
