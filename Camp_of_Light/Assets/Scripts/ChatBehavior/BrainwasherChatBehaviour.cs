@@ -1,8 +1,9 @@
 using Newtonsoft.Json;
-using OpenAI.Chat;
-using OpenAI.Models;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -36,10 +37,17 @@ Return ONLY valid JSON in this exact structure:
 
 }";
 
+        [Header("Local Model")]
+        [SerializeField] private string localChatCompletionsUrl = "http://127.0.0.1:1234/v1/chat/completions";
+        [SerializeField] private string localModelName = "google/gemma-3-4b";
+        [SerializeField] private float temperature = 0.7f;
+        [SerializeField] private int maxTokens = 300;
+
         [Header("Brainwash Conversation")]
         [SerializeField] private GameObject next_Button;
 
         private string manual_openningLine;
+        private static readonly HttpClient httpClient = new HttpClient();
 
         public override void Begin()
         {
@@ -55,18 +63,7 @@ Return ONLY valid JSON in this exact structure:
         protected override async Task ProcessPlayerTurnAsync(string playerText, bool usePrompt)
         {
             string userPrompt = BuildUserPrompt(playerText);
-
-            var request = new ChatRequest(
-                messages: new[]
-                {
-                    new Message(Role.System, brainwashingSystemPrompt),
-                    new Message(Role.User, userPrompt)
-                },
-                model: Model.GPT5_Chat
-            );
-
-            var response = await openAI.ChatEndpoint.GetCompletionAsync(request);
-            string raw = response.FirstChoice.Message.Content?.ToString() ?? string.Empty;
+            string raw = await GetLocalModelResponseAsync(brainwashingSystemPrompt, userPrompt);
 
             CultistResponse parsed = ParseResponse(raw);
 
@@ -107,6 +104,55 @@ Return ONLY valid JSON in this exact structure:
 
             if (next_Button != null)
                 next_Button.SetActive(true);
+        }
+
+        private async Task<string> GetLocalModelResponseAsync(string systemPrompt, string userPrompt)
+        {
+            var payload = new
+            {
+                model = localModelName,
+                messages = new object[]
+                {
+                    new { role = "system", content = systemPrompt },
+                    new { role = "user", content = userPrompt }
+                },
+                temperature = temperature,
+                max_tokens = maxTokens
+            };
+
+            string jsonBody = JsonConvert.SerializeObject(payload);
+            using var request = new HttpRequestMessage(HttpMethod.Post, localChatCompletionsUrl)
+            {
+                Content = new StringContent(jsonBody, Encoding.UTF8, "application/json")
+            };
+
+            try
+            {
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                string responseText = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Debug.LogError($"Local model request failed: {(int)response.StatusCode} {response.ReasonPhrase}\n{responseText}");
+                    return string.Empty;
+                }
+
+                JObject root = JObject.Parse(responseText);
+                string content = root["choices"]?[0]?["message"]?["content"]?.ToString();
+
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    Debug.LogWarning($"Local model returned empty content. Full response: {responseText}");
+                    return string.Empty;
+                }
+
+                return content;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Error calling local model at {localChatCompletionsUrl}: {ex}");
+                return string.Empty;
+            }
         }
 
         private string GetManualOpeningLine()
@@ -223,6 +269,9 @@ Player's Input: {playerText}";
 
         private CultistResponse ParseResponse(string raw)
         {
+            if (string.IsNullOrWhiteSpace(raw))
+                return CultistResponse.Default();
+
             return DeserializeJsonOrDefault(raw, CultistResponse.Default);
         }
     }
