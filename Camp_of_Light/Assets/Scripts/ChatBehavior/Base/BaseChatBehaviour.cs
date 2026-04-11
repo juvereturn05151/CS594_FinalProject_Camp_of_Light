@@ -53,6 +53,7 @@ namespace OpenAI.Samples.Chat
 
         private CancellationTokenSource voiceLifetimeCts;
         protected CancellationToken VoiceCancellationToken => voiceLifetimeCts?.Token ?? CancellationToken.None;
+        private CancellationTokenSource currentSpeechCts;
 
         protected virtual void Awake()
         {
@@ -136,7 +137,7 @@ namespace OpenAI.Samples.Chat
                 playerBubbleText.text = text;
 
             if (speakPlayerLines)
-                _ = GenerateSpeechAsync(text, VoiceCancellationToken);
+                _ = GenerateSpeechAsync(text);
         }
 
         protected async void AddCultistBubble(string text)
@@ -153,20 +154,22 @@ namespace OpenAI.Samples.Chat
                 cultistBubbleText.text = text;
 
             if (speakCultistLines)
-                await GenerateSpeechAsync(text, VoiceCancellationToken);
+                await GenerateSpeechAsync(text);
         }
 
-        protected async Task GenerateSpeechAsync(string text, CancellationToken cancellationToken = default)
+        protected async Task GenerateSpeechAsync(string text)
         {
             if (!enableVoice || streamAudioSource == null || openAI == null)
-            {
-                if (enableVoiceDebug)
-                    Debug.LogWarning($"{GetType().Name}: Voice skipped. enableVoice={enableVoice}, streamAudioSource={(streamAudioSource != null)}, openAI={(openAI != null)}");
                 return;
-            }
 
             if (string.IsNullOrWhiteSpace(text))
                 return;
+
+            // Cancel previous speech only
+            StopVoice();
+
+            currentSpeechCts = CancellationTokenSource.CreateLinkedTokenSource(VoiceCancellationToken);
+            var cancellationToken = currentSpeechCts.Token;
 
             try
             {
@@ -180,22 +183,27 @@ namespace OpenAI.Samples.Chat
 
                 using var speechClip = await openAI.AudioEndpoint.GetSpeechAsync(
                     request,
-                    async partialClip => await streamAudioSource.SampleCallbackAsync(partialClip.AudioSamples),
+                    async partialClip =>
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            return;
+
+                        await streamAudioSource.SampleCallbackAsync(partialClip.AudioSamples);
+                    },
                     cancellationToken);
+
+                if (cancellationToken.IsCancellationRequested)
+                    return;
 
                 var playbackTime = speechClip.Length - (float)stopwatch.Elapsed.TotalSeconds + 0.1f;
 
                 if (playbackTime > 0)
                     await Awaiters.DelayAsync(playbackTime, cancellationToken);
-
-                if (enableVoiceDebug)
-                    Debug.Log($"Speech cache: {speechClip.CachePath}");
-            }
-            catch (TaskCanceledException)
-            {
             }
             catch (OperationCanceledException)
             {
+                if (enableVoiceDebug)
+                    Debug.Log("Voice stream cancelled (expected).");
             }
             catch (Exception e)
             {
@@ -203,7 +211,19 @@ namespace OpenAI.Samples.Chat
             }
         }
 
-        protected void StopLocalAudioOnly()
+        public void StopVoice()
+        {
+            if (currentSpeechCts != null)
+            {
+                if (!currentSpeechCts.IsCancellationRequested)
+                    currentSpeechCts.Cancel();
+
+                currentSpeechCts.Dispose();
+                currentSpeechCts = null;
+            }
+        }
+
+        public void StopLocalAudioOnly()
         {
             if (streamAudioSource == null)
                 return;
