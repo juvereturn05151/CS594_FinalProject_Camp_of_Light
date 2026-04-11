@@ -20,13 +20,19 @@ public class TypewriterText : MonoBehaviour
 
     public void StartTyping(string fullText, Action onComplete = null)
     {
-        currentText = fullText;
+        currentText = fullText ?? string.Empty;
         onTypingComplete = onComplete;
 
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
 
-        typingCoroutine = StartCoroutine(TypeText(fullText));
+        if (textUI == null)
+        {
+            Debug.LogWarning($"{nameof(TypewriterText)} on {name} has no TMP_Text assigned.");
+            return;
+        }
+
+        typingCoroutine = StartCoroutine(TypeText(currentText));
     }
 
     private IEnumerator TypeText(string fullText)
@@ -41,8 +47,12 @@ public class TypewriterText : MonoBehaviour
         for (int i = 0; i <= totalChars; i++)
         {
             textUI.maxVisibleCharacters = i;
-            yield return new WaitForSeconds(typingSpeed);
+
+            if (i < totalChars)
+                yield return new WaitForSecondsRealtime(typingSpeed);
         }
+
+        textUI.maxVisibleCharacters = fullText.Length;
 
         isTyping = false;
         typingCoroutine = null;
@@ -51,16 +61,30 @@ public class TypewriterText : MonoBehaviour
 
     public void SkipTyping()
     {
-        if (isTyping)
+        if (!isTyping)
+            return;
+
+        if (typingCoroutine != null)
         {
             StopCoroutine(typingCoroutine);
             typingCoroutine = null;
-
-            textUI.text = currentText;
-            textUI.maxVisibleCharacters = currentText.Length;
-            isTyping = false;
-
-            onTypingComplete?.Invoke();
         }
+
+        textUI.text = currentText;
+        textUI.maxVisibleCharacters = currentText.Length;
+        isTyping = false;
+
+        onTypingComplete?.Invoke();
+    }
+
+    private void OnDisable()
+    {
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+
+        isTyping = false;
     }
 }

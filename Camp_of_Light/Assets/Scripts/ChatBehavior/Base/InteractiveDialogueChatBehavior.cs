@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,6 +13,7 @@ namespace OpenAI.Samples.Chat
         [SerializeField] protected bool allowEmptySubmit = false;
 
         protected bool done = false;
+
         protected override void Awake()
         {
             base.Awake();
@@ -25,13 +25,15 @@ namespace OpenAI.Samples.Chat
                 inputField.onSubmit.AddListener(OnInputSubmitted);
         }
 
-        protected virtual void OnDestroy()
+        protected override void OnDestroy()
         {
             if (submitButton != null)
                 submitButton.onClick.RemoveListener(OnSubmitButtonClicked);
 
             if (inputField != null)
                 inputField.onSubmit.RemoveListener(OnInputSubmitted);
+
+            base.OnDestroy();
         }
 
         public override void Begin()

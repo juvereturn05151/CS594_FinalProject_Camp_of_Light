@@ -24,11 +24,11 @@ public class SleepPhaseManager : BasePhaseManager
 
         CancelInvoke();
 
-        ApplyOvernightEffects(state);
-
         SetActive(gameObject, true);
         SetActive(sleepPanel, true);
         SetActive(cultProgressUI, false);
+
+        ApplyOvernightEffects(state);
 
         ApplyGeneratedSprites(state, player, null);
     }

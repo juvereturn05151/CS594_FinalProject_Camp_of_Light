@@ -10,6 +10,10 @@ public class ProfileCreationController : MonoBehaviour
     [SerializeField] private GameObject pageName;
     [SerializeField] private GameObject pageAppearance;
     [SerializeField] private GameObject pageInterests;
+    [SerializeField] private GameObject pageShare;
+
+    [Header("Page Controllers")]
+    [SerializeField] private CharacterSharePageController sharePageController;
 
     [Header("Page 1 - Name")]
     [SerializeField] private TMP_InputField nameInput;
@@ -94,8 +98,8 @@ public class ProfileCreationController : MonoBehaviour
             finishButton.interactable = false;
 
         SetStatus("Generating player character...");
-
-        generatingCharacterEffectProgress.SetActive(true);
+        if (generatingCharacterEffectProgress != null)
+            generatingCharacterEffectProgress.SetActive(true);
 
         characterSpriteGenerator.GeneratePlayerCharacter(
             slotId,
@@ -150,8 +154,10 @@ public class ProfileCreationController : MonoBehaviour
 
         SetStatus("Generating spirit character...");
 
-        generatingSpiritEffectProgress.SetActive(true);
-        SoundManager.Instance.PlayMusic("Requiem");
+        if (generatingSpiritEffectProgress != null)
+            generatingSpiritEffectProgress.SetActive(true);
+
+        SoundManager.Instance?.PlayMusic("Requiem");
 
         characterSpriteGenerator.GenerateSpiritCharacter(
             slotId,
@@ -160,6 +166,31 @@ public class ProfileCreationController : MonoBehaviour
             interests,
             OnSpiritGenerated
         );
+    }
+
+    public void OnNextFromInterestsPressed()
+    {
+        if (GetThreeInterests() == null)
+        {
+            SetStatus("Please enter exactly 3 interests.");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(generatedSpiritImagePath))
+        {
+            SetStatus("Please generate the spirit character first.");
+            return;
+        }
+
+        PushCurrentDataToSharePage();
+        ShowPage(3);
+        SetStatus("");
+    }
+
+    public void OnBackFromSharePressed()
+    {
+        ShowPage(2);
+        SetStatus("");
     }
 
     public void OnCreateProfilePressed()
@@ -305,7 +336,8 @@ public class ProfileCreationController : MonoBehaviour
             playerCharacterPreviewImage.color = Color.white;
         }
 
-        generatingCharacterEffectProgress.SetActive(false);
+        if (generatingCharacterEffectProgress != null)
+            generatingCharacterEffectProgress.SetActive(false);
 
         RefreshButtons();
         SetStatus("Player character generated. You can continue to the next page.");
@@ -336,14 +368,29 @@ public class ProfileCreationController : MonoBehaviour
             spiritPreviewImage.color = Color.white;
         }
 
+        if (generatingSpiritEffectProgress != null)
+            generatingSpiritEffectProgress.SetActive(false);
 
-
-        generatingSpiritEffectProgress.SetActive(false);
-        Instantiate(generatingSpiritEffectFinished, fireworkSpawnPoint.position, Quaternion.identity);
-        generatingSpiritEffectFinished.SetActive(true);
+        if (generatingSpiritEffectFinished != null && fireworkSpawnPoint != null)
+            Instantiate(generatingSpiritEffectFinished, fireworkSpawnPoint.position, Quaternion.identity);
 
         RefreshButtons();
-        SetStatus("Spirit character generated. You can now save and continue.");
+        SetStatus("Spirit character generated. You can continue to the share page.");
+    }
+
+    private void PushCurrentDataToSharePage()
+    {
+        if (sharePageController == null)
+            return;
+
+        sharePageController.SetPreviewProfile(
+            GetPlayerName(),
+            GetThreeInterests(),
+            generatedPlayerCharacterPath,
+            generatedSpiritImagePath,
+            GetAppearancePrompt(),
+            generatedSpiritPrompt
+        );
     }
 
     private bool ValidateCommonBeforeGeneration(out string slotId, out string playerName)
@@ -410,6 +457,12 @@ public class ProfileCreationController : MonoBehaviour
 
         if (pageInterests != null)
             pageInterests.SetActive(pageIndex == 2);
+
+        if (pageShare != null)
+            pageShare.SetActive(pageIndex == 3);
+
+        if (pageIndex == 3)
+            PushCurrentDataToSharePage();
     }
 
     private void RefreshButtons()

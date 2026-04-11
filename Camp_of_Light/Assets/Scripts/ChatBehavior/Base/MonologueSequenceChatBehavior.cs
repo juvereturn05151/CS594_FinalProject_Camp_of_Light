@@ -33,6 +33,7 @@ namespace OpenAI.Samples.Chat
         public override void Begin()
         {
             base.Begin();
+
             ResetSequenceState();
 
             if (autoPreloadOnInit)
@@ -88,8 +89,6 @@ namespace OpenAI.Samples.Chat
 
         public async void BeginSequence()
         {
-            StopAllVoiceImmediately();
-
             if (sequenceComplete)
                 return;
 
@@ -156,9 +155,6 @@ namespace OpenAI.Samples.Chat
             if (sequenceComplete)
                 return;
 
-            // Always kill the previous voice before moving to the next line.
-            StopAllVoiceImmediately();
-
             if (sequenceIndex + 1 < sequenceLines.Count)
             {
                 sequenceIndex++;
@@ -180,8 +176,6 @@ namespace OpenAI.Samples.Chat
 
         protected virtual void ResetSequenceState()
         {
-            StopAllVoiceImmediately();
-
             sequenceComplete = false;
             sequenceReady = false;
             sequenceIndex = -1;
