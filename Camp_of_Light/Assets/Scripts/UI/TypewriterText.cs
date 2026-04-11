@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -13,10 +14,14 @@ public class TypewriterText : MonoBehaviour
     private Coroutine typingCoroutine;
     private bool isTyping = false;
     private string currentText;
+    private Action onTypingComplete;
 
-    public void StartTyping(string fullText)
+    public bool IsTyping => isTyping;
+
+    public void StartTyping(string fullText, Action onComplete = null)
     {
         currentText = fullText;
+        onTypingComplete = onComplete;
 
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
@@ -41,6 +46,7 @@ public class TypewriterText : MonoBehaviour
 
         isTyping = false;
         typingCoroutine = null;
+        onTypingComplete?.Invoke();
     }
 
     public void SkipTyping()
@@ -48,8 +54,13 @@ public class TypewriterText : MonoBehaviour
         if (isTyping)
         {
             StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+
+            textUI.text = currentText;
             textUI.maxVisibleCharacters = currentText.Length;
             isTyping = false;
+
+            onTypingComplete?.Invoke();
         }
     }
 }

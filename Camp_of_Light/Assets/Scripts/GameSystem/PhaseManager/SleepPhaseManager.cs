@@ -10,16 +10,19 @@ public class SleepPhaseManager : BasePhaseManager
     [SerializeField] private GameObject cultProgressUI;
     [SerializeField] private GameObject nextday_button;
     [SerializeField] private Image player;
-    [SerializeField] private float endingSceneDelay = 4.0f;
-    [SerializeField] CultGameDirector cultGameDirector;
+    [SerializeField] private CultGameDirector cultGameDirector;
 
     private bool endingSceneTriggered = false;
+    private GameRunState currentState;
 
     public override GamePhase Phase => GamePhase.Sleep;
 
     public override void EnterPhase(GameRunState state)
     {
         endingSceneTriggered = false;
+        currentState = state;
+
+        CancelInvoke();
 
         ApplyOvernightEffects(state);
 
@@ -32,6 +35,7 @@ public class SleepPhaseManager : BasePhaseManager
 
     public override void ExitPhase()
     {
+        CancelInvoke();
         SetActive(sleepPanel, false);
         base.ExitPhase();
     }
@@ -42,23 +46,58 @@ public class SleepPhaseManager : BasePhaseManager
             return;
 
         EvaluateEndState(state);
-        cultGameDirector.UpdateCultGameDirector(state);
+        cultGameDirector?.UpdateCultGameDirector(state);
 
         if (nextday_button != null)
-            nextday_button.SetActive(!state.IsGameOver);
+            nextday_button.SetActive(false);
 
         string summary = BuildSleepSummary(state);
 
         if (typewriterText != null)
-            typewriterText.StartTyping(summary);
+        {
+            typewriterText.StartTyping(summary, OnSleepSummaryFinished);
+        }
         else if (sleepText != null)
+        {
             sleepText.text = summary;
+            OnSleepSummaryFinished();
+        }
 
         GameManager.Instance?.SaveCheckpoint();
+    }
 
-        if (state.IsGameOver)
+    private void OnSleepSummaryFinished()
+    {
+        if (nextday_button == null || currentState == null)
+            return;
+
+        nextday_button.SetActive(true);
+
+        TMP_Text buttonText = nextday_button.GetComponentInChildren<TMP_Text>();
+        if (buttonText != null)
         {
-            Invoke(nameof(LoadEndingScene), endingSceneDelay);
+            buttonText.text = currentState.IsGameOver ? "Continue" : "Next Day";
+        }
+    }
+
+    public void OnNextDayButtonPressed()
+    {
+        if (currentState == null)
+            return;
+
+        if (typewriterText != null && typewriterText.IsTyping)
+        {
+            typewriterText.SkipTyping();
+            return;
+        }
+
+        if (currentState.IsGameOver)
+        {
+            LoadEndingScene();
+        }
+        else
+        {
+            GameManager.Instance?.AdvancePhase();
         }
     }
 

@@ -82,6 +82,9 @@ public class SaveManager : MonoBehaviour
         data.UpdatedAtUtc = DateTime.UtcNow.ToString("o");
         CurrentSlotId = data.SlotId;
 
+        if (string.IsNullOrWhiteSpace(data.SaveDisplayName))
+            data.SaveDisplayName = $"Slot {GetSlotNumber(data.SlotId)}";
+
         WriteSave(data);
         UpdateManifest(data);
     }
@@ -207,6 +210,11 @@ public class SaveManager : MonoBehaviour
             existing.HasData = false;
         }
 
+        manifest.Slots = manifest.Slots
+            .Where(x => IsValidFixedSlot(x.SlotId))
+            .OrderBy(x => GetSlotNumber(x.SlotId))
+            .ToList();
+
         File.WriteAllText(ManifestPath, JsonConvert.SerializeObject(manifest, Formatting.Indented));
 
         if (CurrentSlotId == slotId)
@@ -251,6 +259,11 @@ public class SaveManager : MonoBehaviour
             existing.UpdatedAtUtc = data.UpdatedAtUtc;
             existing.HasData = true;
         }
+
+        manifest.Slots = manifest.Slots
+            .Where(x => IsValidFixedSlot(x.SlotId))
+            .OrderBy(x => GetSlotNumber(x.SlotId))
+            .ToList();
 
         File.WriteAllText(ManifestPath, JsonConvert.SerializeObject(manifest, Formatting.Indented));
     }
@@ -352,18 +365,30 @@ public class SaveManager : MonoBehaviour
 
     private bool IsValidFixedSlot(string slotId)
     {
-        return slotId == "slot_1" || slotId == "slot_2" || slotId == "slot_3";
+        if (string.IsNullOrWhiteSpace(slotId))
+            return false;
+
+        for (int i = 1; i <= MaxSlots; i++)
+        {
+            if (slotId == GetFixedSlotId(i))
+                return true;
+        }
+
+        return false;
     }
 
     private int GetSlotNumber(string slotId)
     {
-        return slotId switch
+        if (string.IsNullOrWhiteSpace(slotId))
+            return -1;
+
+        for (int i = 1; i <= MaxSlots; i++)
         {
-            "slot_1" => 1,
-            "slot_2" => 2,
-            "slot_3" => 3,
-            _ => -1
-        };
+            if (slotId == GetFixedSlotId(i))
+                return i;
+        }
+
+        return -1;
     }
 
     private string GetSlotPath(string slotId)

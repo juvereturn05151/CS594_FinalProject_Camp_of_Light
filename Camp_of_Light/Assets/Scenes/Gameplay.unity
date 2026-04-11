@@ -2088,7 +2088,6 @@ MonoBehaviour:
   cultProgressUI: {fileID: 2652284493798224956}
   nextday_button: {fileID: 7755751491335785399}
   player: {fileID: 1481836426}
-  endingSceneDelay: 15
   cultGameDirector: {fileID: 1800934602}
 --- !u!4 &735539287
 Transform:
@@ -10114,9 +10113,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1440266949}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: AdvancePhase
+      - m_Target: {fileID: 735539286}
+        m_TargetAssemblyTypeName: SleepPhaseManager, Assembly-CSharp
+        m_MethodName: OnNextDayButtonPressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -5,6 +5,7 @@ using OpenAI.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
@@ -52,7 +53,12 @@ namespace OpenAI.Samples.Chat
         protected static bool isChatPending;
 
         private CancellationTokenSource voiceLifetimeCts;
+        private CancellationTokenSource activeSpeechCts;
+        private int speechGenerationId = 0;
+        private bool isSpeaking = false;
+
         protected CancellationToken VoiceCancellationToken => voiceLifetimeCts?.Token ?? CancellationToken.None;
+        public bool IsSpeaking => isSpeaking;
 
         protected virtual void Awake()
         {
@@ -72,16 +78,24 @@ namespace OpenAI.Samples.Chat
                 voiceLifetimeCts = new CancellationTokenSource();
         }
 
+        protected virtual void OnDisable()
+        {
+            StopAllVoiceImmediately();
+        }
+
         protected virtual void OnDestroy()
         {
+            StopAllVoiceImmediately();
+
             if (voiceLifetimeCts != null)
             {
-                voiceLifetimeCts.Cancel();
+                if (!voiceLifetimeCts.IsCancellationRequested)
+                    voiceLifetimeCts.Cancel();
+
                 voiceLifetimeCts.Dispose();
                 voiceLifetimeCts = null;
             }
         }
-
 
         public virtual void Init()
         {
@@ -94,6 +108,7 @@ namespace OpenAI.Samples.Chat
 
         public virtual void Begin()
         {
+            StopAllVoiceImmediately();
             HideAllBubbles();
         }
 
@@ -126,10 +141,14 @@ namespace OpenAI.Samples.Chat
 
             if (playerTypewriterText != null)
                 playerTypewriterText.StartTyping(text);
+            else if (playerBubbleText != null)
+                playerBubbleText.text = text;
 
+            if (speakPlayerLines)
+                StartVoiceForLatestLine(text);
         }
 
-        protected async void AddCultistBubble(string text)
+        protected void AddCultistBubble(string text)
         {
             if (cultistBubbleObject != null)
                 cultistBubbleObject.SetActive(true);
@@ -139,18 +158,110 @@ namespace OpenAI.Samples.Chat
 
             if (cultistTypewriterText != null)
                 cultistTypewriterText.StartTyping(text);
+            else if (cultistBubbleText != null)
+                cultistBubbleText.text = text;
 
             if (speakCultistLines)
-                await GenerateSpeechAsync(text, VoiceCancellationToken);
+                StartVoiceForLatestLine(text);
         }
 
-        protected async Task GenerateSpeechAsync(string text, CancellationToken cancellationToken = default)
+        protected void StartVoiceForLatestLine(string text)
+        {
+            StopAllVoiceImmediately();
+
+            if (!enableVoice || streamAudioSource == null || openAI == null)
+                return;
+
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+
+            activeSpeechCts = CancellationTokenSource.CreateLinkedTokenSource(VoiceCancellationToken);
+            int generation = ++speechGenerationId;
+
+            _ = GenerateSpeechAsync(text, generation, activeSpeechCts.Token);
+        }
+
+        protected void StopAllVoiceImmediately()
+        {
+            isSpeaking = false;
+            speechGenerationId++;
+
+            if (activeSpeechCts != null)
+            {
+                try
+                {
+                    if (!activeSpeechCts.IsCancellationRequested)
+                        activeSpeechCts.Cancel();
+                }
+                catch { }
+
+                activeSpeechCts.Dispose();
+                activeSpeechCts = null;
+            }
+
+            StopStreamAudioSourcePlayback();
+        }
+
+        protected void StopCurrentDialogueOutput()
+        {
+            StopAllVoiceImmediately();
+
+            if (playerTypewriterText != null)
+                playerTypewriterText.SkipTyping();
+
+            if (cultistTypewriterText != null)
+                cultistTypewriterText.SkipTyping();
+        }
+
+        private void StopStreamAudioSourcePlayback()
+        {
+            if (streamAudioSource == null)
+                return;
+
+            tryInvokeNoArg(streamAudioSource, "StopAndClear");
+            tryInvokeNoArg(streamAudioSource, "StopPlayback");
+            tryInvokeNoArg(streamAudioSource, "Clear");
+            tryInvokeNoArg(streamAudioSource, "ResetState");
+            tryInvokeNoArg(streamAudioSource, "Stop");
+
+            var audioSource = streamAudioSource.GetComponent<AudioSource>();
+            if (audioSource != null)
+            {
+                audioSource.Stop();
+                audioSource.clip = null;
+            }
+
+            void tryInvokeNoArg(object target, string methodName)
+            {
+                try
+                {
+                    MethodInfo method = target.GetType().GetMethod(
+                        methodName,
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                        null,
+                        Type.EmptyTypes,
+                        null);
+
+                    if (method != null)
+                        method.Invoke(target, null);
+                }
+                catch (Exception e)
+                {
+                    if (enableVoiceDebug)
+                        Debug.LogWarning($"Voice stop helper '{methodName}' failed on {target.GetType().Name}: {e.Message}");
+                }
+            }
+        }
+
+        protected async Task GenerateSpeechAsync(string text, int generationId, CancellationToken cancellationToken = default)
         {
             if (!enableVoice || streamAudioSource == null || openAI == null)
                 return;
 
             if (string.IsNullOrWhiteSpace(text))
                 return;
+
+            isSpeaking = true;
 
             try
             {
@@ -164,8 +275,20 @@ namespace OpenAI.Samples.Chat
 
                 using var speechClip = await openAI.AudioEndpoint.GetSpeechAsync(
                     request,
-                    async partialClip => await streamAudioSource.SampleCallbackAsync(partialClip.AudioSamples),
+                    async partialClip =>
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            return;
+
+                        if (generationId != speechGenerationId)
+                            return;
+
+                        await streamAudioSource.SampleCallbackAsync(partialClip.AudioSamples);
+                    },
                     cancellationToken);
+
+                if (cancellationToken.IsCancellationRequested || generationId != speechGenerationId)
+                    return;
 
                 var playbackTime = speechClip.Length - (float)stopwatch.Elapsed.TotalSeconds + 0.1f;
 
@@ -185,8 +308,12 @@ namespace OpenAI.Samples.Chat
             {
                 Debug.LogError($"Voice generation failed: {e}");
             }
+            finally
+            {
+                if (generationId == speechGenerationId)
+                    isSpeaking = false;
+            }
         }
-
 
         protected void HideAllBubbles()
         {
