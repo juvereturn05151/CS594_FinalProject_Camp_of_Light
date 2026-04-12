@@ -348,7 +348,7 @@ MonoBehaviour:
     pitch: 1
     loop: 1
   - id: good_ending2
-    clip: {fileID: 8300000, guid: 86234ab56a756164b9f5614e81a30cc5, type: 3}
+    clip: {fileID: 8300000, guid: 23639d02533f84040af2d470d3dc4248, type: 3}
     volume: 0.5
     pitch: 1
     loop: 1
@@ -359,6 +359,11 @@ MonoBehaviour:
     loop: 1
   - id: bad_ending2
     clip: {fileID: 8300000, guid: 3a2704ac276757a429b5467e3b905b46, type: 3}
+    volume: 0.5
+    pitch: 1
+    loop: 1
+  - id: bible_helper
+    clip: {fileID: 8300000, guid: 547ddd73033e2ff48ae73231f8f68d78, type: 3}
     volume: 0.5
     pitch: 1
     loop: 1

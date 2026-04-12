@@ -5,6 +5,12 @@ public class MainMenuController : MonoBehaviour
 {
     [SerializeField] private string loadSceneName = "LoadGameMenu";
     [SerializeField] private LoadGameMenuController loadGameMenuController;
+
+    void Start()
+    {
+        SoundManager.Instance?.PlayMusic("MorningSound");
+    }
+
     public void OnNewGamePressed()
     {
         if (SoundManager.Instance != null)
@@ -39,6 +45,22 @@ public class MainMenuController : MonoBehaviour
         // Clear any unfinished pending new-game selection
         GameRuntimeContext.Instance.ClearPendingNewGameSlot();
         loadGameMenuController.SetModeToLoadGame();
+    }
+
+    public void OnCreditsPressed()
+    {
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX("Click");
+
+        SceneManager.LoadScene("Credits");
+    }
+
+    public void OnBibleHelperPressed() 
+    {
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX("Click");
+
+        SceneManager.LoadScene("BibleHelper");
     }
 
     public void OnQuitPressed()
