@@ -22,7 +22,7 @@ public class BibleConversation
 public class BibleHelperLocalScene : MonoBehaviour
 {
     [Header("Model")]
-    [SerializeField] private string modelRelativePath = "models/module6_bible_helper.gguf";
+    [SerializeField] private string modelRelativePath = "models/Qwen3-1.7B-CS592-Final-Q4_K_M.gguf";
     [SerializeField] private int contextSize = 4096;
     [SerializeField] private int gpuLayerCount = 35;
 
@@ -43,6 +43,8 @@ public class BibleHelperLocalScene : MonoBehaviour
     [Header("Output Limits")]
     [SerializeField] private int maxTokens = 96;
     [SerializeField] private int maxVisibleCharacters = 600;
+
+    [SerializeField] private GameObject lightObj;
 
     [Header("Debug Output")]
     [SerializeField] private string verse = "";
@@ -239,6 +241,7 @@ Rules:
             return;
 
         _isGenerating = true;
+        lightObj.SetActive(true);
         SetInteractable(false);
         SetStatus("Generating response...");
 
@@ -445,6 +448,7 @@ Rules:
         finally
         {
             _isGenerating = false;
+            lightObj.SetActive(false);
             SetInteractable(true);
             FocusInput();
 
