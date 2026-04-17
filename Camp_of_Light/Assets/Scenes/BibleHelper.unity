@@ -913,56 +913,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34c49c5a2f4f3214c986b72d1d3b70f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelRelativePath: models/Qwen3-0.6B-bible-assistant-Q4_K_M.gguf
+  modelRelativePath: models/Qwen3-1.7B-CS592-Final-Q4_K_M.gguf
   contextSize: 4096
   gpuLayerCount: 35
-  systemPrompt: 'You are Bible Helper, a local AI assistant focused on the Bible.
-
-
-
-    Rules:
-
-    -
-    Answer questions about the Bible clearly, respectfully, and faithfully.
-
-    -
-    When possible, include Bible verse references.
-
-    - If you are unsure, say
-    so clearly.
-
-    - Do not invent verses or pretend certainty.
-
-    - Keep answers
-    helpful and easy to understand.
-
-    - You may explain context, meaning, themes,
-    and practical application.
-
-    - Do not roleplay as a cultist or gameplay character.
-
-
-
-    Style:
-
-    -
-    Calm
-
-    - Respectful
-
-    - Concise but helpful
-
-
-
-    Conversation begins
-    now.'
   outputText: {fileID: 757776885}
   inputField: {fileID: 528379371}
   submitButton: {fileID: 849415010}
-  clearButton: {fileID: 0}
-  backButton: {fileID: 0}
-  stopButton: {fileID: 0}
-  scrollRect: {fileID: 0}
   statusText: {fileID: 517974623}
   backSceneName: MainMenu
   submitOnEnter: 1
@@ -970,6 +926,8 @@ MonoBehaviour:
   showDebugLogs: 1
   maxVisibleCharacters: 600
   maxTokens: 600
+  verse: 
+  explanation: 
 --- !u!4 &679361718
 Transform:
   m_ObjectHideFlags: 0
@@ -2129,8 +2087,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 20.36
+  m_fontSizeBase: 20.36
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

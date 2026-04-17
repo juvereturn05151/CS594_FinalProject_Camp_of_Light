@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
@@ -14,11 +15,8 @@ using UnityEngine.UI;
 [Serializable]
 public class BibleConversation
 {
-    public string user_story;
     public string verse;
     public string explanation;
-    public List<string> steps;
-    public string closing;
 }
 
 public class BibleHelperLocalScene : MonoBehaviour
@@ -28,35 +26,10 @@ public class BibleHelperLocalScene : MonoBehaviour
     [SerializeField] private int contextSize = 4096;
     [SerializeField] private int gpuLayerCount = 35;
 
-    [Header("Prompt")]
-    [TextArea(8, 20)]
-    [SerializeField]
-    private string systemPrompt =
-@"You are Bible Helper, a local AI assistant focused on the Bible.
-
-Rules:
-- Answer questions about the Bible clearly, respectfully, and faithfully.
-- When possible, include Bible verse references.
-- If you are unsure, say so clearly.
-- Do not invent verses or pretend certainty.
-- Keep answers helpful and easy to understand.
-- Keep the answer short.
-- Answer in 1 to 2 short sentences only.
-- Keep the visible response compact for a small game UI.
-
-Style:
-- Calm
-- Respectful
-- Concise";
-
     [Header("UI")]
     [SerializeField] private TMP_Text outputText;
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private Button submitButton;
-    [SerializeField] private Button clearButton;
-    [SerializeField] private Button backButton;
-    [SerializeField] private Button stopButton;
-    [SerializeField] private ScrollRect scrollRect;
     [SerializeField] private TMP_Text statusText;
 
     [Header("Scene")]
@@ -64,12 +37,31 @@ Style:
 
     [Header("Behavior")]
     [SerializeField] private bool submitOnEnter = true;
-    [SerializeField] private bool autoScroll = true;
+    [SerializeField] private bool autoFocusInput = true;
     [SerializeField] private bool showDebugLogs = true;
 
     [Header("Output Limits")]
-    [SerializeField] private int maxVisibleCharacters = 180;
-    [SerializeField] private int maxTokens = 80;
+    [SerializeField] private int maxTokens = 96;
+    [SerializeField] private int maxVisibleCharacters = 600;
+
+    [Header("Debug Output")]
+    [SerializeField] private string verse = "";
+    [SerializeField] private string explanation = "";
+
+    private const string SYSTEM_PROMPT = @"You are a Bible assistant.
+
+Rules:
+- Return ONLY one valid JSON object.
+- Return exactly these two fields:
+  ""verse""
+  ""explanation""
+- Use double quotes only.
+- Do not use single quotes.
+- Do not include markdown.
+- Do not include code fences.
+- Do not include extra commentary.
+- Do not repeat the explanation.
+- Keep the explanation short, clear, and practical.";
 
     private LLamaWeights _model;
     private LLamaContext _context;
@@ -82,7 +74,7 @@ Style:
     private bool _isModelReady;
     private bool _isGenerating;
 
-    private string _currentResponse = string.Empty;
+    private readonly StringBuilder _responseBuilder = new StringBuilder();
 
     private void Awake()
     {
@@ -91,21 +83,10 @@ Style:
         if (submitButton != null)
             submitButton.onClick.AddListener(OnSubmitPressed);
 
-        if (clearButton != null)
-            clearButton.onClick.AddListener(OnClearPressed);
-
-        if (backButton != null)
-            backButton.onClick.AddListener(OnBackPressed);
-
-        if (stopButton != null)
-            stopButton.onClick.AddListener(OnStopPressed);
-
         if (inputField != null && submitOnEnter)
             inputField.onSubmit.AddListener(OnInputSubmitted);
 
-        if (outputText != null)
-            outputText.text = string.Empty;
-
+        SetOutputText(string.Empty);
         SetStatus("Loading local model...");
         SetInteractable(false);
     }
@@ -126,8 +107,9 @@ Style:
 
             if (!File.Exists(fullModelPath))
             {
-                SetStatus($"Model not found:\n{fullModelPath}");
                 Debug.LogError($"[BibleHelper] Model file not found: {fullModelPath}");
+                SetStatus("Model file not found.");
+                SetOutputText(fullModelPath);
                 return;
             }
 
@@ -145,7 +127,6 @@ Style:
                 var context = model.CreateContext(parameters);
                 var executor = new InteractiveExecutor(context);
                 var session = new ChatSession(executor);
-                session.AddSystemMessage(systemPrompt);
 
                 return new LoadedLlamaState
                 {
@@ -167,11 +148,13 @@ Style:
             _executor = loaded.Executor;
             _chatSession = loaded.Session;
 
-            _isModelReady = true;
+            ResetConversationHistory();
 
-            SetStatus("Bible Helper is ready.");
+            _isModelReady = true;
             SetInteractable(true);
+            SetStatus("Bible Helper is ready.");
             SetOutputText("Please tell me your issue.");
+            FocusInput();
 
             if (showDebugLogs)
                 Debug.Log("[BibleHelper] Model initialized successfully.");
@@ -184,6 +167,7 @@ Style:
         catch (Exception e)
         {
             SetStatus("Failed to load local model.");
+            SetOutputText("Check Console for details.");
             Debug.LogError($"[BibleHelper] Initialization failed: {e}");
         }
     }
@@ -218,15 +202,13 @@ Style:
     public void OnClearPressed()
     {
         if (_isGenerating)
-            return;
+            StopCurrentGeneration();
 
-        if (_chatSession != null)
-        {
-            _chatSession.History.Messages.Clear();
-            _chatSession.AddSystemMessage(systemPrompt);
-        }
+        ResetConversationHistory();
 
-        _currentResponse = string.Empty;
+        verse = string.Empty;
+        explanation = string.Empty;
+
         SetOutputText("Please tell me your issue.");
         SetStatus("Chat cleared.");
         FocusInput();
@@ -262,30 +244,42 @@ Style:
         _generationCts = CancellationTokenSource.CreateLinkedTokenSource(lifetimeToken);
         CancellationToken genToken = _generationCts.Token;
 
-        _currentResponse = string.Empty;
-        bool receivedAnyToken = false;
-
-        string severity = "moderate"; // or dynamic later
-        string prompt = BuildBiblePrompt(userMessage, severity);
+        _responseBuilder.Clear();
+        SetOutputText(string.Empty);
 
         try
         {
+            ResetConversationHistory();
+
+            string prompt = BuildBiblePrompt(userMessage);
+
             var inferenceParams = new InferenceParams
             {
+                MaxTokens = maxTokens,
                 AntiPrompts = new List<string>
-                    {
-                        "User:",
-                        "Bible Helper:",
-                        "Assistant:",
-                        "\n\n",     // stop after paragraph
-                        "{"         // stop JSON restart loop
-                    },
+                {
+                    "User:",
+                    "Assistant:",
+                    "Bible Helper:",
+                    "System:"
+                }
             };
 
             if (showDebugLogs)
-                Debug.Log($"[BibleHelper] Starting generation. MaxTokens={maxTokens}, MaxVisibleChars={maxVisibleCharacters}");
+            {
+                Debug.Log("[BibleHelper] ===== SYSTEM PROMPT =====");
+                Debug.Log(SYSTEM_PROMPT);
+                Debug.Log("[BibleHelper] ===== USER PROMPT =====");
+                Debug.Log(prompt);
+            }
 
-            await foreach (var token in ChatConcurrent(
+            bool jsonStarted = false;
+            bool inString = false;
+            bool escaping = false;
+            int braceDepth = 0;
+            bool jsonCompleted = false;
+
+            await foreach (var piece in StreamChatAsync(
                 _chatSession.ChatAsync(
                     new ChatHistory.Message(AuthorRole.User, prompt),
                     inferenceParams
@@ -296,78 +290,135 @@ Style:
                 if (genToken.IsCancellationRequested)
                     break;
 
-                receivedAnyToken = true;
-                _currentResponse += token;
-
-                // HARD STOP 1: UI length limit
-                if (_currentResponse.Length > maxVisibleCharacters)
+                for (int i = 0; i < piece.Length; i++)
                 {
-                    Debug.LogWarning("[BibleHelper] Force stop: exceeded UI limit");
+                    char c = piece[i];
 
-                    StopCurrentGeneration(); // cancel stream
-                    break;
+                    if (!jsonStarted)
+                    {
+                        if (c == '{')
+                        {
+                            jsonStarted = true;
+                            braceDepth = 1;
+                            _responseBuilder.Append(c);
+                        }
+
+                        continue;
+                    }
+
+                    _responseBuilder.Append(c);
+
+                    if (escaping)
+                    {
+                        escaping = false;
+                        continue;
+                    }
+
+                    if (c == '\\')
+                    {
+                        escaping = true;
+                        continue;
+                    }
+
+                    if (c == '"')
+                    {
+                        inString = !inString;
+                        continue;
+                    }
+
+                    if (inString)
+                        continue;
+
+                    if (c == '{')
+                    {
+                        braceDepth++;
+                    }
+                    else if (c == '}')
+                    {
+                        braceDepth--;
+
+                        if (braceDepth == 0)
+                        {
+                            jsonCompleted = true;
+                            break;
+                        }
+                    }
                 }
 
-                // HARD STOP 2: repetition detection
-                if (IsRepeating(_currentResponse))
-                {
-                    Debug.LogWarning("[BibleHelper] Force stop: repetition detected");
+                SetOutputText(ClampText(_responseBuilder.ToString(), maxVisibleCharacters));
 
-                    StopCurrentGeneration(); // cancel stream
+                if (jsonCompleted)
+                {
+                    StopCurrentGeneration();
                     break;
                 }
-
-                // Update UI AFTER checks
-                SetOutputText(ClampText(_currentResponse, maxVisibleCharacters));
 
                 await UniTask.Yield();
             }
 
-            if (!receivedAnyToken)
+            string rawResponse = _responseBuilder.ToString();
+
+            if (showDebugLogs)
             {
-                Debug.LogWarning("[BibleHelper] No tokens received from model.");
-                SetOutputText("I couldn't generate a response. Please try again.");
+                Debug.Log("[BibleHelper] ===== RAW/CAPTURED RESPONSE =====");
+                Debug.Log(rawResponse);
+            }
+
+            if (string.IsNullOrWhiteSpace(rawResponse))
+            {
                 SetStatus("No response generated.");
+                SetOutputText("I couldn't generate a response. Please try again.");
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(_currentResponse))
-            {
-                Debug.LogWarning("[BibleHelper] Response is empty after generation.");
-                SetOutputText("No meaningful response generated.");
-                SetStatus("Empty response.");
-                return;
-            }
-
-            var parsed = TryParse(_currentResponse);
+            BibleConversation parsed = TryParseConversation(rawResponse);
 
             if (parsed != null)
             {
-                if (showDebugLogs)
-                    Debug.Log("[BibleHelper] Parsed structured response successfully.");
+                verse = parsed.verse?.Trim() ?? string.Empty;
+                explanation = parsed.explanation?.Trim() ?? string.Empty;
 
-                SetOutputText(FormatShort(parsed));
+                if (string.IsNullOrWhiteSpace(verse) && string.IsNullOrWhiteSpace(explanation))
+                {
+                    SetStatus("Parsed empty response.");
+                    SetOutputText("The model returned empty fields. Please try again.");
+                    return;
+                }
+
+                SetOutputText($"{verse}\n\n{explanation}");
+                SetStatus("Ready.");
+
+                if (showDebugLogs)
+                {
+                    Debug.Log("[BibleHelper] ===== PARSED VERSE =====");
+                    Debug.Log(verse);
+                    Debug.Log("[BibleHelper] ===== PARSED EXPLANATION =====");
+                    Debug.Log(explanation);
+                }
             }
             else
             {
-                Debug.LogWarning("[BibleHelper] Failed to parse structured output. Using fallback.");
+                verse = string.Empty;
+                explanation = string.Empty;
 
-                SetOutputText(ClampText(_currentResponse, maxVisibleCharacters));
+                SetStatus("Could not parse JSON.");
+                SetOutputText(ClampText(CleanResponse(rawResponse), maxVisibleCharacters));
+
+                Debug.LogWarning("[BibleHelper] Failed to parse structured JSON.");
             }
-            SetStatus("Ready.");
         }
         catch (OperationCanceledException)
         {
-            Debug.LogWarning("[BibleHelper] Generation stopped or canceled.");
-            SetStatus("Generation stopped.");
+            if (!string.IsNullOrWhiteSpace(_responseBuilder.ToString()))
+                SetStatus("Ready.");
+            else
+                SetStatus("Generation stopped.");
         }
         catch (Exception e)
         {
-            Debug.LogError("[BibleHelper] Generation exception:");
-            Debug.LogError(e);
-
             SetStatus("Generation failed.");
-            SetOutputText("Something went wrong. Try again.");
+            SetOutputText("Something went wrong. Check Console.");
+            Debug.LogError($"[BibleHelper] Generation failed: {e}");
         }
         finally
         {
@@ -383,68 +434,20 @@ Style:
         }
     }
 
-    private bool IsRepeating(string text)
+    private void ResetConversationHistory()
     {
-        if (string.IsNullOrEmpty(text))
-            return false;
+        if (_chatSession == null)
+            return;
 
-        int half = text.Length / 2;
-
-        if (half < 30)
-            return false;
-
-        string first = text.Substring(0, half);
-        string second = text.Substring(half);
-
-        return second.Contains(first.Substring(0, Mathf.Min(30, first.Length)));
+        _chatSession.History.Messages.Clear();
+        _chatSession.History.AddMessage(AuthorRole.System, SYSTEM_PROMPT);
     }
 
-    private string FormatShort(BibleConversation data)
-    {
-        if (data == null)
-            return "No response.";
-
-        string verse = data.verse?.Trim() ?? "";
-        string explanation = data.explanation?.Trim() ?? "";
-
-        // keep explanation short
-        if (explanation.Length > 120)
-            explanation = explanation.Substring(0, 120).TrimEnd() + "...";
-
-        string result = $"{verse}\n\n{explanation}";
-
-        // add 1–2 guidance steps only
-        if (data.steps != null && data.steps.Count > 0)
-        {
-            int count = Mathf.Min(2, data.steps.Count);
-
-            result += "\n\n";
-
-            for (int i = 0; i < count; i++)
-            {
-                string step = data.steps[i]?.Trim();
-
-                if (!string.IsNullOrEmpty(step))
-                {
-                    // shorten each step
-                    if (step.Length > 80)
-                        step = step.Substring(0, 80).TrimEnd() + "...";
-
-                    result += $"• {step}\n";
-                }
-            }
-        }
-
-        return result.Trim();
-    }
-
-    private async IAsyncEnumerable<string> ChatConcurrent(
-        IAsyncEnumerable<string> tokens,
+    private async IAsyncEnumerable<string> StreamChatAsync(
+        IAsyncEnumerable<string> tokenStream,
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken token)
     {
-        await UniTask.SwitchToThreadPool();
-
-        await foreach (var tokenPiece in tokens)
+        await foreach (var tokenPiece in tokenStream)
         {
             if (token.IsCancellationRequested)
                 yield break;
@@ -453,78 +456,112 @@ Style:
         }
     }
 
-    private BibleConversation TryParse(string raw)
+    private BibleConversation TryParseConversation(string raw)
     {
+        if (string.IsNullOrWhiteSpace(raw))
+            return null;
+
         try
         {
-            int start = raw.IndexOf('{');
-            int end = raw.LastIndexOf('}');
+            string json = ExtractFirstCompleteJsonObject(raw);
 
-            if (start >= 0 && end > start)
+            if (string.IsNullOrWhiteSpace(json))
+                return null;
+
+            if (showDebugLogs)
             {
-                string json = raw.Substring(start, end - start + 1);
-                return JsonUtility.FromJson<BibleConversation>(json);
+                Debug.Log("[BibleHelper] ===== EXTRACTED JSON =====");
+                Debug.Log(json);
             }
+
+            return JsonUtility.FromJson<BibleConversation>(json);
         }
         catch (Exception e)
         {
             Debug.LogWarning($"[BibleHelper] JSON parse failed: {e}");
+            return null;
+        }
+    }
+
+    private string ExtractFirstCompleteJsonObject(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            return null;
+
+        bool started = false;
+        bool inString = false;
+        bool escaping = false;
+        int braceDepth = 0;
+        int startIndex = -1;
+
+        for (int i = 0; i < raw.Length; i++)
+        {
+            char c = raw[i];
+
+            if (!started)
+            {
+                if (c == '{')
+                {
+                    started = true;
+                    startIndex = i;
+                    braceDepth = 1;
+                }
+
+                continue;
+            }
+
+            if (escaping)
+            {
+                escaping = false;
+                continue;
+            }
+
+            if (c == '\\')
+            {
+                escaping = true;
+                continue;
+            }
+
+            if (c == '"')
+            {
+                inString = !inString;
+                continue;
+            }
+
+            if (inString)
+                continue;
+
+            if (c == '{')
+            {
+                braceDepth++;
+            }
+            else if (c == '}')
+            {
+                braceDepth--;
+
+                if (braceDepth == 0)
+                    return raw.Substring(startIndex, i - startIndex + 1);
+            }
         }
 
         return null;
     }
 
-    private string BuildBiblePrompt(string issue, string severity)
+    private string BuildBiblePrompt(string issue)
     {
-        string request;
+        return
+$@"User issue:
+{issue}
 
-        if (issue == "question")
-        {
-            request = $"Provide a Bible verse about {issue}, and explain the meaning.";
-        }
-        else
-        {
-            switch (severity)
-            {
-                case "mild":
-                    request = $"Provide a Bible verse about {issue}, with brief encouragement.";
-                    break;
-
-                case "moderate":
-                    request = $"Provide a Bible verse about {issue}, with explanation and 3–4 steps.";
-                    break;
-
-                case "severe":
-                    request = $"Provide a Bible verse about {issue}, with deeper explanation and 4–6 steps.";
-                    break;
-
-                case "crisis":
-                    request = $"Provide a Bible verse about {issue}, include support advice and suggest seeking help.";
-                    break;
-
-                default:
-                    request = $"Provide a Bible verse about {issue}, with encouragement.";
-                    break;
-            }
-        }
-
-        return $@"
-Create a response from: {request}
-
-Context:
-- Topic: {issue}
-- Severity: {severity}
-
-IMPORTANT:
-Return ONLY valid JSON.
+Return ONLY one valid JSON object.
+Use double quotes only.
+Do not use single quotes.
+Do not add any text before or after the JSON.
 
 Format:
 {{
-  ""user_story"": ""..."",
-  ""verse"": ""..."",
-  ""explanation"": ""..."",
-  ""steps"": [""..."", ""...""],
-  ""closing"": ""...""
+  ""verse"": ""Bible verse with reference"",
+  ""explanation"": ""Short practical explanation""
 }}";
     }
 
@@ -544,20 +581,13 @@ Format:
 
     private void SetInteractable(bool interactable)
     {
-        if (submitButton != null)
-            submitButton.interactable = interactable && _isModelReady && !_isGenerating;
+        bool enabled = interactable && _isModelReady && !_isGenerating;
 
-        if (clearButton != null)
-            clearButton.interactable = interactable && _isModelReady && !_isGenerating;
+        if (submitButton != null)
+            submitButton.interactable = enabled;
 
         if (inputField != null)
-            inputField.interactable = interactable && _isModelReady && !_isGenerating;
-
-        if (stopButton != null)
-            stopButton.interactable = _isGenerating;
-
-        if (backButton != null)
-            backButton.interactable = true;
+            inputField.interactable = enabled;
     }
 
     private void SetStatus(string message)
@@ -568,11 +598,17 @@ Format:
 
     private void SetOutputText(string message)
     {
-        if (outputText == null)
+        if (outputText != null)
+            outputText.text = message ?? string.Empty;
+    }
+
+    private void FocusInput()
+    {
+        if (!autoFocusInput || inputField == null || !inputField.interactable)
             return;
 
-        outputText.text = message;
-        ForceScrollToBottom();
+        inputField.ActivateInputField();
+        inputField.Select();
     }
 
     private string ClampText(string text, int maxChars)
@@ -597,32 +633,8 @@ Format:
         text = text.Replace("Bible Helper:", string.Empty);
         text = text.Replace("Assistant:", string.Empty);
         text = text.Replace("User:", string.Empty);
-        text = text.Replace("\r", " ");
-        text = text.Replace("\n", " ");
-
-        while (text.Contains("  "))
-            text = text.Replace("  ", " ");
-
+        text = text.Replace("System:", string.Empty);
         return text.Trim();
-    }
-
-    private void ForceScrollToBottom()
-    {
-        if (!autoScroll || scrollRect == null)
-            return;
-
-        Canvas.ForceUpdateCanvases();
-        scrollRect.verticalNormalizedPosition = 0f;
-        Canvas.ForceUpdateCanvases();
-    }
-
-    private void FocusInput()
-    {
-        if (inputField == null || !inputField.interactable)
-            return;
-
-        inputField.ActivateInputField();
-        inputField.Select();
     }
 
     private void CleanupModel()
@@ -645,6 +657,8 @@ Format:
                 _model.Dispose();
                 _model = null;
             }
+
+            _isModelReady = false;
         }
         catch (Exception e)
         {
@@ -656,15 +670,6 @@ Format:
     {
         if (submitButton != null)
             submitButton.onClick.RemoveListener(OnSubmitPressed);
-
-        if (clearButton != null)
-            clearButton.onClick.RemoveListener(OnClearPressed);
-
-        if (backButton != null)
-            backButton.onClick.RemoveListener(OnBackPressed);
-
-        if (stopButton != null)
-            stopButton.onClick.RemoveListener(OnStopPressed);
 
         if (inputField != null && submitOnEnter)
             inputField.onSubmit.RemoveListener(OnInputSubmitted);
