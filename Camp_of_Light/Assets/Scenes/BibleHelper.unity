@@ -869,6 +869,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 528379369}
   m_CullTransparentMesh: 1
+--- !u!1 &617541214 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6263782476919498309, guid: 1fd2749f2a4056446881dce86ed70c39, type: 3}
+  m_PrefabInstance: {fileID: 699656963}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &624859173
 GameObject:
   m_ObjectHideFlags: 0
@@ -1072,6 +1077,7 @@ MonoBehaviour:
   maxTokens: 600
   maxVisibleCharacters: 600
   lightObj: {fileID: 157582167}
+  burstObj: {fileID: 617541214}
   verse: 
   explanation: 
 --- !u!4 &679361718
@@ -1248,6 +1254,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3241733169545288115, guid: 1fd2749f2a4056446881dce86ed70c39, type: 3}
       propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444646093860624222, guid: 1fd2749f2a4056446881dce86ed70c39, type: 3}
+      propertyPath: clearBehavior
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6263782476919498304, guid: 1fd2749f2a4056446881dce86ed70c39, type: 3}

@@ -45,6 +45,7 @@ public class BibleHelperLocalScene : MonoBehaviour
     [SerializeField] private int maxVisibleCharacters = 600;
 
     [SerializeField] private GameObject lightObj;
+    [SerializeField] private GameObject burstObj;
 
     [Header("Debug Output")]
     [SerializeField] private string verse = "";
@@ -449,6 +450,7 @@ Rules:
         {
             _isGenerating = false;
             lightObj.SetActive(false);
+            burstObj.SetActive(true);
             SetInteractable(true);
             FocusInput();
 
