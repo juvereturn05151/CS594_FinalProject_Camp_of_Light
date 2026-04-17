@@ -61,6 +61,8 @@ Rules:
 - Do not include code fences.
 - Do not include extra commentary.
 - Do not repeat the explanation.
+- Do not generate a second JSON object.
+- Stop immediately after the final }.
 - Keep the explanation short, clear, and practical.";
 
     private LLamaWeights _model;
@@ -274,10 +276,11 @@ Rules:
             }
 
             bool jsonStarted = false;
+            bool jsonFinished = false;
             bool inString = false;
             bool escaping = false;
             int braceDepth = 0;
-            bool jsonCompleted = false;
+            bool stopNow = false;
 
             await foreach (var piece in StreamChatAsync(
                 _chatSession.ChatAsync(
@@ -294,6 +297,7 @@ Rules:
                 {
                     char c = piece[i];
 
+                    // Wait for first {
                     if (!jsonStarted)
                     {
                         if (c == '{')
@@ -303,6 +307,22 @@ Rules:
                             _responseBuilder.Append(c);
                         }
 
+                        continue;
+                    }
+
+                    // If first JSON is already finished and another { appears,
+                    // stop immediately and DO NOT append it.
+                    if (jsonFinished)
+                    {
+                        if (c == '{')
+                        {
+                            if (showDebugLogs)
+                                Debug.LogWarning("[BibleHelper] Second JSON object detected. Stopping before duplicate '{'.");
+                            stopNow = true;
+                            break;
+                        }
+
+                        // ignore trailing junk after first JSON
                         continue;
                     }
 
@@ -339,7 +359,8 @@ Rules:
 
                         if (braceDepth == 0)
                         {
-                            jsonCompleted = true;
+                            jsonFinished = true;
+                            stopNow = true;
                             break;
                         }
                     }
@@ -347,7 +368,7 @@ Rules:
 
                 SetOutputText(ClampText(_responseBuilder.ToString(), maxVisibleCharacters));
 
-                if (jsonCompleted)
+                if (stopNow)
                 {
                     StopCurrentGeneration();
                     break;
@@ -402,6 +423,7 @@ Rules:
                 explanation = string.Empty;
 
                 SetStatus("Could not parse JSON.");
+                Debug.LogError($"[BibleHelper] rawResponse: {rawResponse}");
                 SetOutputText(ClampText(CleanResponse(rawResponse), maxVisibleCharacters));
 
                 Debug.LogWarning("[BibleHelper] Failed to parse structured JSON.");
@@ -557,6 +579,8 @@ Return ONLY one valid JSON object.
 Use double quotes only.
 Do not use single quotes.
 Do not add any text before or after the JSON.
+Do not generate a second JSON object.
+Stop immediately after the closing }}.
 
 Format:
 {{
