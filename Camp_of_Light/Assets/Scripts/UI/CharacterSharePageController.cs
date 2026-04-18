@@ -26,6 +26,10 @@ public class CharacterSharePageController : MonoBehaviour
     private string shareMessageTemplate =
         "Meet my character and spirit from Only Truth Expedition. #indiegame #gamedev #unity";
 
+    [Header("Save Sprite")]
+    [SerializeField] private string playerSpriteFilePrefix = "OnlyTruthExpedition_Player";
+    [SerializeField] private string spiritSpriteFilePrefix = "OnlyTruthExpedition_Spirit";
+
     private string lastScreenshotPath;
 
     // Preview data injected by ProfileCreationController
@@ -114,6 +118,26 @@ public class CharacterSharePageController : MonoBehaviour
         StartCoroutine(CaptureScreenshotRoutine(true, ShareToLinkedIn));
     }
 
+    public void OnClickSavePlayerSprite()
+    {
+        SaveSpriteToFile(
+            GetCurrentProfile() != null ? GetCurrentProfile().PlayerCharacterImagePath : string.Empty,
+            playerImage,
+            "SavedPlayerSprites",
+            playerSpriteFilePrefix
+        );
+    }
+
+    public void OnClickSaveSpiritSprite()
+    {
+        SaveSpriteToFile(
+            GetCurrentProfile() != null ? GetCurrentProfile().SpiritCharacterImagePath : string.Empty,
+            spiritImage,
+            "SavedSpiritSprites",
+            spiritSpriteFilePrefix
+        );
+    }
+
     public void OnClickOpenScreenshotFolder()
     {
         string folder = Path.Combine(Application.persistentDataPath, "SharedCaptures");
@@ -122,6 +146,20 @@ public class CharacterSharePageController : MonoBehaviour
             Directory.CreateDirectory(folder);
 
         Application.OpenURL("file://" + folder.Replace("\\", "/"));
+    }
+
+    public void OnClickOpenSavedSpritesFolder()
+    {
+        string folder = Path.Combine(Application.persistentDataPath, "SavedPlayerSprites");
+
+        if (!Directory.Exists(folder))
+            Directory.CreateDirectory(folder);
+
+        string spiritFolder = Path.Combine(Application.persistentDataPath, "SavedSpiritSprites");
+        if (!Directory.Exists(spiritFolder))
+            Directory.CreateDirectory(spiritFolder);
+
+        Application.OpenURL("file://" + Application.persistentDataPath.Replace("\\", "/"));
     }
 
     private IEnumerator CaptureScreenshotRoutine(bool openShareAfter, Action<string> shareAction)
@@ -254,13 +292,13 @@ public class CharacterSharePageController : MonoBehaviour
         try
         {
             byte[] bytes = File.ReadAllBytes(imagePath);
-            Texture2D texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            Texture2D texture = new Texture2D(3, 3, TextureFormat.RGBA32, false);
             texture.LoadImage(bytes);
 
             Sprite sprite = Sprite.Create(
                 texture,
                 new Rect(0, 0, texture.width, texture.height),
-                new Vector2(1.0f, 1.0f)
+                new Vector2(0.5f, 0.5f)
             );
 
             targetImage.sprite = sprite;
@@ -272,6 +310,121 @@ public class CharacterSharePageController : MonoBehaviour
             Debug.LogError($"Failed to load image from path '{imagePath}': {e.Message}");
             targetImage.sprite = null;
             targetImage.enabled = false;
+        }
+    }
+
+    private void SaveSpriteToFile(
+        string sourceImagePath,
+        Image sourceImage,
+        string folderName,
+        string filePrefix)
+    {
+        try
+        {
+            string folder = Path.Combine(Application.persistentDataPath, folderName);
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string fileName = $"{filePrefix}_{timestamp}.png";
+            string savePath = Path.Combine(folder, fileName);
+
+            // First choice: copy original generated image directly
+            if (!string.IsNullOrWhiteSpace(sourceImagePath) && File.Exists(sourceImagePath))
+            {
+                File.Copy(sourceImagePath, savePath, true);
+                SetStatus($"Saved sprite:\n{savePath}");
+                return;
+            }
+
+            // Fallback: export from currently displayed UI sprite
+            if (sourceImage == null || sourceImage.sprite == null || sourceImage.sprite.texture == null)
+            {
+                SetStatus("No sprite available to save.");
+                return;
+            }
+
+            Texture2D exportedTexture = ExtractSpriteTexture(sourceImage.sprite);
+            if (exportedTexture == null)
+            {
+                SetStatus("Failed to export sprite texture.");
+                return;
+            }
+
+            byte[] pngBytes = exportedTexture.EncodeToPNG();
+            File.WriteAllBytes(savePath, pngBytes);
+
+            SetStatus($"Saved sprite:\n{savePath}");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to save sprite: {e}");
+            SetStatus("Failed to save sprite.");
+        }
+    }
+
+    private Texture2D ExtractSpriteTexture(Sprite sprite)
+    {
+        if (sprite == null || sprite.texture == null)
+            return null;
+
+        Rect rect = sprite.rect;
+        Texture2D sourceTexture = sprite.texture;
+
+        try
+        {
+            Texture2D croppedTexture = new Texture2D(
+                (int)rect.width,
+                (int)rect.height,
+                TextureFormat.RGBA32,
+                false
+            );
+
+            Color[] pixels = sourceTexture.GetPixels(
+                (int)rect.x,
+                (int)rect.y,
+                (int)rect.width,
+                (int)rect.height
+            );
+
+            croppedTexture.SetPixels(pixels);
+            croppedTexture.Apply();
+
+            return croppedTexture;
+        }
+        catch
+        {
+            // Fallback if GetPixels fails because texture is not readable
+            RenderTexture rt = RenderTexture.GetTemporary(
+                (int)rect.width,
+                (int)rect.height,
+                0,
+                RenderTextureFormat.ARGB32
+            );
+
+            Graphics.Blit(sourceTexture, rt);
+
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = rt;
+
+            Texture2D readableTexture = new Texture2D(
+                (int)rect.width,
+                (int)rect.height,
+                TextureFormat.RGBA32,
+                false
+            );
+
+            readableTexture.ReadPixels(
+                new Rect(rect.x, rect.y, rect.width, rect.height),
+                0,
+                0
+            );
+            readableTexture.Apply();
+
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(rt);
+
+            return readableTexture;
         }
     }
 
