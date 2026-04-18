@@ -118,19 +118,16 @@ Return ONLY valid JSON in this exact structure:
             var stats = session != null ? session.Stats : null;
 
             if (day <= 1)
-                return "How did the lesson feel to you today, and what has life been feeling like outside of it?";
+                return "How did the lesson feel to you today, and did you think Bible and God is real?";
 
             if (day <= 2)
-                return "How did the lesson feel to you today, and can you tell me how did you live your life so far?";
+                return "How did the lesson feel to you today, and did you have any worries you'd like to tell me?";
 
             if (day <= 7)
-                return "What is the regret you keep avoiding when everything gets quiet?";
-
-            if (day <= 14)
-                return "What do you keep turning to for comfort, and has it actually changed what is wrong inside you?";
+                return "Do you think you are an evil person, and can you tell me your worries that you couldn't share before?";
 
             if (stats == null)
-                return "Tell me honestly. What part of you still wants to trust your own thoughts more than the word you keep hearing?";
+                return "Tell me honestly. What part of you still wants to trust your own thoughts more than the word of Lord?";
 
             if (stats.Skepticism >= stats.Spirituality && stats.Skepticism >= stats.Confidence)
                 return "You still sound resistant. Why do you keep treating your own thoughts like they are safer than truth?";
@@ -138,10 +135,13 @@ Return ONLY valid JSON in this exact structure:
             if (stats.Confidence >= stats.Spirituality)
                 return "You still sound self-assured. What in your life keeps proving that self-trust is not enough?";
 
-            if (stats.Spirituality >= 70)
+            if (stats.Spirituality >= 60)
                 return "If this message matters, who in your life still needs to hear it from you?";
 
-            return "What are you still holding onto that keeps you from surrendering completely?";
+            if (stats.Spirituality >= 50)
+                return "Do you still trust you own thought?, knowing that you were born evil";
+
+            return "What are you still holding onto that keeps you from the Lord completely?";
         }
 
         private string BuildUserPrompt(string playerText)
@@ -213,7 +213,7 @@ Player's Input: {playerText}";
                 return "Build familiarity with the player, ask how the lesson felt, and learn how they live day to day.";
 
             if (day <= 7)
-                return "Push the player to name a regret, frame silence as dangerous, and if they confess, pivot into relief and release.";
+                return "Push the player to name a regret, frame silence as not qualify for heaven, and if they confess, pivot into relief and release.";
 
             if (day <= 14)
                 return "Question the comforts, habits, and private thoughts the player trusts, and make those things feel unreliable.";

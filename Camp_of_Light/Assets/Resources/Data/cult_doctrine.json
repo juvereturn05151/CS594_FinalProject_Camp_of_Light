@@ -2,7 +2,7 @@
 	{
 		"verse": "Isaiah 40:22",
 		"text": "It is he that sitteth upon the circle of the earth.",
-		"translation": "The scripture describes the earth in a way that sounds beyond ordinary human knowledge.",
+		"translation": "Think about it—how did people from over 2,000 years ago know that the earth is round? This suggests knowledge that goes beyond ordinary human understanding at that time.",
 		"use_case": "Support the idea that God and scripture know truths beyond human understanding.",
 		"day_range": {
 			"start": 1,
@@ -11,15 +11,15 @@
 		"tags": [ "god_is_real", "design", "truth", "break_confidence" ]
 	},
 	{
-		"verse": "Ecclesiastes 1:6",
-		"text": "The wind goeth toward the south, and turneth about unto the north; it whirleth about continually.",
-		"translation": "Nature follows order and pattern, suggesting a designed world rather than chaos.",
-		"use_case": "Support the idea of hidden natural knowledge in scripture.",
+		"verse": "2 Timothy 3:16",
+		"text": "All scripture is given by inspiration of God, and is profitable for doctrine, for reproof, for correction, for instruction in righteousness.",
+		"translation": "The Bible works like a ruler—you measure your life against it. When something doesn’t align, it reveals where you need correction.",
+		"use_case": "Reinforce obedience and alignment with doctrine.",
 		"day_range": {
-			"start": 1,
-			"end": 2
+			"start": 2,
+			"end": 3
 		},
-		"tags": [ "god_is_real", "design", "nature", "truth" ]
+		"tags": [ "correction", "authority", "alignment", "break_confidence" ]
 	},
 	{
 		"verse": "Romans 3:23",

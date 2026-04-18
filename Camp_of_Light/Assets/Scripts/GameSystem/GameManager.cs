@@ -210,9 +210,9 @@ public class GameManager : MonoBehaviour
             MaxDays = 45,
             CurrentPhase = GamePhase.WakeUp,
             PromptsUsedToday_Brainwash = 0,
-            MaxPromptsPerDay_Brainwash = 7,
+            MaxPromptsPerDay_Brainwash = GameConfig.MaxPromptsPerDay_Brainwash,
             PromptsUsedToday_Conscience = 0,
-            MaxPromptsPerDay_Conscience = 4,
+            MaxPromptsPerDay_Conscience = GameConfig.MaxPromptsPerDay_Conscience,
             IsGameOver = false,
             good_ending_1 = false,
             good_ending_2 = false,
@@ -454,6 +454,12 @@ public class GameManager : MonoBehaviour
         }
 
         return result;
+    }
+
+    public void HackDayThree()
+    {
+        gameDirector.CurrentDay = 3;
+        State.CurrentDay = 3;
     }
 
     public void HackMaxDays() 

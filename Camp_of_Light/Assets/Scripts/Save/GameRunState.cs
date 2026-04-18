@@ -14,10 +14,10 @@ public class GameRunState
     public GamePhase CurrentPhase = GamePhase.WakeUp;
 
     public int PromptsUsedToday_Brainwash = 0;
-    public int MaxPromptsPerDay_Brainwash = 7;
+    public int MaxPromptsPerDay_Brainwash = GameConfig.MaxPromptsPerDay_Brainwash;
 
     public int PromptsUsedToday_Conscience = 0;
-    public int MaxPromptsPerDay_Conscience = 4;
+    public int MaxPromptsPerDay_Conscience = GameConfig.MaxPromptsPerDay_Conscience;
 
     public bool IsGameOver = false;
     public bool good_ending_1 = false;

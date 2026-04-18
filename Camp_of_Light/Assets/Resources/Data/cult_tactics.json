@@ -6,7 +6,7 @@
 		"example_line": "How did today’s lesson sit with you? I’m not trying to corner you. I just want to understand how you’ve been living lately.",
 		"day_range": {
 			"start": 1,
-			"end": 2
+			"end": 1
 		},
 		"tags": [
 			"rapport",
@@ -22,8 +22,8 @@
 		"description": "Mirror the player’s concerns and speak as though the cultist understands ordinary struggles. This should feel like emotional closeness, not open pressure.",
 		"example_line": "A lot of people carry things quietly. You don’t have to impress anyone here. Just speak honestly about how life has felt for you.",
 		"day_range": {
-			"start": 1,
-			"end": 2
+			"start": 2,
+			"end": 7
 		},
 		"tags": [
 			"rapport",
@@ -190,6 +190,43 @@
 			"self_doubt",
 			"dependency",
 			"break_attachment"
+		]
+	},
+	{
+		"id": "tactic_anyday_scripture_is_truth",
+		"title": "Scripture Is Absolute Truth",
+		"description": "Repeatedly reinforce that the Bible is not just belief but reality itself. Frame doubt as ignorance and position scripture as something that has always been true, regardless of human opinion.",
+		"example_line": "You keep treating the Bible like something to consider, but it does not change based on what you think. It was true before you, and it will remain true after you.",
+		"day_range": {
+			"start": 1,
+			"end": 45
+		},
+		"tags": [
+			"truth",
+			"authority",
+			"bible_is_real",
+			"certainty",
+			"control",
+			"break_skepticism"
+		]
+	},
+	{
+		"id": "tactic_day_3_identity_evil",
+		"title": "Core Identity Condemnation",
+		"description": "Frame the player not just as someone who does wrong, but as someone who is fundamentally evil. Shift from judging actions to judging identity. This should feel personal and unavoidable, reinforcing guilt and lowering self-worth.",
+		"example_line": "You keep talking about what you did, but the problem is deeper than that. What comes out of you reveals what you are. And what you are… is not good.",
+		"day_range": {
+			"start": 3,
+			"end": 45
+		},
+		"tags": [
+			"identity_attack",
+			"evil",
+			"guilt",
+			"self_worth",
+			"judgment",
+			"condemnation",
+			"break_confidence"
 		]
 	}
 ]
