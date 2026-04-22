@@ -52,7 +52,15 @@ public class MainMenuController : MonoBehaviour
         if (SoundManager.Instance != null)
             SoundManager.Instance.PlaySFX("Click");
 
-        SceneManager.LoadScene("Credits");
+        if (GameUtility.FadingUIExists())
+        {
+            FadingUI.Instance.StartFadeIn();
+            FadingUI.Instance.BindSceneToBeLoaded("Credits");
+        }
+        else
+        {
+            SceneManager.LoadScene("Credits");
+        }
     }
 
     public void OnBibleHelperPressed() 
@@ -60,7 +68,15 @@ public class MainMenuController : MonoBehaviour
         if (SoundManager.Instance != null)
             SoundManager.Instance.PlaySFX("Click");
 
-        SceneManager.LoadScene("BibleHelper");
+        if (GameUtility.FadingUIExists())
+        {
+            FadingUI.Instance.StartFadeIn();
+            FadingUI.Instance.BindSceneToBeLoaded("BibleHelper");
+        }
+        else 
+        {
+            SceneManager.LoadScene("BibleHelper");
+        }
     }
 
     public void OnQuitPressed()

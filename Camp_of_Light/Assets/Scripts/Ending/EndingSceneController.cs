@@ -244,7 +244,15 @@ public class EndingSceneController : MonoBehaviour
             return;
         }
 
-        SceneManager.LoadScene(mainMenuSceneName);
+        if (GameUtility.FadingUIExists())
+        {
+            FadingUI.Instance.StartFadeIn();
+            FadingUI.Instance.BindSceneToBeLoaded(mainMenuSceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(mainMenuSceneName);
+        }
     }
 
     private GameRunState GetRuntimeState()

@@ -228,7 +228,15 @@ Rules:
             StopCurrentGeneration();
 
         CleanupModel();
-        SceneManager.LoadScene(backSceneName);
+        if (GameUtility.FadingUIExists())
+        {
+            FadingUI.Instance.StartFadeIn();
+            FadingUI.Instance.BindSceneToBeLoaded(backSceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(backSceneName);
+        }
     }
 
     public void OnStopPressed()

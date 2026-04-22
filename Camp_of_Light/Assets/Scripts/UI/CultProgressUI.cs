@@ -174,7 +174,7 @@ public class CultProgressUI : MonoBehaviour
         {
 
             if (stats.Spirituality >= 100 && stats.Confidence <= 10)
-                return "Status: Fully Brainwashed";
+                return "Status: Fully Believer";
 
             return "Status: Trapped Forever";
         }
@@ -189,7 +189,7 @@ public class CultProgressUI : MonoBehaviour
 
             case GamePhase.BrainwashingLesson:
                 if (stats.Spirituality >= 70)
-                    return "Status: Under Pressure";
+                    return "Status: Brainwashed";
                 return "Status: Brainwashing";
 
             case GamePhase.ConscienceTalk:

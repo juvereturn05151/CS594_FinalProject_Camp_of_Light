@@ -1527,7 +1527,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Now, Speak to Yoursefl
+  m_text: Now, Speak to Yourself
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
   m_sharedMaterial: {fileID: 4374565636633926892, guid: dba5ac93cf89bca4a8825e5b851a58f8, type: 2}
@@ -4717,7 +4717,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1673102643
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6922,7 +6922,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!222 &978099479294003237
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12179,7 +12179,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &6669169773104451042
 GameObject:
   m_ObjectHideFlags: 0

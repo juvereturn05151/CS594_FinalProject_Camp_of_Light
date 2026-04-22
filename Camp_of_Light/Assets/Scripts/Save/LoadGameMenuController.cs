@@ -125,7 +125,15 @@ public class LoadGameMenuController : MonoBehaviour
             GameRuntimeContext.Instance.SetCurrentSave(save);
             GameRuntimeContext.Instance.SetCurrentRunState(ConvertSaveToRunState(save));
 
-            SceneManager.LoadScene(gameplaySceneName);
+            if (GameUtility.FadingUIExists())
+            {
+                FadingUI.Instance.StartFadeIn();
+                FadingUI.Instance.BindSceneToBeLoaded(gameplaySceneName);
+            }
+            else
+            {
+                SceneManager.LoadScene(gameplaySceneName);
+            }
             return;
         }
 
@@ -140,7 +148,15 @@ public class LoadGameMenuController : MonoBehaviour
             GameRuntimeContext.Instance.Clear();
             GameRuntimeContext.Instance.SetPendingNewGameSlot(slotId);
 
-            SceneManager.LoadScene(profileCreationSceneName);
+            if (GameUtility.FadingUIExists())
+            {
+                FadingUI.Instance.StartFadeIn();
+                FadingUI.Instance.BindSceneToBeLoaded(profileCreationSceneName);
+            }
+            else
+            {
+                SceneManager.LoadScene(profileCreationSceneName);
+            }
         }
     }
 

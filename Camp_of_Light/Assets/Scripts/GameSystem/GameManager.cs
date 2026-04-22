@@ -160,7 +160,16 @@ public class GameManager : MonoBehaviour
     {
         SaveCheckpoint();
         isInitialized = false;
-        SceneManager.LoadScene(mainMenuSceneName);
+
+        if (GameUtility.FadingUIExists())
+        {
+            FadingUI.Instance.StartFadeIn();
+            FadingUI.Instance.BindSceneToBeLoaded(mainMenuSceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(mainMenuSceneName);
+        }
     }
 
     public void GoToEndingScene()
@@ -172,7 +181,15 @@ public class GameManager : MonoBehaviour
         SaveCheckpoint();
 
         isInitialized = false;
-        SceneManager.LoadScene(endingSceneName);
+        if (GameUtility.FadingUIExists())
+        {
+            FadingUI.Instance.StartFadeIn();
+            FadingUI.Instance.BindSceneToBeLoaded(endingSceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(endingSceneName);
+        }
     }
 
     private GameRunState LoadInitialState()

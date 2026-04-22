@@ -91,7 +91,15 @@ public class IntroSceneController : MonoBehaviour
 
     public void OnStartGamePressed()
     {
-        SceneManager.LoadScene(gameplaySceneName);
+        if (GameUtility.FadingUIExists())
+        {
+            FadingUI.Instance.StartFadeIn();
+            FadingUI.Instance.BindSceneToBeLoaded(gameplaySceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(gameplaySceneName);
+        }
     }
 
     private void BuildAllPages()

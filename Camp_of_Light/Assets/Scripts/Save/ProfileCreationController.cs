@@ -310,7 +310,15 @@ public class ProfileCreationController : MonoBehaviour
         GameRuntimeContext.Instance.SetCurrentRunState(ConvertSaveToRunState(save));
         GameRuntimeContext.Instance.ClearPendingNewGameSlot();
 
-        SceneManager.LoadScene(introSceneName);
+        if (GameUtility.FadingUIExists())
+        {
+            FadingUI.Instance.StartFadeIn();
+            FadingUI.Instance.BindSceneToBeLoaded(introSceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(introSceneName);
+        }
     }
 
     private void OnPlayerCharacterGenerated(bool success, string imagePath, Texture2D texture, string promptUsed, string errorMessage)

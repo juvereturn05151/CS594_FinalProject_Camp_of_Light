@@ -7,6 +7,14 @@ public class BackToMainMenuButton : MonoBehaviour
 
     public void GoToMainMenu()
     {
-        SceneManager.LoadScene(mainMenuSceneName);
+        if (GameUtility.FadingUIExists())
+        {
+            FadingUI.Instance.StartFadeIn();
+            FadingUI.Instance.BindSceneToBeLoaded(mainMenuSceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(mainMenuSceneName);
+        }
     }
 }
